@@ -46,7 +46,7 @@ export function Header() {
                 Sign In
               </Button>
             </Link>
-            <Link href="/register?role=worker">
+            <Link href="/onboarding/worker">
               <Button variant="outline" size="sm">Become a Provider</Button>
             </Link>
             <Link href="/register">

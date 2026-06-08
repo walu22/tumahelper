@@ -1,5 +1,5 @@
 // Run with: node scripts/seed-auth-users.mjs
-// Creates auth.users entries for seed data users so they can log in with OTP
+// Creates/updates auth.users entries for seed data with email + password
 
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync, existsSync } from 'fs'
@@ -8,13 +8,9 @@ import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
-// Load env
 const envPath = join(__dirname, '..', '.env.local')
 if (!existsSync(envPath)) {
-  console.error('.env.local not found. Create it with:')
-  console.error('NEXT_PUBLIC_SUPABASE_URL=...')
-  console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY=...')
-  console.error('SUPABASE_SERVICE_ROLE_KEY=...')
+  console.error('.env.local not found.')
   process.exit(1)
 }
 
@@ -31,8 +27,7 @@ const supabase = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
-const TEST_USERS = [
-  // Workers
+const ACCOUNTS = [
   { phone: '+260961111111', role: 'worker' },
   { phone: '+260962222222', role: 'worker' },
   { phone: '+260963333333', role: 'worker' },
@@ -43,54 +38,56 @@ const TEST_USERS = [
   { phone: '+260968888888', role: 'worker' },
   { phone: '+260969999999', role: 'worker' },
   { phone: '+260960000000', role: 'worker' },
-  // Customers
   { phone: '+260976666666', role: 'customer' },
   { phone: '+260977777777', role: 'customer' },
   { phone: '+260978888888', role: 'customer' },
   { phone: '+260970000004', role: 'customer' },
   { phone: '+260970000005', role: 'customer' },
-  // Admin
   { phone: '+260970000001', role: 'admin' },
 ]
 
 async function main() {
-  for (const u of TEST_USERS) {
-    const { data: existing } = await supabase
-      .from('users')
-      .select('id')
-      .eq('phone', u.phone)
-      .single()
-
-    if (!existing) {
-      console.log(`  Skipping ${u.phone} — not in public.users table`)
+  for (const { phone, role } of ACCOUNTS) {
+    const { data: user } = await supabase.from('users').select('id, email').eq('phone', phone).single()
+    if (!user) {
+      console.log(`  SKIP ${phone} — not in public.users table`)
       continue
     }
 
-    // Check if auth user exists
-    const { data: authUser } = await supabase.auth.admin.getUserById(existing.id)
+    const email = `${role}@tumahelper.dev`
+
+    // Update email in public.users
+    await supabase.from('users').update({ email }).eq('id', user.id)
+
+    // Update or create auth user with email + password
+    const { data: authUser } = await supabase.auth.admin.getUserById(user.id)
     if (authUser?.user) {
-      console.log(`  ${u.phone} (${u.role}) — already has auth user`)
-      continue
-    }
-
-    const { data, error } = await supabase.auth.admin.createUser({
-      id: existing.id,
-      phone: u.phone,
-      phone_confirm: true,
-      user_metadata: { role: u.role },
-    })
-
-    if (error) {
-      console.error(`  ${u.phone} FAILED: ${error.message}`)
+      const { error } = await supabase.auth.admin.updateUserById(user.id, {
+        email,
+        password: 'dev123',
+        email_confirm: true,
+        phone_confirm: true,
+      })
+      if (error) console.error(`  ${phone} UPDATE FAILED: ${error.message}`)
+      else console.log(`  ${phone} → ${email} / dev123 (updated)`)
     } else {
-      console.log(`  ${u.phone} (${u.role}) — auth user created`)
+      const { error } = await supabase.auth.admin.createUser({
+        id: user.id,
+        phone,
+        email,
+        password: 'dev123',
+        email_confirm: true,
+        phone_confirm: true,
+      })
+      if (error) console.error(`  ${phone} CREATE FAILED: ${error.message}`)
+      else console.log(`  ${phone} → ${email} / dev123 (created)`)
     }
   }
 }
 
-console.log('Creating auth users for seed data...')
+console.log('Setting up auth users with email + password...')
 await main()
-console.log('\nDone. Test login numbers:')
-console.log('  Worker:   +260961111111')
-console.log('  Customer: +260976666666')
-console.log('  Admin:    +260970000001')
+console.log('\nDone! Login at http://localhost:3000/login')
+console.log('  admin@tumahelper.dev / dev123')
+console.log('  worker@tumahelper.dev / dev123')
+console.log('  customer@tumahelper.dev / dev123')

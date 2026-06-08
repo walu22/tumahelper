@@ -2,10 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 const roleRedirects: Record<string, string> = {
   customer: '/customer/dashboard',
@@ -27,8 +24,8 @@ function LoginForm() {
     setLoading(true)
     setError('')
     try {
-      const supabase = createClient(supabaseUrl, supabaseAnonKey)
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      const supabase = createClientComponentClient()
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
 
       // Get user role from our users table

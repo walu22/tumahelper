@@ -30,7 +30,7 @@ export function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">For Workers</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/register?role=worker" className="hover:text-white transition-colors">Become a Provider</Link></li>
+              <li><Link href="/onboarding/worker" className="hover:text-white transition-colors">Become a Provider</Link></li>
               <li><Link href="/worker/dashboard" className="hover:text-white transition-colors">Worker Dashboard</Link></li>
               <li><Link href="/jobs" className="hover:text-white transition-colors">Find Jobs</Link></li>
               <li><Link href="/verification" className="hover:text-white transition-colors">Verification Process</Link></li>
