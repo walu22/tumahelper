@@ -40,6 +40,9 @@ next-env.d.ts
 *.swp
 *.swo
 
+# Supabase temp
+supabase/.temp/
+
 # OS
 Thumbs.db
 ehthumbs.db
