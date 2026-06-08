@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 
 const TEST_ACCOUNTS: Record<string, { email: string; role: string }> = {
   "+260961111111": { email: "worker1@tumahelper.dev", role: "worker" },
@@ -53,26 +51,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: updateError.message }, { status: 500 })
     }
 
-    // Also update the public.users table with the email
+    // Update email in public.users table too
     await adminClient.from("users").update({ email: account.email }).eq("id", user.id)
 
-    // Sign in with email + password
-    const cookieStore = cookies()
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
-
-    const { data: session, error: signInError } = await supabase.auth.signInWithPassword({
-      email: account.email,
-      password: "dev123",
+    // Call GoTrue API directly to sign in with email+password and get session tokens
+    const gotrueUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "") + "/auth/v1"
+    const signInRes = await fetch(`${gotrueUrl}/token?grant_type=password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      },
+      body: JSON.stringify({ email: account.email, password: "dev123" }),
     })
 
-    if (signInError) {
-      return NextResponse.json({ success: false, error: signInError.message }, { status: 500 })
+    if (!signInRes.ok) {
+      const errText = await signInRes.text()
+      return NextResponse.json({ success: false, error: `Sign in failed: ${errText}` }, { status: 500 })
     }
 
-    return NextResponse.json({
+    const session = await signInRes.json()
+
+    // Set Supabase session cookies on the response
+    const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL!.match(/https:\/\/(.+)\.supabase\.co/)?.[1]
+    const cookieName = `sb-${projectRef}-auth-token`
+
+    const response = NextResponse.json({
       success: true,
       data: { user: { id: user.id, role: account.role }, isNewUser: false },
     })
+
+    response.cookies.set(cookieName, JSON.stringify([session.access_token, session.refresh_token]), {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+    })
+
+    return response
   } catch (err: any) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 })
   }
