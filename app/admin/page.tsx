@@ -1,14 +1,45 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Users, FileText, CalendarCheck, CreditCard, AlertTriangle } from 'lucide-react'
+import { getSupabaseServer } from '@/lib/supabase'
 
-export default function AdminDashboard() {
-  const stats = [
-    { label: 'Total Workers', value: '5', icon: Users, color: 'bg-blue-500' },
-    { label: 'Pending Documents', value: '2', icon: FileText, color: 'bg-yellow-500' },
-    { label: 'Active Bookings', value: '3', icon: CalendarCheck, color: 'bg-green-500' },
-    { label: 'Pending Payments', value: '1', icon: CreditCard, color: 'bg-purple-500' },
-    { label: 'Open Disputes', value: '0', icon: AlertTriangle, color: 'bg-red-500' },
+async function getStats() {
+  const supabase = getSupabaseServer()
+
+  const { count: totalWorkers } = await supabase
+    .from('worker_profiles')
+    .select('*', { count: 'exact', head: true })
+
+  const { count: pendingDocuments } = await supabase
+    .from('verification_documents')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'submitted')
+
+  const { count: activeBookings } = await supabase
+    .from('bookings')
+    .select('*', { count: 'exact', head: true })
+    .in('status', ['pending', 'accepted', 'in_progress'])
+
+  const { count: pendingPayments } = await supabase
+    .from('payments')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'paid')
+
+  const { count: openDisputes } = await supabase
+    .from('disputes')
+    .select('*', { count: 'exact', head: true })
+    .neq('status', 'resolved')
+
+  return [
+    { label: 'Total Workers', value: String(totalWorkers ?? 0), icon: Users, color: 'bg-blue-500' },
+    { label: 'Pending Documents', value: String(pendingDocuments ?? 0), icon: FileText, color: 'bg-yellow-500' },
+    { label: 'Active Bookings', value: String(activeBookings ?? 0), icon: CalendarCheck, color: 'bg-green-500' },
+    { label: 'Pending Payments', value: String(pendingPayments ?? 0), icon: CreditCard, color: 'bg-purple-500' },
+    { label: 'Open Disputes', value: String(openDisputes ?? 0), icon: AlertTriangle, color: 'bg-red-500' },
   ]
+}
+
+export default async function AdminDashboard() {
+  const stats = await getStats()
 
   return (
     <div>
