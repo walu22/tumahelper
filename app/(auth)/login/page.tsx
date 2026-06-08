@@ -1,18 +1,9 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-
-const roleRedirects: Record<string, string> = {
-  customer: '/customer/dashboard',
-  worker: '/worker/dashboard',
-  employer: '/employer/dashboard',
-  admin: '/admin',
-}
+import { useSearchParams } from 'next/navigation'
 
 function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -24,21 +15,16 @@ function LoginForm() {
     setLoading(true)
     setError('')
     try {
-      const supabase = createClientComponentClient()
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
 
-      // Manually set auth cookie so server-side API can read it
-      if (data?.session) {
-        const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL!.match(/https:\/\/(.+)\.supabase\.co/)?.[1]
-        document.cookie = `sb-${projectRef}-auth-token=${JSON.stringify([data.session.access_token, data.session.refresh_token])}; path=/; max-age=${60*60*24*365}; samesite=lax`
-      }
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error || 'Login failed')
 
-      // Derive role from email (e.g. admin@tumahelper.dev → admin)
-      const role = email.split('@')[0]
-      const redirect = searchParams.get('redirect') || roleRedirects[role] || '/dashboard'
-
-      // Use window.location for a full page navigation so middleware picks up the cookie
+      const redirect = searchParams.get('redirect') || data.data.redirect || '/dashboard'
       window.location.href = redirect
     } catch (err: any) {
       setError(err.message)
