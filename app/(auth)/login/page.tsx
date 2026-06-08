@@ -1,199 +1,106 @@
-"use client";
+'use client'
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { phoneSchema } from "@/lib/validations";
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 const roleRedirects: Record<string, string> = {
-  customer: "/customer/dashboard",
-  worker: "/worker/dashboard",
-  employer: "/employer/dashboard",
-  admin: "/admin",
-};
+  customer: '/customer/dashboard',
+  worker: '/worker/dashboard',
+  employer: '/employer/dashboard',
+  admin: '/admin',
+}
 
 function LoginForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleRequestOTP = async () => {
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
     try {
-      setLoading(true);
-      setError("");
+      const supabase = createClient(supabaseUrl, supabaseAnonKey)
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
 
-      const validated = phoneSchema.parse(phone);
+      // Get user role from our users table
+      const res = await fetch('/api/auth/me')
+      const me = await res.json()
 
-      const res = await fetch("/api/auth/otp/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: validated }),
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        throw new Error(data.error?.message || "Failed to send OTP");
-      }
-
-      setStep("otp");
+      const role = me.user?.role || email.split('@')[0]
+      const redirect = searchParams.get('redirect') || roleRedirects[role] || '/dashboard'
+      router.push(redirect)
     } catch (err: any) {
-      setError(err.message || "Invalid phone number");
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
-  const handleVerifyOTP = async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const res = await fetch("/api/auth/otp/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, code: otp }),
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        throw new Error(data.error?.message || "Invalid OTP");
-      }
-
-      const { user, isNewUser } = data.data;
-
-      if (isNewUser) {
-        localStorage.setItem("pendingPhone", phone);
-        router.push("/register");
-      } else {
-        const redirect = searchParams.get("redirect") || roleRedirects[user?.role] || "/dashboard";
-        router.push(redirect);
-      }
-    } catch (err: any) {
-      setError(err.message || "Invalid OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-xl">TH</span>
           </div>
-          <h1 className="text-2xl font-bold">Welcome to TumaHelper</h1>
-          <p className="text-gray-500 mt-1">Sign in with your phone number</p>
+          <h1 className="text-2xl font-bold">Sign In</h1>
+          <p className="text-muted-foreground text-sm mt-1">Use your email and password to sign in</p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
-            {error}
-          </div>
+          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">{error}</div>
         )}
 
-        {step === "phone" ? (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number
-              </label>
-              <Input
-                type="tel"
-                placeholder="+26097XXXXXXX"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Enter your Zambian phone number to receive a code
-              </p>
-            </div>
-            <Button
-              onClick={handleRequestOTP}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? "Sending..." : "Send OTP"}
-            </Button>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-white px-2 text-muted-foreground">or</span>
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              className="w-full text-xs"
-              disabled={loading}
-              onClick={async () => {
-                setLoading(true)
-                setError("")
-                try {
-                  const res = await fetch("/api/auth/dev-login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ phone }),
-                  })
-                  const data = await res.json()
-                  if (!data.success) throw new Error(data.error)
-                  const redirect = searchParams.get("redirect") || roleRedirects[data.data.user?.role] || "/dashboard"
-                  router.push(redirect)
-                } catch (err: any) {
-                  setError(err.message || "Dev login failed")
-                } finally {
-                  setLoading(false)
-                }
-              }}
-            >
-              Dev Login (bypass OTP for seed numbers)
-            </Button>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full border rounded-md px-3 py-2 text-sm"
+              required
+            />
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Enter OTP
-              </label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                placeholder="000000"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="w-full text-center text-2xl tracking-[0.5em]"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Code sent to {phone}
-              </p>
-            </div>
-            <Button
-              onClick={handleVerifyOTP}
-              disabled={loading || otp.length !== 6}
-              className="w-full"
-            >
-              {loading ? "Verifying..." : "Verify & Sign In"}
-            </Button>
-            <button
-              onClick={() => { setStep("phone"); setOtp(""); setError(""); }}
-              className="w-full text-sm text-gray-500 hover:text-gray-700"
-            >
-              Change phone number
-            </button>
+          <div>
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              className="w-full border rounded-md px-3 py-2 text-sm"
+              required
+            />
           </div>
-        )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-primary text-white rounded-md py-2 font-medium hover:bg-primary-dark disabled:opacity-50"
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+
+        <div className="mt-6 text-xs text-muted-foreground">
+          <p className="font-medium mb-1">Dev test accounts:</p>
+          <p>admin@tumahelper.dev / dev123</p>
+          <p>worker@tumahelper.dev / dev123</p>
+          <p>customer@tumahelper.dev / dev123</p>
+        </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default function LoginPage() {
@@ -201,5 +108,5 @@ export default function LoginPage() {
     <Suspense>
       <LoginForm />
     </Suspense>
-  );
+  )
 }
