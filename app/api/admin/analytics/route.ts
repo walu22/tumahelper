@@ -18,15 +18,17 @@ export async function GET(request: NextRequest) {
       case 'day':
         dateFilter = now.toISOString().split('T')[0]
         break
-      case 'week':
+      case 'week': {
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
         dateFilter = weekAgo.toISOString()
         break
+      }
       case 'month':
-      default:
+      default: {
         const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
         dateFilter = monthAgo.toISOString()
         break
+      }
     }
 
     const { data: bookings } = await supabase
