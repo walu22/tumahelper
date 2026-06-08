@@ -1,5 +1,3 @@
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { BookingCard } from '@/components/booking/booking-card'
@@ -43,7 +41,6 @@ export default async function CustomerDashboard() {
 
   return (
     <div className="min-h-screen">
-      <Header />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -116,7 +113,6 @@ export default async function CustomerDashboard() {
           </CardContent>
         </Card>
       </main>
-      <Footer />
     </div>
   )
 }

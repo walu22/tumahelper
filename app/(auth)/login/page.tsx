@@ -123,6 +123,40 @@ function LoginForm() {
             >
               {loading ? "Sending..." : "Send OTP"}
             </Button>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white px-2 text-muted-foreground">or</span>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              className="w-full text-xs"
+              disabled={loading}
+              onClick={async () => {
+                setLoading(true)
+                setError("")
+                try {
+                  const res = await fetch("/api/auth/dev-login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ phone }),
+                  })
+                  const data = await res.json()
+                  if (!data.success) throw new Error(data.error)
+                  const redirect = searchParams.get("redirect") || roleRedirects[data.data.user?.role] || "/dashboard"
+                  router.push(redirect)
+                } catch (err: any) {
+                  setError(err.message || "Dev login failed")
+                } finally {
+                  setLoading(false)
+                }
+              }}
+            >
+              Dev Login (bypass OTP for seed numbers)
+            </Button>
           </div>
         ) : (
           <div className="space-y-4">

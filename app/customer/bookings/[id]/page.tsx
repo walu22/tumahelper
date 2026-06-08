@@ -1,5 +1,3 @@
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { BookingTimeline } from '@/components/booking-timeline'
@@ -82,7 +80,6 @@ export default async function CustomerBookingDetailPage({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
           href="/customer/bookings"
@@ -229,7 +226,6 @@ export default async function CustomerBookingDetailPage({
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

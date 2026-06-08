@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/header";
@@ -19,14 +20,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = headers().get("x-pathname") || "";
+  const isAdmin = pathname.startsWith("/admin");
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider>
-          <Header />
-          <main className="min-h-screen pb-16 md:pb-0">{children}</main>
-          <Footer />
-          <MobileNav />
+          {!isAdmin && <Header />}
+          <main className={isAdmin ? "" : "min-h-screen pb-16 md:pb-0"}>{children}</main>
+          {!isAdmin && <Footer />}
+          {!isAdmin && <MobileNav />}
           <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>

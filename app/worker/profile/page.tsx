@@ -151,7 +151,7 @@ export default function WorkerProfilePage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
+
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-2">My Profile</h1>
         <p className="text-muted-foreground mb-8">Complete your profile to get more bookings</p>
@@ -408,7 +408,6 @@ export default function WorkerProfilePage() {
           </Button>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

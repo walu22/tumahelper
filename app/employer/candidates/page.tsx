@@ -1,5 +1,3 @@
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { WorkerCard } from '@/components/worker/worker-card'
 import { Users } from 'lucide-react'
@@ -23,7 +21,6 @@ export default async function CandidatesPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-2">Find Candidates</h1>
         <p className="text-muted-foreground mb-8">Browse workers available for permanent hiring</p>
@@ -41,7 +38,6 @@ export default async function CandidatesPage() {
           </div>
         )}
       </main>
-      <Footer />
     </div>
   )
 }

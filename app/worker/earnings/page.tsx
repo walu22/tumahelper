@@ -15,7 +15,6 @@ export default function EarningsPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-8">Earnings</h1>
 
@@ -83,7 +82,6 @@ export default function EarningsPage() {
           </CardContent>
         </Card>
       </main>
-      <Footer />
     </div>
   )
 }

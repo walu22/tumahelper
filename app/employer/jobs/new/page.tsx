@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { supabaseClient as supabase } from '@/lib/supabase-client'
@@ -58,7 +56,6 @@ export default function NewJobPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link href="/employer/dashboard" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="h-4 w-4" /> Back to dashboard
@@ -135,7 +132,6 @@ export default function NewJobPage() {
           <Button type="submit" size="lg" className="w-full">Post Job</Button>
         </form>
       </main>
-      <Footer />
     </div>
   )
 }

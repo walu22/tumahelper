@@ -1,5 +1,3 @@
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -26,18 +24,15 @@ export default async function JobDetailPage({ params }: { params: { id: string }
   if (!job) {
     return (
       <div className="min-h-screen">
-        <Header />
         <main className="max-w-3xl mx-auto px-4 py-16 text-center">
           <p className="text-muted-foreground text-lg">Job not found</p>
         </main>
-        <Footer />
       </div>
     )
   }
 
   return (
     <div className="min-h-screen">
-      <Header />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
@@ -136,7 +131,6 @@ export default async function JobDetailPage({ params }: { params: { id: string }
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

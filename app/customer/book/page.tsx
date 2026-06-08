@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -163,7 +161,6 @@ export default function BookPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Book a Service</h1>
@@ -503,7 +500,6 @@ export default function BookPage() {
           </CardContent>
         </Card>
       </main>
-      <Footer />
     </div>
   )
 }
