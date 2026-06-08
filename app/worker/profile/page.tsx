@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -8,20 +9,145 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { toast } from 'sonner'
 import Link from 'next/link'
-import { User, Phone, MapPin, Briefcase, Globe, Award, Upload, CheckCircle } from 'lucide-react'
+import { User, Phone, MapPin, Briefcase, Globe, Award, Upload, CheckCircle, Loader2, Save } from 'lucide-react'
+
+const EMPLOYMENT_TYPES = ['full_time', 'part_time', 'live_in', 'live_out', 'contract'] as const
+const EMPLOYMENT_LABELS: Record<string, string> = {
+  full_time: 'Full Time',
+  part_time: 'Part Time',
+  live_in: 'Live In',
+  live_out: 'Live Out',
+  contract: 'Contract',
+}
+
+const AVAILABILITY_OPTIONS = [
+  { value: 'available', label: 'Available for new jobs' },
+  { value: 'busy', label: 'Busy (not taking new jobs)' },
+]
 
 export default function WorkerProfilePage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+
   const [form, setForm] = useState({
     fullName: '',
     city: 'Lusaka',
     area: '',
-    category: '',
+    category: '' as 'nanny' | 'house_cleaner' | '',
     bio: '',
     experienceYears: 0,
     languages: '',
     skills: '',
+    employmentTypes: [] as string[],
+    availabilityStatus: 'available',
+    expectedSalaryMin: '',
+    expectedSalaryMax: '',
+    dateOfBirth: '',
+    gender: '' as string,
   })
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/workers/me/profile')
+        const json = await res.json()
+        if (json.success && json.data) {
+          const p = json.data
+          setForm({
+            fullName: p.full_name || '',
+            city: p.city || 'Lusaka',
+            area: p.area || '',
+            category: p.category || '',
+            bio: p.bio || '',
+            experienceYears: p.experience_years || 0,
+            languages: (p.languages || []).join(', '),
+            skills: (p.skills || []).join(', '),
+            employmentTypes: p.employment_types || [],
+            availabilityStatus: p.availability_status || 'available',
+            expectedSalaryMin: p.expected_salary_min ? String(p.expected_salary_min / 100) : '',
+            expectedSalaryMax: p.expected_salary_max ? String(p.expected_salary_max / 100) : '',
+            dateOfBirth: p.date_of_birth || '',
+            gender: p.gender || '',
+          })
+        }
+      } catch {
+        // new profile, form stays empty
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProfile()
+  }, [])
+
+  function toggleEmploymentType(type: string) {
+    setForm((prev) => ({
+      ...prev,
+      employmentTypes: prev.employmentTypes.includes(type)
+        ? prev.employmentTypes.filter((t) => t !== type)
+        : [...prev.employmentTypes, type],
+    }))
+  }
+
+  async function handleSave() {
+    if (!form.fullName || !form.area || !form.category) {
+      toast.error('Please fill in your name, area, and category')
+      return
+    }
+    if (form.employmentTypes.length === 0) {
+      toast.error('Select at least one employment type')
+      return
+    }
+
+    setSaving(true)
+    try {
+      const body = {
+        fullName: form.fullName,
+        city: form.city,
+        area: form.area,
+        category: form.category,
+        bio: form.bio || undefined,
+        experienceYears: form.experienceYears,
+        languages: form.languages.split(',').map((s) => s.trim()).filter(Boolean),
+        skills: form.skills.split(',').map((s) => s.trim()).filter(Boolean),
+        employmentTypes: form.employmentTypes,
+        availabilityStatus: form.availabilityStatus,
+        expectedSalaryMin: form.expectedSalaryMin ? Math.round(parseFloat(form.expectedSalaryMin) * 100) : undefined,
+        expectedSalaryMax: form.expectedSalaryMax ? Math.round(parseFloat(form.expectedSalaryMax) * 100) : undefined,
+        dateOfBirth: form.dateOfBirth || undefined,
+        gender: form.gender || undefined,
+      }
+
+      const res = await fetch('/api/workers/me/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+
+      const json = await res.json()
+
+      if (!json.success) {
+        throw new Error(json.error?.message || 'Failed to save profile')
+      }
+
+      toast.success('Profile saved successfully!')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen">
@@ -101,13 +227,38 @@ export default function WorkerProfilePage() {
                 />
                 <p className="text-xs text-muted-foreground mt-1">Maximum 500 characters</p>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-1.5 block">Years of Experience</label>
-                <Input
-                  type="number"
-                  value={form.experienceYears}
-                  onChange={(e) => setForm({ ...form, experienceYears: parseInt(e.target.value) || 0 })}
-                />
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Years of Experience</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="50"
+                    value={form.experienceYears}
+                    onChange={(e) => setForm({ ...form, experienceYears: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Date of Birth</label>
+                  <Input
+                    type="date"
+                    value={form.dateOfBirth}
+                    onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Gender</label>
+                  <select
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={form.gender}
+                    onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                  >
+                    <option value="">Prefer not to say</option>
+                    <option value="female">Female</option>
+                    <option value="male">Male</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
               </div>
               <div>
                 <label className="text-sm font-medium mb-1.5 block">Languages Spoken</label>
@@ -126,6 +277,79 @@ export default function WorkerProfilePage() {
                   placeholder="e.g. infant care, meal prep, first aid"
                 />
                 <p className="text-xs text-muted-foreground mt-1">Separate with commas</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Briefcase className="h-5 w-5" /> Employment Preferences
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Employment Types</label>
+                <div className="flex flex-wrap gap-2">
+                  {EMPLOYMENT_TYPES.map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => toggleEmploymentType(type)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                        form.employmentTypes.includes(type)
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-background hover:border-primary/50'
+                      }`}
+                    >
+                      {EMPLOYMENT_LABELS[type]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Expected Salary Min (ZMW/day)</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={form.expectedSalaryMin}
+                    onChange={(e) => setForm({ ...form, expectedSalaryMin: e.target.value })}
+                    placeholder="e.g. 200"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Expected Salary Max (ZMW/day)</label>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={form.expectedSalaryMax}
+                    onChange={(e) => setForm({ ...form, expectedSalaryMax: e.target.value })}
+                    placeholder="e.g. 500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Availability</label>
+                <div className="space-y-2">
+                  {AVAILABILITY_OPTIONS.map((opt) => (
+                    <label
+                      key={opt.value}
+                      className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                        form.availabilityStatus === opt.value ? 'border-primary bg-primary/5' : 'hover:border-primary/50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="availability"
+                        value={opt.value}
+                        checked={form.availabilityStatus === opt.value}
+                        onChange={(e) => setForm({ ...form, availabilityStatus: e.target.value })}
+                        className="h-4 w-4 text-primary"
+                      />
+                      <span className="text-sm">{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -169,7 +393,19 @@ export default function WorkerProfilePage() {
             </CardContent>
           </Card>
 
-          <Button className="w-full" size="lg">Save Profile</Button>
+          <Button className="w-full" size="lg" onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Profile
+              </>
+            )}
+          </Button>
         </div>
       </main>
       <Footer />
