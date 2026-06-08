@@ -25,16 +25,21 @@ function LoginForm() {
     setError('')
     try {
       const supabase = createClientComponentClient()
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
 
-      // Get user role from our users table
-      const res = await fetch('/api/auth/me')
-      const me = await res.json()
+      // Manually set auth cookie so server-side API can read it
+      if (data?.session) {
+        const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL!.match(/https:\/\/(.+)\.supabase\.co/)?.[1]
+        document.cookie = `sb-${projectRef}-auth-token=${JSON.stringify([data.session.access_token, data.session.refresh_token])}; path=/; max-age=${60*60*24*365}; samesite=lax`
+      }
 
-      const role = me.user?.role || email.split('@')[0]
+      // Derive role from email (e.g. admin@tumahelper.dev → admin)
+      const role = email.split('@')[0]
       const redirect = searchParams.get('redirect') || roleRedirects[role] || '/dashboard'
-      router.push(redirect)
+
+      // Use window.location for a full page navigation so middleware picks up the cookie
+      window.location.href = redirect
     } catch (err: any) {
       setError(err.message)
     } finally {
