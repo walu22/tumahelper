@@ -64,10 +64,12 @@ export async function POST(request: NextRequest) {
         if (createError) throw new Error(`Create auth user failed: ${createError.message}`)
         authUser = newUser.user
       } else {
-        // Auth user exists — update password
+        // Auth user exists — update password and set email
         const { error: updateError } = await adminClient.auth.admin.updateUserById(dbUser.id, {
           password: "dev123",
           phone_confirm: true,
+          email: `${account.role}@tumahelper.dev`,
+          email_confirm: true,
         })
         if (updateError) throw new Error(`Update password failed: ${updateError.message}`)
         authUser = data.user
@@ -76,7 +78,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: err.message }, { status: 500 })
     }
 
-    // Call GoTrue token endpoint with phone + password
+    // Call GoTrue token endpoint with email + password
     const gotrueUrl = `${supabaseUrl}/auth/v1`
     const signInRes = await fetch(`${gotrueUrl}/token?grant_type=password`, {
       method: "POST",
@@ -84,7 +86,7 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
         "apikey": anonKey,
       },
-      body: JSON.stringify({ phone, password: "dev123" }),
+      body: JSON.stringify({ email: `${account.role}@tumahelper.dev`, password: "dev123" }),
     })
 
     if (!signInRes.ok) {

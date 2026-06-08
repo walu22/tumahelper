@@ -69,14 +69,16 @@ export default async function DevLoginPage({
       email_confirm: true,
     })
   } else {
-    await adminClient.auth.admin.updateUserById(dbUser.id, { password: "dev123", phone_confirm: true })
+    await adminClient.auth.admin.updateUserById(dbUser.id, { password: "dev123", phone_confirm: true, email: `${account.role}@tumahelper.dev`, email_confirm: true })
   }
+
+  const email = `${account.role}@tumahelper.dev`
 
   // Sign in via GoTrue API and set cookie
   const signInRes = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
     method: "POST",
     headers: { "Content-Type": "application/json", apikey: anonKey },
-    body: JSON.stringify({ phone, password: "dev123" }),
+    body: JSON.stringify({ email, password: "dev123" }),
   })
 
   if (!signInRes.ok) {
