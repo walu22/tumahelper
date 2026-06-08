@@ -29,6 +29,7 @@ export default async function WorkerBookingDetailPage({
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+  const userId = user.id;
 
   const supabase = createServerSupabaseClient();
 
@@ -43,7 +44,7 @@ export default async function WorkerBookingDetailPage({
       )
     `)
     .eq("id", params.id)
-    .eq("worker_id", user.id)
+    .eq("worker_id", userId)
     .single();
 
   if (error || !booking) notFound();
@@ -59,7 +60,7 @@ export default async function WorkerBookingDetailPage({
       .from("bookings")
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq("id", params.id)
-      .eq("worker_id", user.id);
+      .eq("worker_id", userId);
 
     if (error) throw error;
     

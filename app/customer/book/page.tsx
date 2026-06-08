@@ -63,15 +63,20 @@ export default function BookPage() {
   const [amount, setAmount] = useState('')
 
   useEffect(() => {
-    supabaseClient
-      .from('service_categories')
-      .select('id, name, slug, icon')
-      .eq('is_active', true)
-      .order('sort_order')
-      .then(({ data }) => {
+    ;(async () => {
+      try {
+        const { data } = await supabaseClient
+          .from('service_categories')
+          .select('id, name, slug, icon')
+          .eq('is_active', true)
+          .order('sort_order')
         if (data) setCategories(data)
-      })
-      .finally(() => setCategoriesLoading(false))
+      } catch {
+        // ignore
+      } finally {
+        setCategoriesLoading(false)
+      }
+    })()
   }, [])
 
   const categorySlug = selectedCategory ? categoryWorkerSlug[selectedCategory.slug] || selectedCategory.slug : ''
