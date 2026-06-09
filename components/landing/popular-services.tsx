@@ -10,12 +10,11 @@ export function PopularServices() {
           Choose the service you need
         </h2>
 
-        {/* SweepSouth-style icon grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {POPULAR_SERVICES.map((service, i) => (
             <Link
               key={`${service.title}-${i}`}
-              href={`/${service.slug}`}
+              href={service.bookHref}
               className="group flex gap-4 rounded-3xl border border-border bg-white p-5 md:p-6 hover:border-primary/25 hover:shadow-lg transition-all"
             >
               <div className="shrink-0 transition-transform group-hover:scale-105">

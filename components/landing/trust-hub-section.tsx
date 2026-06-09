@@ -8,21 +8,21 @@ export function TrustHubSection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-3">
-              Trust Hub
+              Trust first
             </p>
             <h2 className="font-display text-3xl md:text-4xl font-semibold text-balance mb-5">
-              Manage your domestic worker with confidence.
+              Know who&apos;s coming through your gate.
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8 max-w-lg">
-              With Trust Hub, every worker is verified before they join. You see trust
-              scores, reviews, and reference checks — plus tools to book, pay, and
-              manage help from one place.
+              In Lusaka, hiring domestic help often means word-of-mouth and hope.
+              TumaHelper adds NRC checks, reference calls, trust scores, and reviews —
+              so you can book with confidence, not guesswork.
             </p>
             <Link
               href="/workers"
               className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
             >
-              Explore verified workers
+              Browse verified workers
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -35,17 +35,17 @@ export function TrustHubSection() {
                   <Smartphone className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <p className="font-semibold">Trust Hub</p>
-                  <p className="text-xs text-muted-foreground">Your household dashboard</p>
+                  <p className="font-semibold">Your booking dashboard</p>
+                  <p className="text-xs text-muted-foreground">Track jobs, pay, and reviews</p>
                 </div>
               </div>
 
               <ul className="space-y-4">
                 {[
-                  "NRC identity verification on every worker",
-                  "Reference checks before profiles go live",
-                  "Trust scores updated after every job",
-                  "Book, track, and review in one app",
+                  "NRC verification before a profile goes live",
+                  "Reference checks from previous employers",
+                  "Pay with MTN MoMo or Airtel Money",
+                  "Rate workers after every completed job",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm">
                     <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
@@ -55,10 +55,10 @@ export function TrustHubSection() {
               </ul>
 
               <Link
-                href="/register"
-                className="mt-8 flex items-center justify-center rounded-2xl bg-primary text-primary-foreground py-3.5 text-sm font-semibold hover:opacity-95 transition-opacity"
+                href="/customer/book"
+                className="mt-8 flex items-center justify-center rounded-full bg-primary text-primary-foreground py-3.5 text-sm font-semibold hover:opacity-95 transition-opacity"
               >
-                Get started free
+                Book your first visit
               </Link>
             </div>
           </div>

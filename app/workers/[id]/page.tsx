@@ -65,7 +65,7 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
                   <span>{worker.area}, {worker.city}</span>
                 </div>
               </div>
-              <Link href={`/book?worker=${worker.id}`}>
+              <Link href={`/customer/book?worker=${worker.id}`}>
                 <Button className="bg-primary">Book Now</Button>
               </Link>
             </div>

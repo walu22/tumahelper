@@ -39,7 +39,7 @@ export default async function CustomerDashboardPage() {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">My Dashboard</h1>
-        <Link href="/book">
+        <Link href="/customer/book">
           <Button className="bg-primary">
             <Plus className="w-4 h-4 mr-2" />
             Book a Worker
@@ -88,7 +88,7 @@ export default async function CustomerDashboardPage() {
         ) : (
           <div className="bg-gray-50 rounded-lg p-8 text-center">
             <p className="text-gray-500 mb-4">No upcoming bookings</p>
-            <Link href="/book">
+            <Link href="/customer/book">
               <Button variant="outline">Book your first worker</Button>
             </Link>
           </div>

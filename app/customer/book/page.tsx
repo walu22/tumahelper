@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -39,8 +39,37 @@ const categoryWorkerSlug: Record<string, string> = {
   'house-cleaning': 'house_cleaner',
 }
 
-export default function BookPage() {
+const categoryParamToSlug: Record<string, string> = {
+  nanny: 'nanny-services',
+  cleaning: 'house-cleaning',
+  'house-cleaner': 'house-cleaning',
+}
+
+function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
+  return {
+    id: w.id as string,
+    user_id: w.user_id as string,
+    full_name: w.full_name as string,
+    city: w.city as string,
+    area: w.area as string,
+    category: w.category as string,
+    profile_photo_url: (w.profile_photo_url as string | null) ?? null,
+    average_rating: (w.average_rating as number) ?? 0,
+    total_reviews: (w.total_reviews as number) ?? 0,
+    trust_score: (w.trust_score as number) ?? 0,
+    verification_level: (w.verification_level as string) ?? 'none',
+    experience_years: (w.experience_years as number) ?? 0,
+    availability_status: (w.availability_status as string) ?? 'available',
+  }
+}
+
+function BookPageContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const workerProfileId = searchParams.get('worker')
+  const categoryParam = searchParams.get('category')
+  const preselectedWorkerRef = useRef<string | null>(null)
+  const urlInitDone = useRef(false)
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
 
@@ -85,16 +114,60 @@ export default function BookPage() {
       return
     }
     setWorkersLoading(true)
-    setSelectedWorker(null)
 
     fetch(`/api/workers?category=${categorySlug}&available=true`)
       .then((r) => r.json())
       .then((res) => {
-        setWorkers(res.data || [])
+        const list: WorkerSummary[] = res.data || []
+        setWorkers(list)
+        const preId = preselectedWorkerRef.current
+        if (preId) {
+          const found = list.find((w) => w.user_id === preId)
+          if (found) setSelectedWorker(found)
+          preselectedWorkerRef.current = null
+        } else if (!workerProfileId) {
+          setSelectedWorker(null)
+        }
       })
       .catch(() => setWorkers([]))
       .finally(() => setWorkersLoading(false))
-  }, [categorySlug])
+  }, [categorySlug, workerProfileId])
+
+  // Pre-select category from ?category=nanny|cleaning
+  useEffect(() => {
+    if (urlInitDone.current || workerProfileId || !categoryParam || categories.length === 0) return
+    const slug = categoryParamToSlug[categoryParam]
+    if (!slug) return
+    const cat = categories.find((c) => c.slug === slug)
+    if (cat) {
+      setSelectedCategory(cat)
+      setStep(2)
+      urlInitDone.current = true
+    }
+  }, [categoryParam, categories, workerProfileId])
+
+  // Pre-select worker from ?worker={profileId}
+  useEffect(() => {
+    if (urlInitDone.current || !workerProfileId || categoriesLoading || categories.length === 0) return
+
+    fetch(`/api/workers/${workerProfileId}`)
+      .then((r) => r.json())
+      .then((res) => {
+        if (!res.success || !res.data) {
+          toast.error('Worker not found')
+          return
+        }
+        const w = mapApiWorker(res.data)
+        const slug = w.category === 'nanny' ? 'nanny-services' : 'house-cleaning'
+        const cat = categories.find((c) => c.slug === slug)
+        if (cat) setSelectedCategory(cat)
+        preselectedWorkerRef.current = w.user_id
+        setSelectedWorker(w)
+        setStep(3)
+        urlInitDone.current = true
+      })
+      .catch(() => toast.error('Could not load worker'))
+  }, [workerProfileId, categories, categoriesLoading])
 
   const filteredWorkers = workers.filter((w) => {
     if (!searchQuery) return true
@@ -501,5 +574,17 @@ export default function BookPage() {
         </Card>
       </main>
     </div>
+  )
+}
+
+export default function BookPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
+      <BookPageContent />
+    </Suspense>
   )
 }

@@ -14,14 +14,14 @@ export function PlatformOfferings() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
-            What we offer
+            What we do
           </p>
           <h2 className="font-display text-3xl md:text-[2.75rem] font-bold text-balance leading-tight">
-            More than just a home services platform.
+            One platform for day help and long-term hires.
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            Whether you need a quick clean, or full-time help, TumaHelper connects
-            you with reliable professionals you can trust.
+            From a quick clean in Woodlands to a live-in nanny in Kabulonga —
+            find help you can actually trust.
           </p>
         </div>
 

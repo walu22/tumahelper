@@ -7,6 +7,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
 import { formatDate, formatTime, formatCurrency } from '@/utils/formatters'
 import Link from 'next/link'
+import { PaymentInstructions } from '@/components/booking/payment-instructions'
 import { ArrowLeft, MapPin, Calendar, Clock, FileText, User } from 'lucide-react'
 import type { BookingStatus } from '@/types'
 
@@ -44,6 +45,7 @@ interface BookingWithRelations {
   amount: number
   platform_fee: number
   worker_earnings: number
+  payment_status: string
   customer_rating: number | null
   customer_review: string | null
   cancellation_reason: string | null
@@ -222,6 +224,14 @@ export default async function CustomerBookingDetailPage({
                   <CancelBookingButton bookingId={booking.id} />
                 </CardContent>
               </Card>
+            )}
+
+            {!['cancelled', 'declined'].includes(booking.status) && (
+              <PaymentInstructions
+                bookingId={booking.id}
+                totalAmount={booking.amount + booking.platform_fee}
+                paymentStatus={booking.payment_status || 'pending'}
+              />
             )}
           </div>
         </div>
