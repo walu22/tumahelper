@@ -24,12 +24,19 @@ export function LandingHero() {
             Vetted nannies &amp; cleaners, booked in minutes.
           </h1>
 
-          <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto">
+          <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl mx-auto">
             TumaHelper connects Lusaka families with verified domestic workers —
             pay with MoMo, see real reviews, and book as early as today.
           </p>
+        </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+        {/* Service icons first — primary action */}
+        <div className="mb-10">
+          <CategoryScroller />
+        </div>
+
+        <div className="text-center max-w-3xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
             <Link
               href="/customer/book"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-10 py-4 text-sm font-semibold text-primary-foreground hover:opacity-95 transition-opacity w-full sm:w-auto"
@@ -45,7 +52,7 @@ export function LandingHero() {
             </Link>
           </div>
 
-          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground mb-12">
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
             {TRUST_POINTS.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-2">
                 <Icon className="h-4 w-4 text-primary" />
@@ -54,8 +61,6 @@ export function LandingHero() {
             ))}
           </ul>
         </div>
-
-        <CategoryScroller />
       </div>
     </section>
   );
