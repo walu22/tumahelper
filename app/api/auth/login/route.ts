@@ -1,105 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
 import { applySessionCookies } from "@/lib/auth-session";
-import {
-  ensureDevAuthUser,
-  getDevRole,
-  normalizeEmail,
-  ROLE_REDIRECTS,
-} from "@/lib/dev-auth";
+import { authenticateUser } from "@/lib/authenticate-user";
 import {
   applyDevSessionCookie,
-  DEV_PASSWORD,
   getDevAccountByEmail,
-  isDevAuthBypassEnabled,
 } from "@/lib/dev-auth-bypass";
+import { normalizeEmail } from "@/lib/dev-auth";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password, redirect: redirectParam } = body;
 
-    if (!email || !password) {
-      return NextResponse.json(
-        { success: false, error: "Email and password required" },
-        { status: 400 }
-      );
-    }
-
-    const normalizedEmail = normalizeEmail(email);
-    const devRole = getDevRole(normalizedEmail);
-
-    if (isDevAuthBypassEnabled()) {
-      const account = getDevAccountByEmail(normalizedEmail);
-      if (!account || password !== DEV_PASSWORD) {
-        return NextResponse.json(
-          { success: false, error: "Invalid email or password" },
-          { status: 401 }
-        );
-      }
-
-      const redirect = redirectParam || ROLE_REDIRECTS[account.role] || "/dashboard";
-      const response = NextResponse.json({
-        success: true,
-        data: {
-          redirect,
-          user: { id: account.id, role: account.role },
-        },
-      });
-
-      return applyDevSessionCookie(response, account);
-    }
-
-    if (devRole) {
-      await ensureDevAuthUser({
-        email: normalizedEmail,
-        password,
-        role: devRole,
-      });
-    }
-
-    const supabase = getRouteHandlerClient();
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: normalizedEmail,
+    const result = await authenticateUser({
+      email,
       password,
+      redirect: redirectParam,
     });
 
-    if (error || !data.session) {
-      return NextResponse.json(
-        { success: false, error: error?.message || "Invalid email or password" },
-        { status: 401 }
-      );
+    if (!result.ok) {
+      return NextResponse.json({ success: false, error: result.error }, { status: 401 });
     }
-
-    const adminClient = getAdminClient();
-    const { data: profile } = await adminClient
-      .from("users")
-      .select("id, role")
-      .eq("id", data.user.id)
-      .maybeSingle();
-
-    const role = profile?.role || devRole;
-    if (!role) {
-      return NextResponse.json(
-        { success: false, error: "Account profile not found" },
-        { status: 404 }
-      );
-    }
-
-    const redirect = redirectParam || ROLE_REDIRECTS[role] || "/dashboard";
 
     const response = NextResponse.json({
       success: true,
       data: {
-        redirect,
-        user: {
-          id: profile?.id || data.user.id,
-          role,
-        },
+        redirect: result.redirect,
+        user: result.user,
       },
     });
 
-    return applySessionCookies(response, data.session);
+    if (result.usedDevBypass) {
+      const account = getDevAccountByEmail(normalizeEmail(email));
+      if (account) return applyDevSessionCookie(response, account);
+    }
+
+    if (result.session) {
+      return applySessionCookies(response, result.session);
+    }
+
+    return response;
   } catch (err: any) {
     return NextResponse.json(
       { success: false, error: err.message || "Login failed" },

@@ -1,39 +1,18 @@
-'use client'
+import Link from "next/link";
+import { loginAction, quickDevLoginAction } from "./actions";
+import { isDevAuthBypassEnabled } from "@/lib/dev-auth-bypass";
 
-import { useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-
-function LoginForm() {
-  const searchParams = useSearchParams()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(searchParams.get('error') || '')
-
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    try {
-      const redirect = searchParams.get('redirect') || undefined
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password, redirect }),
-      })
-
-      const data = await res.json()
-      if (!res.ok || !data.success) throw new Error(data.error || 'Login failed')
-
-      window.location.href = redirect || data.data.redirect || '/dashboard'
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
+function LoginForm({
+  error,
+  email,
+  redirectTo,
+  devLoginEnabled,
+}: {
+  error?: string;
+  email?: string;
+  redirectTo?: string;
+  devLoginEnabled: boolean;
+}) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
@@ -49,13 +28,14 @@ function LoginForm() {
           <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">{error}</div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form action={loginAction} className="space-y-4">
+          {redirectTo ? <input type="hidden" name="redirect" value={redirectTo} /> : null}
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              defaultValue={email || ""}
               placeholder="you@example.com"
               className="w-full border rounded-md px-3 py-2 text-sm"
               required
@@ -65,8 +45,7 @@ function LoginForm() {
             <label className="block text-sm font-medium mb-1">Password</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
               placeholder="Enter your password"
               className="w-full border rounded-md px-3 py-2 text-sm"
               required
@@ -74,28 +53,65 @@ function LoginForm() {
           </div>
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-primary text-white rounded-md py-2 font-medium hover:bg-primary-dark disabled:opacity-50"
+            className="w-full bg-primary text-white rounded-md py-2 font-medium hover:bg-primary-dark"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            Sign In
           </button>
         </form>
 
-        <div className="mt-6 text-xs text-muted-foreground">
-          <p className="font-medium mb-1">Dev test accounts:</p>
-          <p>admin@tumahelper.dev / dev123</p>
-          <p>worker@tumahelper.dev / dev123</p>
-          <p>customer@tumahelper.dev / dev123</p>
-        </div>
+        {devLoginEnabled && (
+          <div className="mt-6 space-y-3">
+            <p className="text-xs text-muted-foreground font-medium">Quick dev login:</p>
+            <div className="grid gap-2">
+              {[
+                { label: "Admin", email: "admin@tumahelper.dev" },
+                { label: "Worker", email: "worker@tumahelper.dev" },
+                { label: "Customer", email: "customer@tumahelper.dev" },
+              ].map((account) => (
+                <form key={account.email} action={quickDevLoginAction}>
+                  {redirectTo ? <input type="hidden" name="redirect" value={redirectTo} /> : null}
+                  <input type="hidden" name="email" value={account.email} />
+                  <button
+                    type="submit"
+                    className="w-full text-left px-3 py-2 border rounded-md text-sm hover:bg-gray-50"
+                  >
+                    {account.label}
+                    <span className="text-muted-foreground ml-2">{account.email}</span>
+                  </button>
+                </form>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">Password for all dev accounts: dev123</p>
+          </div>
+        )}
+
+        {!devLoginEnabled && (
+          <p className="mt-6 text-xs text-muted-foreground">
+            Need a demo account? Ask your admin or use credentials from your Supabase project.
+          </p>
+        )}
+
+        <p className="mt-4 text-center text-sm">
+          <Link href="/dev-login" className="text-primary hover:underline">
+            Dev login page
+          </Link>
+        </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default function LoginPage() {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: { error?: string; email?: string; redirect?: string };
+}) {
   return (
-    <Suspense>
-      <LoginForm />
-    </Suspense>
-  )
+    <LoginForm
+      error={searchParams.error}
+      email={searchParams.email}
+      redirectTo={searchParams.redirect}
+      devLoginEnabled={isDevAuthBypassEnabled()}
+    />
+  );
 }

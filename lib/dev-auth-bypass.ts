@@ -43,8 +43,9 @@ export const DEV_ACCOUNTS_BY_PHONE: Record<string, DevAccount> = Object.fromEntr
 );
 
 export function isDevAuthBypassEnabled() {
-  if (process.env.NODE_ENV === "production") return false;
+  if (process.env.ALLOW_DEV_LOGIN === "true") return true;
   if (process.env.DEV_AUTH_BYPASS === "true") return true;
+  if (process.env.NODE_ENV === "production") return false;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
@@ -127,6 +128,16 @@ export function applyDevSessionCookie(response: NextResponse, account: DevAccoun
     maxAge: 60 * 60 * 24 * 365,
   });
   return response;
+}
+
+export function setDevSessionInCookies(account: DevAccount) {
+  cookies().set(DEV_SESSION_COOKIE, encodeSession(createDevSession(account)), {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 60 * 60 * 24 * 365,
+  });
 }
 
 export function clearDevSessionCookie(response: NextResponse) {
