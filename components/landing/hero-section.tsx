@@ -56,8 +56,8 @@ export function HeroSection() {
         className="object-cover object-[center_30%]"
       />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/95 via-primary/88 to-primary/55" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-foreground/75 via-primary/60 to-primary/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
       <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-28">
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
@@ -67,7 +67,7 @@ export function HeroSection() {
               Trusted home help in Lusaka
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 drop-shadow-sm">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 drop-shadow-sm">
               All the help your home needs.
             </h1>
 

@@ -42,7 +42,7 @@ export function TrustStatsBar({
   ];
 
   return (
-    <section className="border-b bg-white shadow-sm">
+    <section className="border-b border-border bg-surface">
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {(workerCount || reviewCount || averageRating ? stats : defaultStats).map((stat) => (
@@ -51,7 +51,7 @@ export function TrustStatsBar({
                 <stat.icon className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-lg font-bold text-foreground leading-tight">{stat.value}</p>
+                <p className="text-lg font-display font-bold text-foreground leading-tight">{stat.value}</p>
                 <p className="text-xs text-muted-foreground">{stat.label}</p>
               </div>
             </div>

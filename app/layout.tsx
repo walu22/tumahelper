@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -8,7 +8,18 @@ import { Footer } from "@/components/layout/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const sans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const display = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-display",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "TumaHelper - Trusted Workers in Lusaka",
@@ -25,7 +36,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${sans.variable} ${display.variable} font-sans`}>
         <ThemeProvider>
           {!isAdmin && <HeaderAuth />}
           <main className={isAdmin ? "" : "min-h-screen pb-16 md:pb-0"}>{children}</main>

@@ -1,17 +1,13 @@
 import { getServerClient } from "@/lib/supabase";
 import { HeroSection } from "@/components/landing/hero-section";
 import { TrustStatsBar } from "@/components/landing/trust-stats-bar";
-import { PlatformPillars } from "@/components/landing/platform-pillars";
-import { DualAudienceSection } from "@/components/landing/dual-audience-section";
-import { HowItWorksSection } from "@/components/landing/how-it-works-section";
+import { TrustPlatformSection } from "@/components/landing/trust-platform-section";
+import { ProductShowcase } from "@/components/landing/product-showcase";
 import { ServicesGrid } from "@/components/landing/services-grid";
-import { FullTimeSection } from "@/components/landing/full-time-section";
-import { FeaturedHelpersSection } from "@/components/landing/featured-helpers-section";
-import { GuaranteeSection } from "@/components/landing/guarantee-section";
-import { TrustSection } from "@/components/landing/trust-section";
+import { SocialProofSection } from "@/components/landing/social-proof-section";
 import { FaqSection } from "@/components/landing/faq-section";
+import { FinalCtaSection } from "@/components/landing/final-cta-section";
 import { ContactStrip } from "@/components/landing/contact-strip";
-import { CustomerCtaSection, ProviderCtaSection } from "@/components/landing/cta-sections";
 import type { PublicWorkerProfile } from "@/types";
 
 export default async function HomePage() {
@@ -77,17 +73,12 @@ export default async function HomePage() {
         reviewCount={reviewCount}
         averageRating={averageRating}
       />
-      <PlatformPillars />
-      <DualAudienceSection />
-      <HowItWorksSection />
+      <TrustPlatformSection />
+      <ProductShowcase />
       <ServicesGrid categories={categories} />
-      <FullTimeSection />
-      <FeaturedHelpersSection workers={featuredWorkers} testimonials={testimonials} />
-      <GuaranteeSection />
-      <TrustSection />
+      <SocialProofSection workers={featuredWorkers} testimonials={testimonials} />
       <FaqSection />
-      <ProviderCtaSection />
-      <CustomerCtaSection />
+      <FinalCtaSection />
       <ContactStrip />
     </div>
   );
