@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { loginAction, quickDevLoginAction } from "./actions";
-import { SubmitButton, QuickLoginButton } from "./submit-button";
+import { loginAction } from "./actions";
+import { SubmitButton } from "./submit-button";
 
 function LoginForm({
   error,
@@ -38,7 +38,7 @@ function LoginForm({
               name="email"
               autoComplete="username"
               defaultValue={email || ""}
-              placeholder="admin@tumahelper.dev"
+              placeholder="owner@tumahelper.dev"
               className="w-full border rounded-md px-3 py-2 text-sm"
               required
             />
@@ -52,7 +52,7 @@ function LoginForm({
               type="password"
               name="password"
               autoComplete="current-password"
-              placeholder="dev123"
+              placeholder="Enter your password"
               className="w-full border rounded-md px-3 py-2 text-sm"
               required
             />
@@ -60,26 +60,12 @@ function LoginForm({
           <SubmitButton />
         </form>
 
-        <div className="mt-6 space-y-3">
-          <p className="text-xs text-muted-foreground font-medium">Test accounts:</p>
-          <div className="text-xs text-muted-foreground space-y-1 mb-3">
-            <p>admin@tumahelper.dev / dev123</p>
-            <p>worker@tumahelper.dev / dev123</p>
-            <p>customer@tumahelper.dev / dev123</p>
-          </div>
-          <div className="grid gap-2">
-            {[
-              { label: "Admin", email: "admin@tumahelper.dev" },
-              { label: "Worker", email: "worker@tumahelper.dev" },
-              { label: "Customer", email: "customer@tumahelper.dev" },
-            ].map((account) => (
-              <form key={account.email} action={quickDevLoginAction}>
-                {redirectTo ? <input type="hidden" name="redirect" value={redirectTo} /> : null}
-                <input type="hidden" name="email" value={account.email} />
-                <QuickLoginButton label={account.label} email={account.email} />
-              </form>
-            ))}
-          </div>
+        <div className="mt-6 text-xs text-muted-foreground space-y-1">
+          <p className="font-medium">Account emails:</p>
+          <p>owner@tumahelper.dev — admin</p>
+          <p>provider@tumahelper.dev — worker</p>
+          <p>client@tumahelper.dev — customer</p>
+          <p className="pt-2">Need new passwords? Run: npm run setup:credentials</p>
         </div>
 
         <p className="mt-4 text-center text-sm">

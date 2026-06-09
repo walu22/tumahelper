@@ -9,6 +9,7 @@
     "lint": "next lint",
     "setup": "node scripts/setup-local.mjs",
     "setup:auth": "node scripts/seed-auth-users.mjs",
+    "setup:credentials": "node scripts/create-credentials.mjs",
     "db:types": "supabase gen types typescript --project-id your-project-ref --schema public > types/supabase.ts"
   },
   "dependencies": {
