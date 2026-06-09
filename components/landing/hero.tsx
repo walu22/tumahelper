@@ -20,14 +20,9 @@ export function LandingHero() {
           <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
             Trusted home help in Lusaka
           </p>
-          <h1 className="font-display text-[2.75rem] sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.05] text-balance text-foreground mb-6">
+          <h1 className="font-display text-[2.75rem] sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.05] text-balance text-foreground mb-10">
             Vetted nannies &amp; cleaners, booked in minutes.
           </h1>
-
-          <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl mx-auto">
-            TumaHelper connects Lusaka families with verified domestic workers —
-            pay with MoMo, see real reviews, and book as early as today.
-          </p>
         </div>
 
         {/* Service icons first — primary action */}
