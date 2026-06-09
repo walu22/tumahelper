@@ -28,6 +28,9 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
   const isCustomer = user.id === booking.customer_id;
   const isWorker = user.id === booking.worker_id;
 
+  if (isCustomer) redirect(`/customer/bookings/${params.id}`);
+  if (isWorker) redirect(`/worker/bookings/${params.id}`);
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">

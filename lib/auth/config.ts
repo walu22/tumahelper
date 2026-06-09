@@ -64,7 +64,13 @@ export function resolveLoginEmail(email: string) {
 }
 
 export function getRedirectForRole(role: string, fallback?: string | null) {
-  return fallback || ROLE_REDIRECTS[role] || "/dashboard";
+  if (fallback) {
+    if (fallback.startsWith("/customer") && role !== "customer") {
+      return ROLE_REDIRECTS[role] || "/dashboard";
+    }
+    return fallback;
+  }
+  return ROLE_REDIRECTS[role] || "/dashboard";
 }
 
 export function isDevBypassEnabled() {

@@ -55,7 +55,7 @@ export default async function CustomerDashboardPage() {
         {upcomingBookings && upcomingBookings.length > 0 ? (
           <div className="space-y-4">
             {upcomingBookings.map((booking: any) => (
-              <Link key={booking.id} href={`/bookings/${booking.id}`}>
+              <Link key={booking.id} href={`/customer/bookings/${booking.id}`}>
                 <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -100,7 +100,7 @@ export default async function CustomerDashboardPage() {
         {pastBookings && pastBookings.length > 0 ? (
           <div className="space-y-4">
             {pastBookings.map((booking: any) => (
-              <Link key={booking.id} href={`/bookings/${booking.id}`}>
+              <Link key={booking.id} href={`/customer/bookings/${booking.id}`}>
                 <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-opacity opacity-75">
                   <div className="flex items-center justify-between">
                     <div>

@@ -108,7 +108,7 @@ export default async function WorkerDashboardPage() {
         {upcomingBookings && upcomingBookings.length > 0 ? (
           <div className="space-y-4">
             {upcomingBookings.map((booking: any) => (
-              <Link key={booking.id} href={`/bookings/${booking.id}`}>
+              <Link key={booking.id} href={`/worker/bookings/${booking.id}`}>
                 <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div>

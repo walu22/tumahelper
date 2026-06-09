@@ -23,7 +23,8 @@ export async function middleware(request: NextRequest) {
 
   if (!user) {
     const url = new URL("/login", request.url);
-    url.searchParams.set("redirect", request.nextUrl.pathname);
+    const returnTo = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+    url.searchParams.set("redirect", returnTo);
     return NextResponse.redirect(url);
   }
 

@@ -82,6 +82,12 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.name === "ZodError") {
       return errorResponse("VALIDATION_ERROR", "Invalid booking data", 400);
     }
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return errorResponse("UNAUTHORIZED", "Please sign in to book", 401);
+    }
+    if (error instanceof Error && error.message === "Forbidden") {
+      return errorResponse("FORBIDDEN", "Only customer accounts can create bookings", 403);
+    }
     return errorResponse("INTERNAL_ERROR", "Failed to create booking", 500);
   }
 }
