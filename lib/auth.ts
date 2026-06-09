@@ -1,26 +1,9 @@
-import { getServerComponentClient } from "./supabase";
 import { User, UserRole } from "@/types";
 import { NextResponse } from "next/server";
-import { getDevSessionFromCookies, isDevAuthBypassEnabled } from "./dev-auth-bypass";
-import { getAuthUserFromCookies } from "./supabase-auth";
+import { resolveUserFromCookies } from "@/lib/auth/session";
 
 export async function getCurrentUser(): Promise<User | null> {
-  if (isDevAuthBypassEnabled()) {
-    return getDevSessionFromCookies();
-  }
-
-  const authUser = await getAuthUserFromCookies();
-  if (!authUser) return null;
-
-  const supabase = getServerComponentClient();
-
-  const { data: profile } = await supabase
-    .from("users")
-    .select("*")
-    .eq("id", authUser.id)
-    .single();
-
-  return profile as User | null;
+  return resolveUserFromCookies();
 }
 
 export async function requireAuth(): Promise<User> {

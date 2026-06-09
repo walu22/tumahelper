@@ -3,12 +3,16 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
-import { Menu, X, User, Sun, Moon } from 'lucide-react'
+import { Menu, X, User, Sun, Moon, LogOut } from 'lucide-react'
 import { useTheme } from '@/components/theme-provider'
+import type { User as AppUser } from '@/types'
+import { ROLE_REDIRECTS } from '@/lib/auth/config'
+import { logoutAction } from '@/app/(auth)/login/actions'
 
-export function Header() {
+export function Header({ user }: { user: AppUser | null }) {
   const [isOpen, setIsOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
+  const dashboardHref = user ? ROLE_REDIRECTS[user.role] || '/dashboard' : '/login'
 
   return (
     <header className="border-b bg-background sticky top-0 z-50">
@@ -40,18 +44,38 @@ export function Header() {
             <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted transition-colors" aria-label="Toggle theme">
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                <User className="h-4 w-4 mr-2" />
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/onboarding/worker">
-              <Button variant="outline" size="sm">Become a Provider</Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm">Get Started</Button>
-            </Link>
+
+            {user ? (
+              <>
+                <Link href={dashboardHref}>
+                  <Button variant="ghost" size="sm">
+                    <User className="h-4 w-4 mr-2" />
+                    {user.full_name || user.email || 'Dashboard'}
+                  </Button>
+                </Link>
+                <form action={logoutAction}>
+                  <Button variant="outline" size="sm" type="submit">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    <User className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/onboarding/worker">
+                  <Button variant="outline" size="sm">Become a Provider</Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm">Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2">
@@ -78,12 +102,25 @@ export function Header() {
                 {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               </button>
-              <Link href="/login" className="flex-1">
-                <Button variant="outline" className="w-full">Sign In</Button>
-              </Link>
-              <Link href="/register" className="flex-1">
-                <Button className="w-full">Get Started</Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link href={dashboardHref} className="flex-1" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" className="w-full">Dashboard</Button>
+                  </Link>
+                  <form action={logoutAction} className="flex-1">
+                    <Button className="w-full" type="submit">Sign Out</Button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="flex-1">
+                    <Button variant="outline" className="w-full">Sign In</Button>
+                  </Link>
+                  <Link href="/register" className="flex-1">
+                    <Button className="w-full">Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

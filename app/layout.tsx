@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Header } from "@/components/layout/header";
+import { HeaderAuth } from "@/components/layout/header-auth";
 import { Footer } from "@/components/layout/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { Toaster } from "sonner";
@@ -27,7 +27,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider>
-          {!isAdmin && <Header />}
+          {!isAdmin && <HeaderAuth />}
           <main className={isAdmin ? "" : "min-h-screen pb-16 md:pb-0"}>{children}</main>
           {!isAdmin && <Footer />}
           {!isAdmin && <MobileNav />}

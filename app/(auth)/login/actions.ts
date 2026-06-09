@@ -1,40 +1,25 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { authenticateUser } from "@/lib/authenticate-user";
+import { AuthError, signIn, signOut } from "@/lib/auth/login";
 
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") || "");
   const password = String(formData.get("password") || "");
   const redirectTo = String(formData.get("redirect") || "") || null;
 
-  const result = await authenticateUser({ email, password, redirect: redirectTo });
-
-  if (!result.ok) {
-    const params = new URLSearchParams({
-      error: result.error,
-      email,
-    });
+  try {
+    const result = await signIn({ email, password, redirect: redirectTo });
+    redirect(result.redirect);
+  } catch (error) {
+    const message = error instanceof AuthError ? error.message : "Login failed";
+    const params = new URLSearchParams({ error: message, email });
     if (redirectTo) params.set("redirect", redirectTo);
     redirect(`/login?${params.toString()}`);
   }
-
-  redirect(result.redirect);
 }
 
-export async function quickDevLoginAction(formData: FormData) {
-  const email = String(formData.get("email") || "");
-  const redirectTo = String(formData.get("redirect") || "") || null;
-
-  const result = await authenticateUser({
-    email,
-    password: "dev123",
-    redirect: redirectTo,
-  });
-
-  if (!result.ok) {
-    redirect(`/login?error=${encodeURIComponent(result.error)}`);
-  }
-
-  redirect(result.redirect);
+export async function logoutAction() {
+  await signOut();
+  redirect("/login");
 }
