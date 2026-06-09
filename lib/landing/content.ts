@@ -31,18 +31,24 @@ export const HERO_CATEGORIES: { href: string; label: string; icon: LucideIcon }[
 export const PLATFORM_OFFERINGS = [
   {
     title: "Bookings",
-    description: "One-off cleans, childcare, laundry, and express help — booked in minutes.",
-    href: "/workers",
+    description:
+      "One-off cleans, childcare, laundry, and express help — booked in minutes.",
+    href: "/customer/book",
+    variant: "green" as const,
   },
   {
     title: "Placements",
-    description: "Full-time nannies, housekeepers, and live-in workers matched within 48 hours.",
+    description:
+      "Full-time nannies, housekeepers, and live-in workers matched within 48 hours.",
     href: "/jobs",
+    variant: "pink" as const,
   },
   {
     title: "Trust Hub",
-    description: "NRC checks, reference verification, trust scores, and reviews on every profile.",
+    description:
+      "NRC checks, reference verification, trust scores, and reviews on every profile.",
     href: "/workers",
+    variant: "teal" as const,
   },
 ];
 
@@ -155,25 +161,34 @@ export const SWEEP_STARS = [
     name: "Sarah Mulenga",
     category: "Indoor",
     area: "Kabulonga",
-    quote: "Loved her professional attitude, pleasant disposition and thorough cleaning.",
+    quote:
+      "Loved her professional attitude, pleasant disposition and thorough cleaning.",
     rating: 4.9,
     href: "/workers",
+    photo: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&h=400&fit=crop",
+    date: "15 July 2024",
   },
   {
     name: "Mary Phiri",
     category: "Childcare",
     area: "Woodlands",
-    quote: "Our kids took to her immediately. Reliable, warm, and always on time.",
+    quote:
+      "Our kids took to her immediately. Reliable, warm, and always on time.",
     rating: 4.8,
     href: "/workers",
+    photo: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&h=400&fit=crop",
+    date: "15 July 2024",
   },
   {
     name: "Grace Banda",
     category: "Indoor",
     area: "Roma",
-    quote: "So much effort — she even cleaned the mirrors. Our kitchen looks amazing again!",
+    quote:
+      "So much effort — she even cleaned the mirrors. Our kitchen looks amazing again!",
     rating: 4.9,
     href: "/workers",
+    photo: "https://images.unsplash.com/photo-1590086782957-93c06ef21604?w=400&h=400&fit=crop",
+    date: "15 July 2024",
   },
 ];
 

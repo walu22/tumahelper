@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fraunces } from "next/font/google";
+import { Figtree, Bricolage_Grotesque } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -8,13 +8,13 @@ import { Footer } from "@/components/layout/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { Toaster } from "sonner";
 
-const sans = DM_Sans({
+const sans = Figtree({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const display = Fraunces({
+const display = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",

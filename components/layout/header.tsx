@@ -15,46 +15,46 @@ export function Header({ user }: { user: AppUser | null }) {
   const dashboardHref = user ? ROLE_REDIRECTS[user.role] || '/dashboard' : '/login'
 
   return (
-    <header className="border-b bg-background sticky top-0 z-50">
+    <header className="border-b border-border/60 bg-white/95 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+            <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">TH</span>
             </div>
-            <span className="font-bold text-xl text-primary">TumaHelper</span>
+            <span className="font-display font-bold text-xl text-primary">TumaHelper</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/nannies" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <nav className="hidden md:flex items-center gap-8">
+            <Link href="/nannies" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Nannies
             </Link>
-            <Link href="/house-cleaners" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              House Cleaners
+            <Link href="/house-cleaners" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Cleaning
             </Link>
-            <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Jobs
+            <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Full-time
             </Link>
-            <Link href="/workers" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Browse All
+            <Link href="/workers" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Browse
             </Link>
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted transition-colors" aria-label="Toggle theme">
+            <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface transition-colors" aria-label="Toggle theme">
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
 
             {user ? (
               <>
                 <Link href={dashboardHref}>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="rounded-full">
                     <User className="h-4 w-4 mr-2" />
                     {user.full_name || user.email || 'Dashboard'}
                   </Button>
                 </Link>
                 <form action={logoutAction}>
-                  <Button variant="outline" size="sm" type="submit">
+                  <Button variant="outline" size="sm" type="submit" className="rounded-full">
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
                   </Button>
@@ -63,16 +63,12 @@ export function Header({ user }: { user: AppUser | null }) {
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost" size="sm">
-                    <User className="h-4 w-4 mr-2" />
+                  <Button variant="ghost" size="sm" className="rounded-full">
                     Sign In
                   </Button>
                 </Link>
-                <Link href="/onboarding/worker">
-                  <Button variant="outline" size="sm">Become a Provider</Button>
-                </Link>
-                <Link href="/register">
-                  <Button size="sm">Get Started</Button>
+                <Link href="/customer/book">
+                  <Button size="sm" className="rounded-full px-6">Find help</Button>
                 </Link>
               </>
             )}
@@ -89,35 +85,35 @@ export function Header({ user }: { user: AppUser | null }) {
               Nannies
             </Link>
             <Link href="/house-cleaners" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              House Cleaners
+              Cleaning
             </Link>
             <Link href="/jobs" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              Jobs
+              Full-time
             </Link>
             <Link href="/workers" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              Browse All
+              Browse
             </Link>
             <div className="flex gap-2 pt-2">
-              <button onClick={toggleTheme} className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors">
+              <button onClick={toggleTheme} className="flex items-center gap-2 px-3 py-2 text-sm rounded-full hover:bg-surface transition-colors">
                 {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               </button>
               {user ? (
                 <>
                   <Link href={dashboardHref} className="flex-1" onClick={() => setIsOpen(false)}>
-                    <Button variant="outline" className="w-full">Dashboard</Button>
+                    <Button variant="outline" className="w-full rounded-full">Dashboard</Button>
                   </Link>
                   <form action={logoutAction} className="flex-1">
-                    <Button className="w-full" type="submit">Sign Out</Button>
+                    <Button className="w-full rounded-full" type="submit">Sign Out</Button>
                   </form>
                 </>
               ) : (
                 <>
                   <Link href="/login" className="flex-1">
-                    <Button variant="outline" className="w-full">Sign In</Button>
+                    <Button variant="outline" className="w-full rounded-full">Sign In</Button>
                   </Link>
-                  <Link href="/register" className="flex-1">
-                    <Button className="w-full">Get Started</Button>
+                  <Link href="/customer/book" className="flex-1" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full rounded-full">Find help</Button>
                   </Link>
                 </>
               )}

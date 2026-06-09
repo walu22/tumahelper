@@ -39,6 +39,9 @@ const config: Config = {
         },
         forest: "hsl(var(--forest))",
         cream: "hsl(var(--cream))",
+        "sweep-pink": "hsl(var(--sweep-pink))",
+        "sweep-teal": "hsl(var(--sweep-teal))",
+        "sweep-gold": "hsl(var(--sweep-gold))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
