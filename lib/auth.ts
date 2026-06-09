@@ -1,9 +1,14 @@
-import { getRouteHandlerClient } from "./supabase";
+import { getServerComponentClient } from "./supabase";
 import { User, UserRole } from "@/types";
 import { NextResponse } from "next/server";
+import { getDevSessionFromCookies, isDevAuthBypassEnabled } from "./dev-auth-bypass";
 
 export async function getCurrentUser(): Promise<User | null> {
-  const supabase = getRouteHandlerClient();
+  if (isDevAuthBypassEnabled()) {
+    return getDevSessionFromCookies();
+  }
+
+  const supabase = getServerComponentClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return null;

@@ -1,10 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 const ACCOUNTS = [
   { label: 'Worker', phone: '+260961111111' },
@@ -18,39 +14,20 @@ export default function DevLoginPage() {
   async function login(phone: string) {
     setStatus(`Logging in ${phone}...`)
     try {
-      // 1. Call API to ensure auth user exists with email+password
-      const setupRes = await fetch('/api/auth/dev-login', {
+      const res = await fetch('/api/auth/dev-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ phone }),
       })
-      const setup = await setupRes.json()
-      if (!setup.success) {
-        setStatus(`Setup failed: ${setup.error}`)
+
+      const data = await res.json()
+      if (!data.success) {
+        setStatus(`Login failed: ${data.error}`)
         return
       }
 
-      // 2. Sign in client-side with email + password
-      const role = setup.data.user.role
-      const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: `${role}@tumahelper.dev`,
-        password: 'dev123',
-      })
-
-      if (error) {
-        setStatus(`Sign in failed: ${error.message}`)
-        return
-      }
-
-      // 3. Redirect
-      const redirects: Record<string, string> = {
-        worker: '/worker/bookings',
-        customer: '/customer/bookings',
-        admin: '/admin',
-      }
-      window.location.href = redirects[role] || '/dashboard'
+      window.location.href = data.data.redirect || '/dashboard'
     } catch (err: any) {
       setStatus(`Error: ${err.message}`)
     }

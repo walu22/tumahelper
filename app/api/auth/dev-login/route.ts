@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseServer } from "@/lib/supabase";
+import { getRouteHandlerClient } from "@/lib/supabase";
+import { applySessionCookies, loginRedirectResponse } from "@/lib/auth-session";
+import {
+  ensureDevAuthUser,
+  getDevEmail,
+  ROLE_REDIRECTS,
+} from "@/lib/dev-auth";
+import {
+  applyDevSessionCookie,
+  DEV_PASSWORD,
+  getDevAccountByPhone,
+  isDevAuthBypassEnabled,
+} from "@/lib/dev-auth-bypass";
 
 const ACCOUNTS: Record<string, { role: string }> = {
   "+260961111111": { role: "worker" },
@@ -18,143 +30,100 @@ const ACCOUNTS: Record<string, { role: string }> = {
   "+260970000004": { role: "customer" },
   "+260970000005": { role: "customer" },
   "+260970000001": { role: "admin" },
+};
+
+function appUrl() {
+  return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 }
 
-const REDIRECTS: Record<string, string> = {
-  worker: "/worker/bookings",
-  customer: "/customer/bookings",
-  admin: "/admin",
-}
-
-async function loginAndRedirect(phone: string) {
-  const account = ACCOUNTS[phone]
+async function loginWithPhone(phone: string) {
+  const account = ACCOUNTS[phone];
   if (!account) {
-    return NextResponse.redirect(new URL("/dev-login?error=invalid", process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"))
+    throw new Error("Invalid phone");
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "")
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  const projectRef = supabaseUrl.match(/https:\/\/(.+)\.supabase\.co/)?.[1]
+  if (isDevAuthBypassEnabled()) {
+    const devAccount = getDevAccountByPhone(phone);
+    if (!devAccount) {
+      throw new Error(`No dev account configured for ${phone}`);
+    }
 
-  const adminClient = getSupabaseServer()
-  const { data: dbUser } = await adminClient
-    .from("users")
-    .select("id")
-    .eq("phone", phone)
-    .single()
-
-  if (!dbUser) {
-    return NextResponse.redirect(new URL("/dev-login?error=notfound", process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"))
+    return {
+      user: { id: devAccount.id, role: devAccount.role },
+      redirect: ROLE_REDIRECTS[devAccount.role] || "/dashboard",
+      devAccount,
+    };
   }
 
-  const email = `${account.role}@tumahelper.dev`
+  const email = getDevEmail(account.role, phone);
+  const user = await ensureDevAuthUser({
+    email,
+    password: DEV_PASSWORD,
+    role: account.role,
+    phone,
+  });
 
-  // Create or update auth user
-  const { data: existing } = await adminClient.auth.admin.getUserById(dbUser.id)
-  if (!existing?.user) {
-    await adminClient.auth.admin.createUser({
-      id: dbUser.id,
-      phone,
-      password: "dev123",
-      phone_confirm: true,
-      email,
-      email_confirm: true,
-    })
-  } else {
-    await adminClient.auth.admin.updateUserById(dbUser.id, { password: "dev123", phone_confirm: true, email, email_confirm: true })
+  const supabase = getRouteHandlerClient();
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password: DEV_PASSWORD,
+  });
+
+  if (error || !data.session) {
+    throw new Error(error?.message || "Sign in failed");
   }
 
-  // Sign in via GoTrue API with email + password
-  const signInRes = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", apikey: anonKey },
-    body: JSON.stringify({ email, password: "dev123" }),
-  })
-
-  if (!signInRes.ok) {
-    const err = await signInRes.text()
-    return NextResponse.redirect(new URL(`/dev-login?error=${encodeURIComponent(err)}`, process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"))
-  }
-
-  const session = await signInRes.json()
-
-  // Set cookie and redirect
-  const response = NextResponse.redirect(new URL(REDIRECTS[account.role] || "/dashboard", process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"))
-
-  response.cookies.set(`sb-${projectRef}-auth-token`, JSON.stringify([session.access_token, session.refresh_token]), {
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 365,
-  })
-
-  return response
+  return {
+    user: { id: user.id, role: account.role },
+    redirect: ROLE_REDIRECTS[account.role] || "/dashboard",
+    session: data.session,
+  };
 }
 
 export async function GET(request: NextRequest) {
-  const phone = request.nextUrl.searchParams.get("phone")
+  const phone = request.nextUrl.searchParams.get("phone");
   if (!phone) {
-    return NextResponse.redirect(new URL("/dev-login", process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"))
+    return NextResponse.redirect(new URL("/dev-login", appUrl()));
   }
-  return loginAndRedirect(phone)
+
+  try {
+    const result = await loginWithPhone(phone);
+
+    if ("devAccount" in result && result.devAccount) {
+      const response = NextResponse.redirect(new URL(result.redirect, appUrl()));
+      return applyDevSessionCookie(response, result.devAccount);
+    }
+
+    return loginRedirectResponse(request, result.session!, result.redirect);
+  } catch (err: any) {
+    const message = encodeURIComponent(err.message || "Login failed");
+    return NextResponse.redirect(new URL(`/dev-login?error=${message}`, appUrl()));
+  }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone } = await request.json()
+    const { phone } = await request.json();
     if (!phone || !ACCOUNTS[phone]) {
-      return NextResponse.json({ success: false, error: "Invalid phone" }, { status: 400 })
+      return NextResponse.json({ success: false, error: "Invalid phone" }, { status: 400 });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/, "")
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    const projectRef = supabaseUrl.match(/https:\/\/(.+)\.supabase\.co/)?.[1]
-
-    const adminClient = getSupabaseServer()
-    const { data: dbUser } = await adminClient.from("users").select("id").eq("phone", phone).single()
-    if (!dbUser) {
-      return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
-    }
-
-    const account = ACCOUNTS[phone]
-    const email = `${account.role}@tumahelper.dev`
-
-    const { data: existing } = await adminClient.auth.admin.getUserById(dbUser.id)
-    if (!existing?.user) {
-      await adminClient.auth.admin.createUser({ id: dbUser.id, phone, password: "dev123", phone_confirm: true, email, email_confirm: true })
-    } else {
-      await adminClient.auth.admin.updateUserById(dbUser.id, { password: "dev123", phone_confirm: true, email, email_confirm: true })
-    }
-
-    const signInRes = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", apikey: anonKey },
-      body: JSON.stringify({ email, password: "dev123" }),
-    })
-
-    if (!signInRes.ok) {
-      const err = await signInRes.text()
-      return NextResponse.json({ success: false, error: `Sign in failed: ${err}` }, { status: 500 })
-    }
-
-    const session = await signInRes.json()
+    const result = await loginWithPhone(phone);
 
     const response = NextResponse.json({
       success: true,
-      data: { user: { id: dbUser.id, role: account.role }, isNewUser: false },
-    })
+      data: { user: result.user, redirect: result.redirect, isNewUser: false },
+    });
 
-    response.cookies.set(`sb-${projectRef}-auth-token`, JSON.stringify([session.access_token, session.refresh_token]), {
-      path: "/",
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 365,
-    })
+    if ("devAccount" in result && result.devAccount) {
+      return applyDevSessionCookie(response, result.devAccount);
+    }
 
-    return response
+    return applySessionCookies(response, result.session!);
   } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json(
+      { success: false, error: err.message || "Login failed" },
+      { status: 500 }
+    );
   }
 }

@@ -1,9 +1,18 @@
-import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { getRouteHandlerClient } from "@/lib/supabase";
-import { successResponse, errorResponse } from "@/lib/auth";
+import { errorResponse } from "@/lib/auth";
+import { clearDevSessionCookie, isDevAuthBypassEnabled } from "@/lib/dev-auth-bypass";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
+    if (isDevAuthBypassEnabled()) {
+      const response = NextResponse.json({
+        success: true,
+        data: { message: "Logged out successfully" },
+      });
+      return clearDevSessionCookie(response);
+    }
+
     const supabase = getRouteHandlerClient();
     const { error } = await supabase.auth.signOut();
 
@@ -11,7 +20,10 @@ export async function POST(request: NextRequest) {
       return errorResponse("LOGOUT_FAILED", error.message, 500);
     }
 
-    return successResponse({ message: "Logged out successfully" });
+    return NextResponse.json({
+      success: true,
+      data: { message: "Logged out successfully" },
+    });
   } catch (error) {
     return errorResponse("INTERNAL_ERROR", "Logout failed", 500);
   }
