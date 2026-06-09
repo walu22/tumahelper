@@ -51,7 +51,7 @@ export function LandingHero() {
           <p className="mb-8 text-sm text-muted-foreground">
             Are you a worker?{" "}
             <Link
-              href="/onboarding/worker"
+              href="/register?role=worker"
               className="font-semibold text-primary hover:underline"
             >
               Apply now

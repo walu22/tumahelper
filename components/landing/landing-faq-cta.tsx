@@ -50,7 +50,7 @@ export function LandingFaqCta() {
               Book help now
             </Link>
             <Link
-              href="/onboarding/worker"
+              href="/register?role=worker"
               className="flex items-center justify-center rounded-full border border-white/30 py-3.5 text-sm font-semibold hover:bg-white/10 transition-colors"
             >
               Apply as a worker

@@ -28,7 +28,7 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4">For Workers</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/onboarding/worker" className="hover:text-primary transition-colors">Apply Now</Link></li>
+              <li><Link href="/register?role=worker" className="hover:text-primary transition-colors">Apply Now</Link></li>
               <li><Link href="/worker/dashboard" className="hover:text-primary transition-colors">Worker Dashboard</Link></li>
               <li><Link href="/jobs" className="hover:text-primary transition-colors">Find Jobs</Link></li>
             </ul>

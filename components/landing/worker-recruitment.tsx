@@ -13,7 +13,7 @@ export function WorkerRecruitment() {
           from families who respect your work.
         </p>
         <Link
-          href="/onboarding/worker"
+          href="/register?role=worker"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-sweep-pink text-foreground px-10 py-4 text-sm font-semibold hover:opacity-95 transition-opacity"
         >
           Apply as a worker
