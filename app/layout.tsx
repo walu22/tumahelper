@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { DM_Sans, Fraunces } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -8,15 +8,14 @@ import { Footer } from "@/components/layout/footer";
 import { MobileNav } from "@/components/mobile-nav";
 import { Toaster } from "sonner";
 
-const sans = Plus_Jakarta_Sans({
+const sans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const display = Plus_Jakarta_Sans({
+const display = Fraunces({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
   variable: "--font-display",
   display: "swap",
 });
