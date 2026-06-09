@@ -22,6 +22,13 @@ export const DEV_ACCOUNTS: Record<string, DevAccount> = {
     full_name: "Dev Admin",
     email: "admin@tumahelper.dev",
   },
+  "owner@tumahelper.dev": {
+    id: "00000000-0000-0000-0000-000000000001",
+    role: "admin",
+    phone: "+260970000001",
+    full_name: "Platform Owner",
+    email: "owner@tumahelper.dev",
+  },
   "worker@tumahelper.dev": {
     id: "a0000000-0000-0000-0000-000000000001",
     role: "worker",
@@ -29,12 +36,26 @@ export const DEV_ACCOUNTS: Record<string, DevAccount> = {
     full_name: "Sarah Mulenga",
     email: "worker@tumahelper.dev",
   },
+  "provider@tumahelper.dev": {
+    id: "a0000000-0000-0000-0000-000000000001",
+    role: "worker",
+    phone: "+260961111111",
+    full_name: "Sarah Mulenga",
+    email: "provider@tumahelper.dev",
+  },
   "customer@tumahelper.dev": {
     id: "f0000000-0000-0000-0000-000000000001",
     role: "customer",
     phone: "+260976666666",
     full_name: "Dev Customer",
     email: "customer@tumahelper.dev",
+  },
+  "client@tumahelper.dev": {
+    id: "f0000000-0000-0000-0000-000000000001",
+    role: "customer",
+    phone: "+260976666666",
+    full_name: "Demo Customer",
+    email: "client@tumahelper.dev",
   },
 };
 

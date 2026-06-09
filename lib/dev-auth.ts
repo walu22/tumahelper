@@ -4,6 +4,9 @@ export const DEV_EMAIL_ROLE_MAP: Record<string, string> = {
   "admin@tumahelper.dev": "admin",
   "worker@tumahelper.dev": "worker",
   "customer@tumahelper.dev": "customer",
+  "owner@tumahelper.dev": "admin",
+  "provider@tumahelper.dev": "worker",
+  "client@tumahelper.dev": "customer",
 };
 
 export const ROLE_REDIRECTS: Record<string, string> = {
@@ -26,6 +29,17 @@ export function getDevEmail(role: string, phone?: string) {
     return `${phone.replace("+", "")}@tumahelper.dev`;
   }
   return `${role}@tumahelper.dev`;
+}
+
+export async function findUserByEmail(email: string) {
+  const adminClient = getAdminClient();
+  const { data } = await adminClient
+    .from("users")
+    .select("id, role, email, phone")
+    .eq("email", normalizeEmail(email))
+    .maybeSingle();
+
+  return data;
 }
 
 export async function findDevUser(role: string) {
@@ -65,28 +79,28 @@ export async function findDevUserByPhone(phone: string) {
 export async function ensureDevAuthUser(params: {
   email: string;
   password: string;
-  role: string;
+  role?: string;
   phone?: string;
 }) {
   const adminClient = getAdminClient();
   const email = normalizeEmail(params.email);
-  const user = params.phone
-    ? await findDevUserByPhone(params.phone)
-    : await findDevUser(params.role);
+
+  const user =
+    (params.phone ? await findDevUserByPhone(params.phone) : null) ??
+    (await findUserByEmail(email)) ??
+    (params.role ? await findDevUser(params.role) : null);
 
   if (!user) {
-    throw new Error(
-      params.phone
-        ? `No user found for phone ${params.phone}`
-        : `No ${params.role} user found in database`
-    );
+    throw new Error(`No account found for ${email}`);
   }
 
   const authPayload = {
     email,
     password: params.password,
     email_confirm: true,
-    ...(params.phone ? { phone: params.phone, phone_confirm: true } : {}),
+    ...(params.phone || user.phone
+      ? { phone: params.phone || user.phone, phone_confirm: true }
+      : {}),
   };
 
   const { data: existing } = await adminClient.auth.admin.getUserById(user.id);

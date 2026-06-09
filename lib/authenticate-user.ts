@@ -1,6 +1,7 @@
 import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
 import {
   ensureDevAuthUser,
+  findUserByEmail,
   getDevRole,
   normalizeEmail,
   ROLE_REDIRECTS,
@@ -38,7 +39,7 @@ export async function authenticateUser(params: {
   }
 
   const normalizedEmail = normalizeEmail(params.email);
-  const devRole = getDevRole(normalizedEmail);
+  const mappedRole = getDevRole(normalizedEmail);
 
   if (isDevAuthBypassEnabled()) {
     const account = getDevAccountByEmail(normalizedEmail);
@@ -56,12 +57,19 @@ export async function authenticateUser(params: {
     };
   }
 
-  if (devRole) {
-    await ensureDevAuthUser({
-      email: normalizedEmail,
-      password: params.password,
-      role: devRole,
-    });
+  const dbUser = await findUserByEmail(normalizedEmail);
+  const role = dbUser?.role || mappedRole;
+
+  if (role) {
+    try {
+      await ensureDevAuthUser({
+        email: normalizedEmail,
+        password: params.password,
+        role,
+      });
+    } catch {
+      // Auth user may already exist with this password — continue to sign-in.
+    }
   }
 
   const supabase = getRouteHandlerClient();
@@ -81,15 +89,15 @@ export async function authenticateUser(params: {
     .eq("id", data.user.id)
     .maybeSingle();
 
-  const role = profile?.role || devRole;
-  if (!role) {
+  const resolvedRole = profile?.role || role;
+  if (!resolvedRole) {
     return { ok: false, error: "Account profile not found" };
   }
 
   return {
     ok: true,
-    redirect: params.redirect || ROLE_REDIRECTS[role] || "/dashboard",
-    user: { id: profile?.id || data.user.id, role },
+    redirect: params.redirect || ROLE_REDIRECTS[resolvedRole] || "/dashboard",
+    user: { id: profile?.id || data.user.id, role: resolvedRole },
     session: data.session,
     usedDevBypass: false,
   };
