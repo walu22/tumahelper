@@ -12,9 +12,11 @@ export const otpCodeSchema = z
   .regex(/^\d{6}$/, "OTP must be 6 digits");
 
 export const registerSchema = z.object({
-  phone: phoneSchema,
+  email: z.string().email().max(255),
+  password: z.string().min(8).max(128),
   role: z.enum(["customer", "worker", "employer"]),
   fullName: z.string().min(2).max(255),
+  phone: phoneSchema.optional(),
 });
 
 export const workerProfileSchema = z.object({
