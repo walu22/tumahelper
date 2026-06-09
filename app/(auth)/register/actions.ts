@@ -10,8 +10,7 @@ export async function registerAction(formData: FormData) {
   const fullName = String(formData.get("fullName") || "");
   const email = String(formData.get("email") || "");
   const password = String(formData.get("password") || "");
-  const phoneRaw = String(formData.get("phone") || "").trim();
-  const phone = phoneRaw || undefined;
+  const phone = String(formData.get("phone") || "").trim();
 
   if (!["customer", "worker", "employer"].includes(role)) {
     redirect("/register?error=Invalid+role");

@@ -11,7 +11,7 @@ export interface SignUpParams {
   password: string;
   role: Exclude<UserRole, "admin">;
   fullName: string;
-  phone?: string;
+  phone: string;
 }
 
 export interface SignUpResult {
@@ -19,34 +19,18 @@ export interface SignUpResult {
   userId: string;
 }
 
-async function allocatePhone(
+async function assertPhoneAvailable(
   admin: ReturnType<typeof getAdminClient>,
-  provided?: string
-): Promise<string> {
-  if (provided) {
-    const { data: existing } = await admin
-      .from("users")
-      .select("id")
-      .eq("phone", provided)
-      .maybeSingle();
-    if (existing) {
-      throw new AuthError("This phone number is already registered");
-    }
-    return provided;
+  phone: string
+): Promise<void> {
+  const { data: existing } = await admin
+    .from("users")
+    .select("id")
+    .eq("phone", phone)
+    .maybeSingle();
+  if (existing) {
+    throw new AuthError("This phone number is already registered");
   }
-
-  for (let attempt = 0; attempt < 8; attempt++) {
-    const suffix = String(Math.floor(1000000 + Math.random() * 9000000));
-    const phone = `+26090${suffix}`;
-    const { data: existing } = await admin
-      .from("users")
-      .select("id")
-      .eq("phone", phone)
-      .maybeSingle();
-    if (!existing) return phone;
-  }
-
-  throw new AuthError("Could not create account. Please try again.");
 }
 
 async function createWorkerStub(
@@ -104,7 +88,7 @@ export async function signUp(params: SignUpParams): Promise<SignUpResult> {
   const fullName = params.fullName.trim();
   const password = params.password;
 
-  if (!email || !password || !fullName) {
+  if (!email || !password || !fullName || !params.phone?.trim()) {
     throw new AuthError("All fields are required");
   }
 
@@ -112,13 +96,11 @@ export async function signUp(params: SignUpParams): Promise<SignUpResult> {
     throw new AuthError("Password must be at least 8 characters");
   }
 
-  let normalizedPhone: string | undefined;
-  if (params.phone?.trim()) {
-    try {
-      normalizedPhone = phoneSchema.parse(params.phone.trim());
-    } catch {
-      throw new AuthError("Invalid phone number. Use format +26097XXXXXXX");
-    }
+  let phone: string;
+  try {
+    phone = phoneSchema.parse(params.phone.trim());
+  } catch {
+    throw new AuthError("Invalid phone number. Use format +26097XXXXXXX");
   }
 
   const admin = getAdminClient();
@@ -133,7 +115,7 @@ export async function signUp(params: SignUpParams): Promise<SignUpResult> {
     throw new AuthError("An account with this email already exists");
   }
 
-  const phone = await allocatePhone(admin, normalizedPhone);
+  await assertPhoneAvailable(admin, phone);
 
   if (isDevBypassEnabled()) {
     const id = randomUUID();
@@ -144,7 +126,7 @@ export async function signUp(params: SignUpParams): Promise<SignUpResult> {
       phone,
       role: params.role,
       fullName,
-      phoneVerified: Boolean(normalizedPhone),
+      phoneVerified: true,
     });
 
     if (params.role === "worker") {
@@ -166,6 +148,8 @@ export async function signUp(params: SignUpParams): Promise<SignUpResult> {
     email,
     password,
     email_confirm: true,
+    phone,
+    phone_confirm: true,
     user_metadata: { role: params.role, full_name: fullName },
   });
 
@@ -186,7 +170,7 @@ export async function signUp(params: SignUpParams): Promise<SignUpResult> {
       phone,
       role: params.role,
       fullName,
-      phoneVerified: Boolean(normalizedPhone),
+      phoneVerified: true,
     });
 
     if (params.role === "worker") {

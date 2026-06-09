@@ -16,7 +16,7 @@ export const registerSchema = z.object({
   password: z.string().min(8).max(128),
   role: z.enum(["customer", "worker", "employer"]),
   fullName: z.string().min(2).max(255),
-  phone: phoneSchema.optional(),
+  phone: phoneSchema,
 });
 
 export const workerProfileSchema = z.object({

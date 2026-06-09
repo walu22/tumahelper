@@ -136,17 +136,18 @@ export function RegisterForm() {
 
           <div>
             <label htmlFor="phone" className="block text-sm font-medium mb-1.5">
-              Phone <span className="text-muted-foreground font-normal">(optional)</span>
+              Phone
             </label>
             <Input
               id="phone"
               name="phone"
               type="tel"
+              required
               placeholder="+26097XXXXXXX"
               autoComplete="tel"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Zambian format: +26097XXXXXXX — used for MoMo and worker contact
+              Zambian format: +26097XXXXXXX — used for MoMo payments and contact
             </p>
           </div>
 
