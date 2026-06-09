@@ -1,51 +1,63 @@
 import Link from "next/link";
-import { HeartHandshake, Search, Star } from "lucide-react";
+import { CalendarCheck, Search, Star } from "lucide-react";
 import { SectionHeader } from "./section-header";
 
 const steps = [
   {
     icon: Search,
-    title: "Browse & filter",
-    description: "Search verified workers by category, area, availability, and trust score.",
+    step: "01",
+    title: "Choose your service",
+    description: "Pick cleaning, childcare, laundry, or full-time help — and filter by Lusaka area.",
+    href: "/workers",
+    cta: "Browse services",
   },
   {
-    icon: HeartHandshake,
-    title: "Book with confidence",
-    description: "Every worker is ID-verified, reference-checked, and rated by real customers.",
+    icon: CalendarCheck,
+    step: "02",
+    title: "Pick a verified worker",
+    description: "Compare trust scores, reviews, and verification badges before you book.",
+    href: "/workers",
+    cta: "View profiles",
   },
   {
     icon: Star,
-    title: "Rate & build trust",
-    description: "Share feedback after each booking to help great workers stand out.",
+    step: "03",
+    title: "Book and review",
+    description: "Confirm your booking, get the help you need, and leave a review to build trust.",
+    href: "/register",
+    cta: "Get started",
   },
 ];
 
 export function HowItWorksSection() {
   return (
-    <section className="py-20 px-4 bg-gray-50">
+    <section className="py-20 px-4 bg-white">
       <div className="max-w-6xl mx-auto">
         <SectionHeader
           eyebrow="How it works"
-          title="Getting help at home has never been easier."
+          title="Book trusted help in 3 simple steps."
+          description="From first search to finished job — designed to be fast, clear, and safe."
         />
 
         <div className="grid md:grid-cols-3 gap-8">
-          {steps.map((step, index) => (
-            <div key={step.title} className="relative text-center">
-              <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                <step.icon className="h-8 w-8 text-primary" />
+          {steps.map((step) => (
+            <div
+              key={step.title}
+              className="relative rounded-2xl border border-gray-100 bg-gray-50/50 p-8"
+            >
+              <p className="text-4xl font-bold text-primary/15 absolute top-6 right-6">
+                {step.step}
+              </p>
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                <step.icon className="h-7 w-7 text-primary" />
               </div>
-              <p className="text-sm font-semibold text-primary mb-2">Step {index + 1}</p>
               <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+              <p className="text-muted-foreground leading-relaxed mb-5">{step.description}</p>
+              <Link href={step.href} className="text-primary font-medium text-sm hover:underline">
+                {step.cta} →
+              </Link>
             </div>
           ))}
-        </div>
-
-        <div className="text-center mt-10">
-          <Link href="/workers" className="text-primary font-medium hover:underline">
-            Start browsing workers →
-          </Link>
         </div>
       </div>
     </section>

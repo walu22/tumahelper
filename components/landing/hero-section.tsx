@@ -8,6 +8,15 @@ import {
   NannyServiceIcon,
 } from "./service-icons";
 
+const lusakaAreas = [
+  "Kabulonga",
+  "Woodlands",
+  "Roma",
+  "Meanwood",
+  "Ibex Hill",
+  "Chelstone",
+];
+
 const quickLinks = [
   {
     href: "/nannies",
@@ -83,6 +92,21 @@ export function HeroSection() {
                   Book a Worker
                 </Button>
               </Link>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-sm text-green-100/80 mb-3">Popular areas in Lusaka</p>
+              <div className="flex flex-wrap gap-2">
+                {lusakaAreas.map((area) => (
+                  <Link
+                    key={area}
+                    href={`/workers?area=${encodeURIComponent(area)}`}
+                    className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm hover:bg-white/20 transition-colors backdrop-blur-sm"
+                  >
+                    {area}
+                  </Link>
+                ))}
+              </div>
             </div>
 
             <p className="text-sm text-green-100/85">

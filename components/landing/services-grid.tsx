@@ -16,6 +16,7 @@ const fallbackServices = [
     description: "Top-to-bottom home cleaning, from kitchens and bathrooms to bedrooms.",
     icon: Home,
     meta: "3–8 hours",
+    price: "From K250",
   },
   {
     slug: "nannies",
@@ -23,6 +24,7 @@ const fallbackServices = [
     description: "Babysitting, after-school care, and supervised help around the home.",
     icon: Baby,
     meta: "Flexible hours",
+    price: "From K200/day",
   },
   {
     slug: "house-cleaners",
@@ -30,6 +32,7 @@ const fallbackServices = [
     description: "Quick help with tidying, dishes, laundry, and high-priority tasks.",
     icon: Clock3,
     meta: "1–3 hours",
+    price: "From K150",
   },
   {
     slug: "house-cleaners",
@@ -37,6 +40,7 @@ const fallbackServices = [
     description: "Fresh, folded, and ready-to-wear laundry handled by experienced helpers.",
     icon: Shirt,
     meta: "Per load",
+    price: "From K80",
   },
   {
     slug: "jobs",
@@ -44,13 +48,15 @@ const fallbackServices = [
     description: "Essential deep cleaning for move-ins, move-outs, and handovers.",
     icon: Truck,
     meta: "One-off",
+    price: "From K400",
   },
   {
-    slug: "workers",
-    name: "Special Requests",
-    description: "Need something specific? Browse verified workers by skill and area.",
+    slug: "jobs",
+    name: "Full-Time Help",
+    description: "Live-in or live-out nannies, housekeepers, and domestic workers.",
     icon: Sparkles,
-    meta: "Custom",
+    meta: "Monthly",
+    price: "From K800/mo",
   },
 ];
 
@@ -63,6 +69,7 @@ export function ServicesGrid({ categories }: { categories: ServiceCategory[] | n
           description: category.description || "Browse trusted professionals in this category.",
           icon: category.slug?.includes("nanny") ? Baby : Home,
           meta: "Available now",
+          price: category.slug?.includes("nanny") ? "From K200/day" : "From K150",
         }))
       : fallbackServices;
 
@@ -90,9 +97,12 @@ export function ServicesGrid({ categories }: { categories: ServiceCategory[] | n
                   {service.meta}
                 </span>
               </div>
-              <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+              <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">
                 {service.name}
               </h3>
+              {"price" in service && service.price ? (
+                <p className="text-sm font-medium text-primary mb-2">{service.price}</p>
+              ) : null}
               <p className="text-sm text-muted-foreground leading-relaxed">{service.description}</p>
             </Link>
           ))}
