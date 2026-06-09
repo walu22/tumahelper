@@ -1,49 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { applySessionCookies } from "@/lib/auth-session";
-import { authenticateUser } from "@/lib/authenticate-user";
-import {
-  applyDevSessionCookie,
-  getDevAccountByEmail,
-} from "@/lib/dev-auth-bypass";
-import { normalizeEmail } from "@/lib/dev-auth";
+import { AuthError, signIn } from "@/lib/auth/login";
+import { successResponse } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, redirect: redirectParam } = body;
-
-    const result = await authenticateUser({
-      email,
-      password,
-      redirect: redirectParam,
+    const result = await signIn({
+      email: body.email,
+      password: body.password,
+      redirect: body.redirect,
     });
 
-    if (!result.ok) {
-      return NextResponse.json({ success: false, error: result.error }, { status: 401 });
-    }
-
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
-      data: {
-        redirect: result.redirect,
-        user: result.user,
-      },
+      data: result,
     });
-
-    if (result.usedDevBypass) {
-      const account = getDevAccountByEmail(normalizeEmail(email));
-      if (account) return applyDevSessionCookie(response, account);
-    }
-
-    if (result.session) {
-      return applySessionCookies(response, result.session);
-    }
-
-    return response;
-  } catch (err: any) {
-    return NextResponse.json(
-      { success: false, error: err.message || "Login failed" },
-      { status: 500 }
-    );
+  } catch (error) {
+    const message = error instanceof AuthError ? error.message : "Login failed";
+    return NextResponse.json({ success: false, error: message }, { status: 401 });
   }
 }
