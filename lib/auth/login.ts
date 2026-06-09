@@ -3,7 +3,7 @@ import {
   getRedirectForRole,
   isDevBypassEnabled,
   LOGIN_ACCOUNTS_BY_EMAIL,
-  normalizeEmail,
+  resolveLoginEmail,
 } from "./config";
 import { clearDevSessionCookie, setDevSessionCookie } from "./session";
 
@@ -24,7 +24,7 @@ export async function signIn(params: {
   password: string;
   redirect?: string | null;
 }): Promise<SignInResult> {
-  const email = normalizeEmail(params.email);
+  const email = resolveLoginEmail(params.email);
   const password = params.password;
 
   if (!email || !password) {

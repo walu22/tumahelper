@@ -44,11 +44,23 @@ export const LOGIN_ACCOUNTS: DevAccount[] = [
 ];
 
 export const LOGIN_ACCOUNTS_BY_EMAIL = Object.fromEntries(
-  LOGIN_ACCOUNTS.map((account) => [account.email, account])
+  LOGIN_ACCOUNTS.flatMap((account) => [
+    [account.email, account],
+    ...(account.role === "admin" ? [["admin@tumahelper.dev", account] as const] : []),
+    ...(account.role === "worker" ? [["worker@tumahelper.dev", account] as const] : []),
+    ...(account.role === "customer" ? [["customer@tumahelper.dev", account] as const] : []),
+  ])
 );
 
 export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
+}
+
+/** Map legacy demo emails to the current account emails */
+export function resolveLoginEmail(email: string) {
+  const normalized = normalizeEmail(email);
+  const account = LOGIN_ACCOUNTS_BY_EMAIL[normalized];
+  return account?.email ?? normalized;
 }
 
 export function getRedirectForRole(role: string, fallback?: string | null) {

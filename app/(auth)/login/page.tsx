@@ -79,6 +79,7 @@ export default function LoginPage({
                 <span className="text-foreground">{account.email}</span>
               </li>
             ))}
+            <li className="text-xs pt-1">Legacy aliases also work: admin@, worker@, customer@tumahelper.dev</li>
           </ul>
           <p className="text-xs text-muted-foreground mt-3">
             {devMode
