@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { PLATFORM_OFFERINGS, FULL_TIME_ROLES } from "@/lib/landing/content";
+import { PLATFORM_OFFERINGS, PERMANENT_PLACEMENT_ROLES } from "@/lib/landing/content";
 
 const cardStyles = {
   green: "sweep-card-green border-primary/15",
@@ -17,11 +17,11 @@ export function PlatformOfferings() {
             What we do
           </p>
           <h2 className="font-display text-3xl md:text-[2.75rem] font-bold text-balance leading-tight">
-            One platform for day help and long-term hires.
+            Nannies and house cleaners, verified for Lusaka homes.
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            From a quick clean in Woodlands to a live-in nanny in Kabulonga —
-            find help you can actually trust.
+            Book for a single visit or set up regular help — then hire permanently
+            when you find the right person.
           </p>
         </div>
 
@@ -43,23 +43,34 @@ export function PlatformOfferings() {
           ))}
         </div>
 
-        <div>
-          <h3 className="font-display text-xl md:text-2xl font-semibold text-center mb-6">
-            Full-time placements
-          </h3>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {FULL_TIME_ROLES.map((role) => (
-              <Link
+        <div className="rounded-3xl border border-border bg-surface p-8 md:p-10">
+          <div className="max-w-2xl mx-auto text-center mb-8">
+            <h3 className="font-display text-xl md:text-2xl font-semibold mb-3">
+              Need someone permanently?
+            </h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Many families book a worker several times, then hire full-time.
+              We can also help you find a live-in nanny or housekeeper directly.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4 mb-8">
+            {PERMANENT_PLACEMENT_ROLES.map((role) => (
+              <div
                 key={role.title}
-                href={role.href}
-                className="group rounded-2xl border border-border bg-surface p-6 hover:border-primary/25 hover:shadow-sm transition-all"
+                className="rounded-2xl border border-border bg-white p-5 text-center"
               >
-                <h4 className="font-semibold group-hover:text-primary transition-colors mb-1.5">
-                  {role.title}
-                </h4>
+                <h4 className="font-semibold mb-1.5">{role.title}</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">{role.description}</p>
-              </Link>
+              </div>
             ))}
+          </div>
+          <div className="text-center">
+            <Link
+              href="/hire"
+              className="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-95 transition-opacity"
+            >
+              Request a permanent placement
+            </Link>
           </div>
         </div>
       </div>

@@ -35,20 +35,6 @@ export function NannyIcon({ className }: ServiceIconProps) {
   );
 }
 
-export function FullTimeIcon({ className }: ServiceIconProps) {
-  return (
-    <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
-      <circle cx="32" cy="32" r="30" fill="#FFF4E0" />
-      <rect x="18" y="22" width="28" height="22" rx="3" fill="#027749" />
-      <path d="M18 28h28" stroke="#039855" strokeWidth="2" />
-      <rect x="24" y="32" width="16" height="3" rx="1" fill="#80C5BC" />
-      <path d="M32 22v-6M28 18h8" stroke="#E1B016" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="44" cy="40" r="6" fill="#FE80C9" opacity="0.8" />
-      <path d="M42 40h4M44 38v4" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 export function BrowseIcon({ className }: ServiceIconProps) {
   return (
     <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
@@ -62,12 +48,9 @@ export function BrowseIcon({ className }: ServiceIconProps) {
   );
 }
 
-export type { ServiceIconKey } from "@/lib/landing/content";
-
 const ICON_MAP: Record<ServiceIconKey, ComponentType<ServiceIconProps>> = {
   indoor: IndoorCleaningIcon,
   nanny: NannyIcon,
-  fulltime: FullTimeIcon,
   browse: BrowseIcon,
 };
 

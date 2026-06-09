@@ -1,4 +1,4 @@
-export type ServiceIconKey = "indoor" | "nanny" | "fulltime" | "browse";
+export type ServiceIconKey = "indoor" | "nanny" | "browse";
 
 export const LUSAKA_AREAS = [
   "Kabulonga",
@@ -11,52 +11,49 @@ export const LUSAKA_AREAS = [
   "Longacres",
 ];
 
+/** Launch categories only: nannies + cleaning */
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
   { href: "/customer/book?category=nanny", label: "Nannies", icon: "nanny" },
   { href: "/customer/book?category=cleaning", label: "Cleaning", icon: "indoor" },
-  { href: "/jobs", label: "Full-time", icon: "fulltime" },
   { href: "/workers", label: "Browse all", icon: "browse" },
 ];
 
 export const PLATFORM_OFFERINGS = [
   {
-    title: "Book today",
+    title: "Nannies & childcare",
     description:
-      "Need a cleaner this Saturday or a nanny for the afternoon? Pick a verified worker, set the time, and book in minutes.",
-    href: "/customer/book",
-    variant: "green" as const,
+      "Babysitting, after-school help, or regular childcare — book a verified nanny for the times you need.",
+    href: "/customer/book?category=nanny",
+    variant: "pink" as const,
   },
   {
-    title: "Hire full-time",
+    title: "House cleaning",
     description:
-      "Live-in nannies, housekeepers, and domestic workers — we help Lusaka families find long-term help that fits.",
-    href: "/jobs",
-    variant: "pink" as const,
+      "One-off deep cleans or regular visits — book a verified cleaner across Lusaka.",
+    href: "/customer/book?category=cleaning",
+    variant: "green" as const,
   },
   {
     title: "Verified profiles",
     description:
-      "Every worker is NRC-checked and reference-verified. See trust scores, reviews, and skills before you invite someone in.",
+      "NRC checks, reference verification, trust scores, and reviews on every worker.",
     href: "/workers",
     variant: "teal" as const,
   },
 ];
 
-export const FULL_TIME_ROLES = [
+export const PERMANENT_PLACEMENT_ROLES = [
+  {
+    title: "Full-time nanny",
+    description: "Live-in or live-out childcare for your family.",
+  },
   {
     title: "Full-time housekeeper",
     description: "Daily cleaning, laundry, and household management.",
-    href: "/jobs",
-  },
-  {
-    title: "Full-time nanny",
-    description: "Dedicated childcare for families needing ongoing support.",
-    href: "/jobs",
   },
   {
     title: "Live-in domestic worker",
-    description: "Long-term help tailored to your household.",
-    href: "/jobs",
+    description: "Long-term help tailored to your home.",
   },
 ];
 
@@ -77,8 +74,12 @@ export const FAQ_ITEMS = [
     a: "After booking, pay via MTN Mobile Money or Airtel Money and upload your confirmation screenshot. Cash on arrival works too — just agree with your worker beforehand.",
   },
   {
-    q: "Can I hire for one day or full-time?",
-    a: "Both. Book express cleans and babysitting for single visits, or post a full-time role for live-in nannies, housekeepers, and domestic workers.",
+    q: "Can I book once or regularly?",
+    a: "Both. Book a single visit or schedule recurring help with the same verified worker. Many families book regularly before moving to permanent hire.",
+  },
+  {
+    q: "What about full-time or live-in help?",
+    a: "Start by booking a worker you like, or contact us for a permanent placement. We help match live-in nannies, housekeepers, and long-term domestic workers in Lusaka.",
   },
   {
     q: "Which areas do you cover?",
