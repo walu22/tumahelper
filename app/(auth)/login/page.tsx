@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo";
-import { LOGIN_ACCOUNTS, isDevBypassEnabled } from "@/lib/auth/config";
 import { loginAction } from "./actions";
 import { SubmitButton } from "./submit-button";
 
@@ -9,8 +8,6 @@ export default function LoginPage({
 }: {
   searchParams: { error?: string; email?: string; redirect?: string };
 }) {
-  const devMode = isDevBypassEnabled();
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md">
@@ -69,24 +66,6 @@ export default function LoginPage({
 
             <SubmitButton />
           </form>
-        </div>
-
-        <div className="mt-6 bg-white rounded-xl shadow-sm border p-5 text-sm">
-          <p className="font-medium mb-3">Demo accounts</p>
-          <ul className="space-y-2 text-muted-foreground">
-            {LOGIN_ACCOUNTS.map((account) => (
-              <li key={account.email} className="flex justify-between gap-4">
-                <span className="capitalize">{account.role}</span>
-                <span className="text-foreground">{account.email}</span>
-              </li>
-            ))}
-            <li className="text-xs pt-1">Legacy aliases also work: admin@, worker@, customer@tumahelper.dev</li>
-          </ul>
-          <p className="text-xs text-muted-foreground mt-3">
-            {devMode
-              ? "Dev mode password: dev123"
-              : "Run npm run setup:credentials to reset passwords"}
-          </p>
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
