@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         location_lat: validated.locationLat,
         location_lng: validated.locationLng,
         description: validated.description,
+        service_details: validated.serviceDetails ?? null,
         amount: validated.amount,
         platform_fee: platformFee,
         worker_earnings: workerEarnings,

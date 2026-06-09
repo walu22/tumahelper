@@ -9,6 +9,8 @@ import { redirect, notFound } from 'next/navigation'
 import { formatDate, formatTime, formatCurrency } from '@/utils/formatters'
 import Link from 'next/link'
 import { PaymentInstructions } from '@/components/booking/payment-instructions'
+import { ServiceSummary } from '@/components/services/service-summary'
+import type { ServiceDetails } from '@/lib/services/catalog'
 import { ArrowLeft, MapPin, Calendar, Clock, FileText, User } from 'lucide-react'
 import type { BookingStatus } from '@/types'
 
@@ -51,6 +53,7 @@ interface BookingWithRelations {
   customer_review: string | null
   cancellation_reason: string | null
   created_at: string
+  service_details: ServiceDetails | null
   worker: { full_name: string | null; profile_photo_url: string | null; phone: string | null }
   category: { name: string } | null
 }
@@ -141,6 +144,10 @@ export default async function CustomerBookingDetailPage({
                     </div>
                   </div>
                 </div>
+
+                {booking.service_details && (
+                  <ServiceSummary details={booking.service_details} />
+                )}
 
                 {booking.description && (
                   <div>

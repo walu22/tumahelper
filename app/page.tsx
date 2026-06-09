@@ -1,6 +1,7 @@
 import { getServerClient } from "@/lib/supabase";
 import { LandingHero } from "@/components/landing/hero";
 import { PlatformOfferings } from "@/components/landing/platform-offerings";
+import { ServicesDetailSection } from "@/components/landing/services-detail";
 import { SweepStarsSection } from "@/components/landing/sweep-stars";
 import { TrustSection } from "@/components/landing/trust-section";
 import { WorkerRecruitment } from "@/components/landing/worker-recruitment";
@@ -26,6 +27,7 @@ export default async function HomePage() {
     <div className="overflow-x-hidden bg-white">
       <LandingHero />
       <PlatformOfferings />
+      <ServicesDetailSection />
       <SweepStarsSection workers={featuredWorkers} />
       <TrustSection />
       <WorkerRecruitment />

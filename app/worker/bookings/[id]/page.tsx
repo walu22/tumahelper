@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Phone, Calendar, Clock, CreditCard, MessageSquare, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import type { BookingStatus } from "@/types";
+import type { ServiceDetails } from "@/lib/services/catalog";
+import { ServiceSummary } from "@/components/services/service-summary";
 
 export default async function WorkerBookingDetailPage({
   params,
@@ -65,6 +67,10 @@ export default async function WorkerBookingDetailPage({
           <BookingTimeline currentStatus={booking.status} />
         </CardContent>
       </Card>
+
+      {booking.service_details && (
+        <ServiceSummary details={booking.service_details as ServiceDetails} />
+      )}
 
       <Card>
         <CardHeader>

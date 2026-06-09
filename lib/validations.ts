@@ -39,6 +39,17 @@ export const workerProfileSchema = z.object({
     .default("available"),
 });
 
+export const serviceDetailsSchema = z.object({
+  category: z.enum(["cleaning", "nanny"]),
+  serviceType: z.string().min(1).max(50),
+  durationHours: z.number().min(2).max(12),
+  bedrooms: z.number().min(1).max(10).optional(),
+  bathrooms: z.number().min(1).max(6).optional(),
+  children: z.number().min(1).max(10).optional(),
+  childAgeGroups: z.array(z.string()).optional(),
+  addons: z.array(z.string()).default([]),
+});
+
 export const bookingSchema = z.object({
   workerId: z.string().uuid(),
   categoryId: z.string().uuid(),
@@ -48,6 +59,7 @@ export const bookingSchema = z.object({
   locationLat: z.number().optional(),
   locationLng: z.number().optional(),
   description: z.string().max(1000).optional(),
+  serviceDetails: serviceDetailsSchema.optional(),
   amount: z.number().min(50).max(1000000),
 });
 

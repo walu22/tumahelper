@@ -1,3 +1,6 @@
+import type { ServiceDetails } from "@/lib/services/catalog";
+
+export type { ServiceDetails };
 export type UserRole = "customer" | "worker" | "employer" | "admin";
 export type UserStatus = "pending" | "active" | "suspended" | "rejected";
 
@@ -138,6 +141,7 @@ export interface Booking {
   location_lat: number | null;
   location_lng: number | null;
   description: string | null;
+  service_details: ServiceDetails | null;
   amount: number;
   platform_fee: number;
   worker_earnings: number;

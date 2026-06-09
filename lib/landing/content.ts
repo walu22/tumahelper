@@ -13,8 +13,8 @@ export const LUSAKA_AREAS = [
 
 /** Launch categories only: nannies + cleaning */
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
-  { href: "/customer/book?category=nanny", label: "Nannies", icon: "nanny" },
-  { href: "/customer/book?category=cleaning", label: "Cleaning", icon: "indoor" },
+  { href: "/customer/book?category=nanny&type=babysitting", label: "Nannies", icon: "nanny" },
+  { href: "/customer/book?category=cleaning&type=standard", label: "Cleaning", icon: "indoor" },
 ];
 
 export const PLATFORM_OFFERINGS = [

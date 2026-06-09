@@ -20,6 +20,19 @@ import {
   ChevronLeft,
   Loader2,
 } from 'lucide-react'
+import { ServiceConfigPanel } from '@/components/services/service-config-panel'
+import { ServiceSummary } from '@/components/services/service-summary'
+import {
+  categorySlugToKey,
+  defaultServiceDetails,
+  paramToCategoryKey,
+  type ServiceDetails,
+} from '@/lib/services/catalog'
+import {
+  formatServiceSummary,
+  parseServiceDetailsFromParams,
+  suggestPrice,
+} from '@/lib/services/utils'
 
 interface Category {
   id: string
@@ -74,8 +87,8 @@ function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
 }
 
 function getInitialStep(categoryParam: string | null, workerProfileId: string | null) {
-  if (workerProfileId) return 3
-  if (categoryParam && categoryParamToSlug[categoryParam]) return 2
+  if (workerProfileId) return 4
+  if (categoryParam && paramToCategoryKey(categoryParam)) return 2
   return 1
 }
 
@@ -86,6 +99,7 @@ export function BookingWizard() {
   const categoryParam = searchParams.get('category')
   const preselectedWorkerRef = useRef<string | null>(null)
   const urlInitDone = useRef(false)
+  const pricePrefilled = useRef(false)
 
   const [step, setStep] = useState(() => getInitialStep(categoryParam, workerProfileId))
   const [submitting, setSubmitting] = useState(false)
@@ -95,6 +109,7 @@ export function BookingWizard() {
   const [categoriesLoading, setCategoriesLoading] = useState(true)
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(null)
   const [workers, setWorkers] = useState<WorkerSummary[]>([])
   const [workersLoading, setWorkersLoading] = useState(false)
   const [selectedWorker, setSelectedWorker] = useState<WorkerSummary | null>(null)
@@ -157,12 +172,15 @@ export function BookingWizard() {
     const slug = categoryParamToSlug[categoryParam]
     if (!slug) return
     const cat = categories.find((c) => c.slug === slug)
-    if (cat) {
-      setSelectedCategory(cat)
-      setStep(2)
-      urlInitDone.current = true
-    }
-  }, [categoryParam, categories, workerProfileId])
+    if (!cat) return
+
+    const parsed = parseServiceDetailsFromParams(searchParams)
+    const key = paramToCategoryKey(categoryParam)!
+    setSelectedCategory(cat)
+    setServiceDetails(parsed ?? defaultServiceDetails(key))
+    setStep(2)
+    urlInitDone.current = true
+  }, [categoryParam, categories, workerProfileId, searchParams])
 
   useEffect(() => {
     if (urlInitDone.current || !workerProfileId || categoriesLoading || categories.length === 0) return
@@ -173,24 +191,35 @@ export function BookingWizard() {
       .then((res) => {
         if (!res.success || !res.data) {
           toast.error('Worker not found')
-          setStep(2)
+          setStep(3)
           return
         }
         const w = mapApiWorker(res.data)
         const slug = w.category === 'nanny' ? 'nanny-services' : 'house-cleaning'
         const cat = categories.find((c) => c.slug === slug)
+        const key = categorySlugToKey(slug)!
+        const parsed = parseServiceDetailsFromParams(searchParams)
         if (cat) setSelectedCategory(cat)
+        setServiceDetails(parsed ?? defaultServiceDetails(key))
         preselectedWorkerRef.current = w.user_id
         setSelectedWorker(w)
-        setStep(3)
+        setStep(4)
         urlInitDone.current = true
       })
       .catch(() => {
         toast.error('Could not load worker')
-        setStep(2)
+        setStep(3)
       })
       .finally(() => setDeepLinkLoading(false))
-  }, [workerProfileId, categories, categoriesLoading])
+  }, [workerProfileId, categories, categoriesLoading, searchParams])
+
+  useEffect(() => {
+    if (step === 4 && serviceDetails && !amount && !pricePrefilled.current) {
+      const { typical } = suggestPrice(serviceDetails)
+      setAmount(String(typical))
+      pricePrefilled.current = true
+    }
+  }, [step, serviceDetails, amount])
 
   const filteredWorkers = workers.filter((w) => {
     if (!searchQuery) return true
@@ -209,7 +238,10 @@ export function BookingWizard() {
 
   const selectCategory = useCallback(
     (cat: Category) => {
+      const key = categorySlugToKey(cat.slug)
+      if (!key) return
       setSelectedCategory(cat)
+      setServiceDetails(defaultServiceDetails(key))
       goToStep(2)
     },
     [goToStep]
@@ -218,13 +250,14 @@ export function BookingWizard() {
   const selectWorker = useCallback(
     (worker: WorkerSummary) => {
       setSelectedWorker(worker)
-      goToStep(3)
+      goToStep(4)
     },
     [goToStep]
   )
 
-  const canProceedStep3 =
+  const canProceedStep4 =
     !!selectedWorker &&
+    !!serviceDetails &&
     !!serviceDate &&
     !!serviceTime &&
     locationAddress.length >= 5 &&
@@ -236,14 +269,14 @@ export function BookingWizard() {
   const totalCents = amountInCents + platformFee
 
   async function handleSubmit() {
-    if (!selectedCategory) {
-      toast.error('Please choose a service')
-      goToStep(1)
+    if (!selectedCategory || !serviceDetails) {
+      toast.error('Please configure your service')
+      goToStep(2)
       return
     }
     if (!selectedWorker) {
       toast.error('Please choose a worker')
-      goToStep(2)
+      goToStep(3)
       return
     }
     if (!serviceDate || !serviceTime || locationAddress.length < 5 || !amount) {
@@ -263,6 +296,7 @@ export function BookingWizard() {
           serviceTime,
           locationAddress,
           description: description || undefined,
+          serviceDetails,
           amount: amountInCents,
         }),
       })
@@ -284,8 +318,9 @@ export function BookingWizard() {
 
   const steps = [
     { num: 1, label: 'Service' },
-    { num: 2, label: 'Worker' },
-    { num: 3, label: 'Schedule' },
+    { num: 2, label: 'Details' },
+    { num: 3, label: 'Worker' },
+    { num: 4, label: 'Schedule' },
   ]
 
   const today = new Date().toISOString().split('T')[0]
@@ -295,9 +330,9 @@ export function BookingWizard() {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Book a Service</h1>
-          <div className="flex items-center gap-2 mt-4">
+          <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1">
             {steps.map((s) => (
-              <div key={s.num} className="flex items-center gap-2">
+              <div key={s.num} className="flex items-center gap-2 shrink-0">
                 <div
                   className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     s.num === step
@@ -314,7 +349,7 @@ export function BookingWizard() {
                 >
                   {s.label}
                 </span>
-                {s.num < 3 && <div className="h-0.5 w-8 bg-gray-200" />}
+                {s.num < 4 && <div className="h-0.5 w-6 bg-gray-200" />}
               </div>
             ))}
           </div>
@@ -324,7 +359,7 @@ export function BookingWizard() {
           <CardContent className="p-6">
             {step === 1 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4">What service do you need?</h2>
+                <h2 className="text-xl font-semibold mb-4">What do you need?</h2>
                 {categoriesLoading ? (
                   <div className="flex justify-center py-8">
                     <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -345,8 +380,8 @@ export function BookingWizard() {
                           <h3 className="font-semibold">{cat.name}</h3>
                           <p className="text-sm text-muted-foreground">
                             {cat.slug.includes('nanny')
-                              ? 'Babysitting, after-school, or regular childcare'
-                              : 'One-off deep clean or regular visits'}
+                              ? 'Babysitting, after-school, newborn care & more'
+                              : 'Standard, deep, or move-in/out cleans'}
                           </p>
                         </div>
                         <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground" />
@@ -357,13 +392,41 @@ export function BookingWizard() {
               </div>
             )}
 
-            {step === 2 && (
+            {step === 2 && serviceDetails && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-semibold">Configure your visit</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {selectedCategory?.name} — choose type, scope, and extras
+                  </p>
+                </div>
+
+                <ServiceConfigPanel
+                  category={serviceDetails.category}
+                  value={serviceDetails}
+                  onChange={setServiceDetails}
+                />
+
+                <div className="flex justify-between pt-2">
+                  <Button variant="outline" onClick={() => goToStep(1)}>
+                    <ChevronLeft className="mr-2 h-4 w-4" />
+                    Back
+                  </Button>
+                  <Button onClick={() => goToStep(3)}>
+                    Choose worker
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between gap-4">
+                {serviceDetails && (
+                  <ServiceSummary details={serviceDetails} />
+                )}
+                <div className="flex items-center justify-between gap-4 pt-2">
                   <h2 className="text-xl font-semibold">Choose a worker</h2>
-                  {selectedCategory && (
-                    <span className="text-sm text-muted-foreground">{selectedCategory.name}</span>
-                  )}
                 </div>
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -430,11 +493,6 @@ export function BookingWizard() {
                                   : 'New'}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
-                              <span>{worker.experience_years} yrs exp</span>
-                              <span>&middot;</span>
-                              <span>Trust: {worker.trust_score}</span>
-                            </div>
                           </div>
                           <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 mt-1" />
                         </div>
@@ -444,15 +502,15 @@ export function BookingWizard() {
                 )}
 
                 <div className="flex justify-start pt-2">
-                  <Button variant="outline" onClick={() => goToStep(1)}>
+                  <Button variant="outline" onClick={() => goToStep(2)}>
                     <ChevronLeft className="mr-2 h-4 w-4" />
-                    Change service
+                    Edit details
                   </Button>
                 </div>
               </div>
             )}
 
-            {step === 3 && (
+            {step === 4 && (
               <div className="space-y-6">
                 {deepLinkLoading ? (
                   <div className="flex justify-center py-12">
@@ -461,13 +519,15 @@ export function BookingWizard() {
                 ) : (
                   <>
                     <div>
-                      <h2 className="text-xl font-semibold mb-1">Schedule your visit</h2>
+                      <h2 className="text-xl font-semibold mb-1">Schedule & confirm</h2>
                       <p className="text-sm text-muted-foreground">
                         {selectedWorker
-                          ? `Booking ${selectedWorker.full_name} for ${selectedCategory?.name ?? 'your service'}`
+                          ? `Booking ${selectedWorker.full_name}`
                           : 'Choose a worker to continue'}
                       </p>
                     </div>
+
+                    {serviceDetails && <ServiceSummary details={serviceDetails} />}
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
@@ -510,15 +570,20 @@ export function BookingWizard() {
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                       />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Amount paid to the worker. A 10% platform fee is added at checkout.
-                      </p>
+                      {serviceDetails && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Suggested K{suggestPrice(serviceDetails).typical} based on your scope.
+                          Platform fee (10%) added at checkout.
+                        </p>
+                      )}
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-1.5 block">Notes (optional)</label>
+                      <label className="text-sm font-medium mb-1.5 block">
+                        Additional notes (optional)
+                      </label>
                       <Textarea
-                        placeholder="Gate code, children&apos;s ages, cleaning priorities..."
+                        placeholder="Gate code, access instructions, special requests..."
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         rows={3}
@@ -527,6 +592,9 @@ export function BookingWizard() {
 
                     {selectedWorker && amount && parseFloat(amount) >= 1 && (
                       <div className="rounded-lg bg-gray-50 border p-4 space-y-2 text-sm">
+                        <p className="font-medium text-xs text-muted-foreground uppercase tracking-wide">
+                          {serviceDetails ? formatServiceSummary(serviceDetails) : 'Booking summary'}
+                        </p>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Service fee</span>
                           <span>{formatCurrency(amountInCents)}</span>
@@ -543,13 +611,13 @@ export function BookingWizard() {
                     )}
 
                     <div className="flex justify-between pt-2 gap-3">
-                      <Button variant="outline" onClick={() => goToStep(2)}>
+                      <Button variant="outline" onClick={() => goToStep(3)}>
                         <ChevronLeft className="mr-2 h-4 w-4" />
                         Change worker
                       </Button>
                       <Button
                         onClick={handleSubmit}
-                        disabled={submitting || !canProceedStep3}
+                        disabled={submitting || !canProceedStep4}
                         className="min-w-[10rem]"
                       >
                         {submitting ? (
