@@ -89,10 +89,7 @@ export async function ensureDevAuthUser(params: {
     ...(params.phone ? { phone: params.phone, phone_confirm: true } : {}),
   };
 
-  const { data: existing, error: lookupError } = await adminClient.auth.admin.getUserById(user.id);
-  if (lookupError) {
-    throw new Error(lookupError.message);
-  }
+  const { data: existing } = await adminClient.auth.admin.getUserById(user.id);
 
   if (!existing?.user) {
     const { error } = await adminClient.auth.admin.createUser({

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
+import { applySessionCookies, loginRedirectResponse } from "@/lib/auth-session";
 import {
   ensureDevAuthUser,
   getDevRole,
@@ -9,7 +10,8 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const body = await request.json();
+    const { email, password, redirect: redirectParam } = body;
 
     if (!email || !password) {
       return NextResponse.json(
@@ -57,9 +59,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const redirect = ROLE_REDIRECTS[role] || "/dashboard";
+    const redirect = redirectParam || ROLE_REDIRECTS[role] || "/dashboard";
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: {
         redirect,
@@ -69,6 +71,8 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    return applySessionCookies(response, data.session);
   } catch (err: any) {
     return NextResponse.json(
       { success: false, error: err.message || "Login failed" },

@@ -1,9 +1,9 @@
-import { getRouteHandlerClient } from "./supabase";
+import { getServerComponentClient } from "./supabase";
 import { User, UserRole } from "@/types";
 import { NextResponse } from "next/server";
 
 export async function getCurrentUser(): Promise<User | null> {
-  const supabase = getRouteHandlerClient();
+  const supabase = getServerComponentClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return null;

@@ -17,8 +17,10 @@ export default function DevLoginPage() {
       const res = await fetch('/api/auth/dev-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ phone }),
       })
+
       const data = await res.json()
       if (!data.success) {
         setStatus(`Login failed: ${data.error}`)

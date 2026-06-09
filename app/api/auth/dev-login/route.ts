@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRouteHandlerClient } from "@/lib/supabase";
+import { applySessionCookies, loginRedirectResponse } from "@/lib/auth-session";
 import {
   ensureDevAuthUser,
   getDevEmail,
@@ -58,6 +59,7 @@ async function loginWithPhone(phone: string) {
   return {
     user: { id: user.id, role: account.role },
     redirect: ROLE_REDIRECTS[account.role] || "/dashboard",
+    session: data.session,
   };
 }
 
@@ -68,8 +70,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { redirect } = await loginWithPhone(phone);
-    return NextResponse.redirect(new URL(redirect, appUrl()));
+    const { redirect, session } = await loginWithPhone(phone);
+    return loginRedirectResponse(request, session, redirect);
   } catch (err: any) {
     const message = encodeURIComponent(err.message || "Login failed");
     return NextResponse.redirect(new URL(`/dev-login?error=${message}`, appUrl()));
@@ -83,12 +85,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Invalid phone" }, { status: 400 });
     }
 
-    const { user, redirect } = await loginWithPhone(phone);
+    const { user, redirect, session } = await loginWithPhone(phone);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: { user, redirect, isNewUser: false },
     });
+
+    return applySessionCookies(response, session);
   } catch (err: any) {
     return NextResponse.json(
       { success: false, error: err.message || "Login failed" },

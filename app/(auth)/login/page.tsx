@@ -8,25 +8,25 @@ function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState(searchParams.get('error') || '')
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
     try {
+      const redirect = searchParams.get('redirect') || undefined
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+        body: JSON.stringify({ email, password, redirect }),
       })
 
       const data = await res.json()
       if (!res.ok || !data.success) throw new Error(data.error || 'Login failed')
 
-      const redirect = searchParams.get('redirect') || data.data.redirect || '/dashboard'
-      window.location.href = redirect
+      window.location.href = redirect || data.data.redirect || '/dashboard'
     } catch (err: any) {
       setError(err.message)
     } finally {
