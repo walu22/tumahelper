@@ -2,21 +2,22 @@ import { getServerComponentClient } from "./supabase";
 import { User, UserRole } from "@/types";
 import { NextResponse } from "next/server";
 import { getDevSessionFromCookies, isDevAuthBypassEnabled } from "./dev-auth-bypass";
+import { getAuthUserFromCookies } from "./supabase-auth";
 
 export async function getCurrentUser(): Promise<User | null> {
   if (isDevAuthBypassEnabled()) {
     return getDevSessionFromCookies();
   }
 
-  const supabase = getServerComponentClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const authUser = await getAuthUserFromCookies();
+  if (!authUser) return null;
 
-  if (!user) return null;
+  const supabase = getServerComponentClient();
 
   const { data: profile } = await supabase
     .from("users")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", authUser.id)
     .single();
 
   return profile as User | null;
