@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { authenticateUser } from "@/lib/authenticate-user";
-import { isDevAuthBypassEnabled } from "@/lib/dev-auth-bypass";
 
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") || "");
@@ -24,10 +23,6 @@ export async function loginAction(formData: FormData) {
 }
 
 export async function quickDevLoginAction(formData: FormData) {
-  if (!isDevAuthBypassEnabled()) {
-    redirect("/login?error=Dev+login+is+not+enabled");
-  }
-
   const email = String(formData.get("email") || "");
   const redirectTo = String(formData.get("redirect") || "") || null;
 
