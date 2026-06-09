@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { LogoMark } from '@/components/brand/logo'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/utils/formatters'
+import { Button } from '@/components/ui/button'
+import { logoutAction } from '@/app/(auth)/login/actions'
 import {
   LayoutDashboard,
   Users,
@@ -13,6 +15,7 @@ import {
   Scale,
   ClipboardList,
   BarChart3,
+  LogOut,
 } from 'lucide-react'
 
 const sidebarLinks = [
@@ -30,14 +33,14 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-64 border-r bg-white min-h-screen">
+    <aside className="w-64 border-r bg-white min-h-screen flex flex-col">
       <div className="p-4 border-b">
         <Link href="/admin" className="flex items-center gap-2">
           <LogoMark size={28} />
           <span className="font-bold text-primary">Admin Panel</span>
         </Link>
       </div>
-      <nav className="p-3 space-y-1">
+      <nav className="p-3 space-y-1 flex-1">
         {sidebarLinks.map((link) => {
           const Icon = link.icon
           const isActive = pathname === link.href || (link.href !== '/admin' && pathname.startsWith(link.href))
@@ -59,6 +62,18 @@ export function AdminSidebar() {
           )
         })}
       </nav>
+      <div className="p-3 border-t mt-auto">
+        <form action={logoutAction}>
+          <Button
+            type="submit"
+            variant="outline"
+            className="w-full justify-start gap-2 text-muted-foreground"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign out
+          </Button>
+        </form>
+      </div>
     </aside>
   )
 }
