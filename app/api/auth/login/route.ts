@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
-import { applySessionCookies, loginRedirectResponse } from "@/lib/auth-session";
+import { applySessionCookies } from "@/lib/auth-session";
 import {
   ensureDevAuthUser,
   getDevRole,
   normalizeEmail,
   ROLE_REDIRECTS,
 } from "@/lib/dev-auth";
+import {
+  applyDevSessionCookie,
+  DEV_PASSWORD,
+  getDevAccountByEmail,
+  isDevAuthBypassEnabled,
+} from "@/lib/dev-auth-bypass";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,6 +28,27 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = normalizeEmail(email);
     const devRole = getDevRole(normalizedEmail);
+
+    if (isDevAuthBypassEnabled()) {
+      const account = getDevAccountByEmail(normalizedEmail);
+      if (!account || password !== DEV_PASSWORD) {
+        return NextResponse.json(
+          { success: false, error: "Invalid email or password" },
+          { status: 401 }
+        );
+      }
+
+      const redirect = redirectParam || ROLE_REDIRECTS[account.role] || "/dashboard";
+      const response = NextResponse.json({
+        success: true,
+        data: {
+          redirect,
+          user: { id: account.id, role: account.role },
+        },
+      });
+
+      return applyDevSessionCookie(response, account);
+    }
 
     if (devRole) {
       await ensureDevAuthUser({

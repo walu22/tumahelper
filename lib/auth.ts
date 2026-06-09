@@ -1,8 +1,13 @@
 import { getServerComponentClient } from "./supabase";
 import { User, UserRole } from "@/types";
 import { NextResponse } from "next/server";
+import { getDevSessionFromCookies, isDevAuthBypassEnabled } from "./dev-auth-bypass";
 
 export async function getCurrentUser(): Promise<User | null> {
+  if (isDevAuthBypassEnabled()) {
+    return getDevSessionFromCookies();
+  }
+
   const supabase = getServerComponentClient();
   const { data: { user } } = await supabase.auth.getUser();
 

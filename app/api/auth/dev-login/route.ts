@@ -6,6 +6,12 @@ import {
   getDevEmail,
   ROLE_REDIRECTS,
 } from "@/lib/dev-auth";
+import {
+  applyDevSessionCookie,
+  DEV_PASSWORD,
+  getDevAccountByPhone,
+  isDevAuthBypassEnabled,
+} from "@/lib/dev-auth-bypass";
 
 const ACCOUNTS: Record<string, { role: string }> = {
   "+260961111111": { role: "worker" },
@@ -26,8 +32,6 @@ const ACCOUNTS: Record<string, { role: string }> = {
   "+260970000001": { role: "admin" },
 };
 
-const DEV_PASSWORD = "dev123";
-
 function appUrl() {
   return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 }
@@ -36,6 +40,19 @@ async function loginWithPhone(phone: string) {
   const account = ACCOUNTS[phone];
   if (!account) {
     throw new Error("Invalid phone");
+  }
+
+  if (isDevAuthBypassEnabled()) {
+    const devAccount = getDevAccountByPhone(phone);
+    if (!devAccount) {
+      throw new Error(`No dev account configured for ${phone}`);
+    }
+
+    return {
+      user: { id: devAccount.id, role: devAccount.role },
+      redirect: ROLE_REDIRECTS[devAccount.role] || "/dashboard",
+      devAccount,
+    };
   }
 
   const email = getDevEmail(account.role, phone);
@@ -70,8 +87,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { redirect, session } = await loginWithPhone(phone);
-    return loginRedirectResponse(request, session, redirect);
+    const result = await loginWithPhone(phone);
+
+    if ("devAccount" in result && result.devAccount) {
+      const response = NextResponse.redirect(new URL(result.redirect, appUrl()));
+      return applyDevSessionCookie(response, result.devAccount);
+    }
+
+    return loginRedirectResponse(request, result.session!, result.redirect);
   } catch (err: any) {
     const message = encodeURIComponent(err.message || "Login failed");
     return NextResponse.redirect(new URL(`/dev-login?error=${message}`, appUrl()));
@@ -85,14 +108,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Invalid phone" }, { status: 400 });
     }
 
-    const { user, redirect, session } = await loginWithPhone(phone);
+    const result = await loginWithPhone(phone);
 
     const response = NextResponse.json({
       success: true,
-      data: { user, redirect, isNewUser: false },
+      data: { user: result.user, redirect: result.redirect, isNewUser: false },
     });
 
-    return applySessionCookies(response, session);
+    if ("devAccount" in result && result.devAccount) {
+      return applyDevSessionCookie(response, result.devAccount);
+    }
+
+    return applySessionCookies(response, result.session!);
   } catch (err: any) {
     return NextResponse.json(
       { success: false, error: err.message || "Login failed" },
