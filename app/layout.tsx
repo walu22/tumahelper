@@ -23,6 +23,10 @@ const display = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: "TumaHelper - Trusted Workers in Lusaka",
   description: "Find verified nannies and house cleaners in Lusaka, Zambia",
+  icons: {
+    icon: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export default function RootLayout({

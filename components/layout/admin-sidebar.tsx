@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { LogoMark } from '@/components/brand/logo'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/utils/formatters'
 import {
@@ -32,9 +33,7 @@ export function AdminSidebar() {
     <aside className="w-64 border-r bg-white min-h-screen">
       <div className="p-4 border-b">
         <Link href="/admin" className="flex items-center gap-2">
-          <div className="h-7 w-7 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xs">TH</span>
-          </div>
+          <LogoMark size={28} />
           <span className="font-bold text-primary">Admin Panel</span>
         </Link>
       </div>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { Logo } from '@/components/brand/logo'
 import { useState } from 'react'
 import { Menu, X, User, Sun, Moon, LogOut } from 'lucide-react'
 import { useTheme } from '@/components/theme-provider'
@@ -18,11 +19,8 @@ export function Header({ user }: { user: AppUser | null }) {
     <header className="border-b border-border/60 bg-white/95 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">TH</span>
-            </div>
-            <span className="font-display font-bold text-xl text-primary">TumaHelper</span>
+          <Link href="/" className="flex items-center">
+            <Logo size="sm" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">

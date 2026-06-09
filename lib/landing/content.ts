@@ -1,12 +1,10 @@
-import {
-  Baby,
-  Briefcase,
-  Clock3,
-  Home,
-  Shirt,
-  Sparkles,
-  type LucideIcon,
-} from "lucide-react";
+export type ServiceIconKey =
+  | "indoor"
+  | "nanny"
+  | "express"
+  | "laundry"
+  | "moving"
+  | "moms-helper";
 
 export const LUSAKA_AREAS = [
   "Kabulonga",
@@ -19,13 +17,13 @@ export const LUSAKA_AREAS = [
   "Longacres",
 ];
 
-export const HERO_CATEGORIES: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/nannies", label: "Nannies", icon: Baby },
-  { href: "/house-cleaners", label: "Cleaning", icon: Home },
-  { href: "/house-cleaners", label: "Express", icon: Clock3 },
-  { href: "/house-cleaners", label: "Laundry", icon: Shirt },
-  { href: "/jobs", label: "Full-time", icon: Briefcase },
-  { href: "/workers", label: "Browse all", icon: Sparkles },
+export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
+  { href: "/nannies", label: "Nannies", icon: "nanny" },
+  { href: "/house-cleaners", label: "Cleaning", icon: "indoor" },
+  { href: "/house-cleaners", label: "Express", icon: "express" },
+  { href: "/house-cleaners", label: "Laundry", icon: "laundry" },
+  { href: "/jobs", label: "Full-time", icon: "moving" },
+  { href: "/workers", label: "Browse all", icon: "moms-helper" },
 ];
 
 export const PLATFORM_OFFERINGS = [
@@ -59,42 +57,54 @@ export const PLATFORM_STATS = [
   { value: "48hr", label: "Full-time matching", sub: "Priority placements" },
 ];
 
-export const POPULAR_SERVICES = [
+export const POPULAR_SERVICES: {
+  slug: string;
+  title: string;
+  description: string;
+  price: string;
+  icon: ServiceIconKey;
+}[] = [
   {
     slug: "house-cleaners",
     title: "Indoor cleaning",
     description: "3.5–8 hours top-to-bottom home cleaning.",
     price: "From K250",
+    icon: "indoor",
   },
   {
     slug: "nannies",
     title: "Nanny & childcare",
     description: "Babysitting, after-school, and supervised help.",
     price: "From K200/day",
+    icon: "nanny",
   },
   {
     slug: "house-cleaners",
     title: "Express cleaning",
     description: "1–3 hours for tidying, dishes, and laundry.",
     price: "From K150",
+    icon: "express",
   },
   {
     slug: "house-cleaners",
     title: "Laundry & ironing",
     description: "Fresh, folded, and ready-to-wear laundry.",
     price: "From K80",
+    icon: "laundry",
   },
   {
     slug: "jobs",
     title: "Moving clean",
     description: "Move-in and move-out deep cleaning.",
     price: "From K400",
+    icon: "moving",
   },
   {
     slug: "jobs",
     title: "Mom's helper",
     description: "Supervised help with children and around the home.",
     price: "From K180",
+    icon: "moms-helper",
   },
 ];
 

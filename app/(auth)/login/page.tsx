@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoMark } from "@/components/brand/logo";
 import { LOGIN_ACCOUNTS, isDevBypassEnabled } from "@/lib/auth/config";
 import { loginAction } from "./actions";
 import { SubmitButton } from "./submit-button";
@@ -15,8 +16,8 @@ export default function LoginPage({
       <div className="w-full max-w-md">
         <div className="bg-white rounded-xl shadow-md p-8">
           <div className="text-center mb-8">
-            <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-xl">TH</span>
+            <div className="flex justify-center mb-4">
+              <LogoMark size={48} />
             </div>
             <h1 className="text-2xl font-bold">Welcome back</h1>
             <p className="text-muted-foreground text-sm mt-2">
