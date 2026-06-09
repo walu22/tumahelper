@@ -30,8 +30,8 @@ export function Header({ user }: { user: AppUser | null }) {
             <Link href="/house-cleaners" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Cleaning
             </Link>
-            <Link href="/jobs" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Full-time
+            <Link href="/hire" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+              Permanent hire
             </Link>
             <Link href="/workers" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Browse
@@ -85,8 +85,8 @@ export function Header({ user }: { user: AppUser | null }) {
             <Link href="/house-cleaners" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
               Cleaning
             </Link>
-            <Link href="/jobs" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              Full-time
+            <Link href="/hire" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
+              Permanent hire
             </Link>
             <Link href="/workers" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
               Browse

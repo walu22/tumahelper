@@ -35,23 +35,9 @@ export function NannyIcon({ className }: ServiceIconProps) {
   );
 }
 
-export function BrowseIcon({ className }: ServiceIconProps) {
-  return (
-    <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
-      <circle cx="32" cy="32" r="30" fill="#E0F2EE" />
-      <circle cx="28" cy="28" r="10" stroke="#027749" strokeWidth="3" fill="none" />
-      <path d="M35 35l8 8" stroke="#027749" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="24" cy="26" r="2" fill="#FE80C9" />
-      <circle cx="32" cy="26" r="2" fill="#027749" />
-      <circle cx="28" cy="32" r="2" fill="#E1B016" />
-    </svg>
-  );
-}
-
 const ICON_MAP: Record<ServiceIconKey, ComponentType<ServiceIconProps>> = {
   indoor: IndoorCleaningIcon,
   nanny: NannyIcon,
-  browse: BrowseIcon,
 };
 
 export function ServiceIcon({ name, className }: { name: ServiceIconKey; className?: string }) {

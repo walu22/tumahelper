@@ -1,4 +1,4 @@
-export type ServiceIconKey = "indoor" | "nanny" | "browse";
+export type ServiceIconKey = "indoor" | "nanny";
 
 export const LUSAKA_AREAS = [
   "Kabulonga",
@@ -15,7 +15,6 @@ export const LUSAKA_AREAS = [
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
   { href: "/customer/book?category=nanny", label: "Nannies", icon: "nanny" },
   { href: "/customer/book?category=cleaning", label: "Cleaning", icon: "indoor" },
-  { href: "/workers", label: "Browse all", icon: "browse" },
 ];
 
 export const PLATFORM_OFFERINGS = [
