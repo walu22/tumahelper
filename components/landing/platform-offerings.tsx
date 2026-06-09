@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { PLATFORM_OFFERINGS } from "@/lib/landing/content";
+import { PLATFORM_OFFERINGS, FULL_TIME_ROLES } from "@/lib/landing/content";
 
 const cardStyles = {
   green: "sweep-card-green border-primary/15",
@@ -10,7 +10,7 @@ const cardStyles = {
 
 export function PlatformOfferings() {
   return (
-    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white border-t border-border">
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
@@ -25,7 +25,7 @@ export function PlatformOfferings() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-5">
+        <div className="grid md:grid-cols-3 gap-5 mb-16">
           {PLATFORM_OFFERINGS.map((item) => (
             <Link
               key={item.title}
@@ -41,6 +41,26 @@ export function PlatformOfferings() {
               <p className="text-muted-foreground leading-relaxed">{item.description}</p>
             </Link>
           ))}
+        </div>
+
+        <div>
+          <h3 className="font-display text-xl md:text-2xl font-semibold text-center mb-6">
+            Full-time placements
+          </h3>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {FULL_TIME_ROLES.map((role) => (
+              <Link
+                key={role.title}
+                href={role.href}
+                className="group rounded-2xl border border-border bg-surface p-6 hover:border-primary/25 hover:shadow-sm transition-all"
+              >
+                <h4 className="font-semibold group-hover:text-primary transition-colors mb-1.5">
+                  {role.title}
+                </h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{role.description}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>
