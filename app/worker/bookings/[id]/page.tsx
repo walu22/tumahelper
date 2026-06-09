@@ -2,34 +2,23 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { BookingTimeline } from "@/components/booking-timeline";
+import { WorkerBookingActions } from "@/components/booking/worker-booking-actions";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Phone, Calendar, Clock, CreditCard, MessageSquare, AlertCircle, CheckCircle, XCircle, Play } from "lucide-react";
+import { MapPin, Phone, Calendar, Clock, CreditCard, MessageSquare, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import type { BookingStatus } from "@/types";
 
-const statusActions = {
-  pending: [
-    { label: "Accept Booking", action: "accepted", icon: CheckCircle, variant: "default" as const },
-    { label: "Decline", action: "declined", icon: XCircle, variant: "outline" as const },
-  ],
-  accepted: [
-    { label: "Start Job", action: "in_progress", icon: Play, variant: "default" as const },
-  ],
-  in_progress: [
-    { label: "Complete Job", action: "completed", icon: CheckCircle, variant: "default" as const },
-  ],
-};
-
-export default async function WorkerBookingDetailPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default async function WorkerBookingDetailPage({
+  params,
+}: {
+  params: { id: string };
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  const userId = user.id;
+  if (user.role !== "worker") redirect("/dashboard");
 
   const supabase = createServerSupabaseClient();
 
@@ -44,28 +33,10 @@ export default async function WorkerBookingDetailPage({
       )
     `)
     .eq("id", params.id)
-    .eq("worker_id", userId)
+    .eq("worker_id", user.id)
     .single();
 
   if (error || !booking) notFound();
-
-  const actions = statusActions[booking.status as keyof typeof statusActions] || [];
-
-  async function updateStatus(formData: FormData) {
-    "use server";
-    const newStatus = formData.get("status") as string;
-    
-    const supabase = createServerSupabaseClient();
-    const { error } = await supabase
-      .from("bookings")
-      .update({ status: newStatus, updated_at: new Date().toISOString() })
-      .eq("id", params.id)
-      .eq("worker_id", userId);
-
-    if (error) throw error;
-    
-    redirect("/worker/bookings");
-  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
@@ -182,13 +153,16 @@ export default async function WorkerBookingDetailPage({
             <div className="flex items-center gap-3">
               <CreditCard className="w-5 h-5 text-gray-400" />
               <div>
-                <div className="font-medium text-lg">{formatCurrency(booking.amount)}</div>
+                <div className="font-medium text-lg">{formatCurrency(booking.worker_earnings)}</div>
                 <div className="text-sm text-gray-500">
-                  {booking.payment_status === "paid" ? "Paid to your account" : "Payment pending"}
+                  Your earnings after platform fee
+                  {booking.payment_status === "paid" || booking.payment_status === "confirmed"
+                    ? " · Paid"
+                    : " · Payment pending"}
                 </div>
               </div>
             </div>
-            {booking.payment_status === "paid" && (
+            {(booking.payment_status === "paid" || booking.payment_status === "confirmed") && (
               <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
                 Paid
               </Badge>
@@ -197,23 +171,10 @@ export default async function WorkerBookingDetailPage({
         </CardContent>
       </Card>
 
-      {actions.length > 0 && (
-        <div className="flex gap-3">
-          {actions.map((action) => (
-            <form key={action.action} action={updateStatus}>
-              <input type="hidden" name="status" value={action.action} />
-              <Button 
-                type="submit" 
-                variant={action.variant}
-                className="gap-2"
-              >
-                <action.icon className="w-4 h-4" />
-                {action.label}
-              </Button>
-            </form>
-          ))}
-        </div>
-      )}
+      <WorkerBookingActions
+        bookingId={booking.id}
+        status={booking.status as BookingStatus}
+      />
 
       <Button variant="outline" asChild className="w-full">
         <Link href="/worker/bookings">Back to Jobs</Link>

@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/utils/formatters'
-import { MapPin, Briefcase, Clock, Eye } from 'lucide-react'
+import { MapPin, Briefcase, Eye } from 'lucide-react'
 import Link from 'next/link'
 
 async function getJobs() {
@@ -25,9 +25,25 @@ export default async function JobsPage() {
     <div className="min-h-screen">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Job Opportunities</h1>
+          <h1 className="text-3xl font-bold mb-2">Job board for workers</h1>
+          <p className="text-muted-foreground max-w-2xl">
+            Browse permanent and long-term positions posted by Lusaka families.
+            Apply here if you&apos;re looking for full-time or live-in work.
+          </p>
+        </div>
+
+        <div className="mb-8 rounded-2xl border border-border bg-surface p-5 text-sm">
           <p className="text-muted-foreground">
-            Find permanent and long-term positions with Lusaka families
+            <span className="font-semibold text-foreground">Looking to hire help?</span>{' '}
+            Families should{' '}
+            <Link href="/customer/book" className="font-semibold text-primary hover:underline">
+              book a verified worker
+            </Link>{' '}
+            or{' '}
+            <Link href="/hire" className="font-semibold text-primary hover:underline">
+              request a permanent placement
+            </Link>
+            — this page is for workers finding jobs.
           </p>
         </div>
 

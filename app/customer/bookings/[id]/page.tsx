@@ -5,6 +5,7 @@ import { CancelBookingButton } from '@/components/booking/cancel-booking-button'
 import { BookingReviewSection } from '@/components/booking/booking-review-section'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
+import { redirect, notFound } from 'next/navigation'
 import { formatDate, formatTime, formatCurrency } from '@/utils/formatters'
 import Link from 'next/link'
 import { PaymentInstructions } from '@/components/booking/payment-instructions'
@@ -62,7 +63,7 @@ export default async function CustomerBookingDetailPage({
   const supabase = createServerSupabaseClient()
   const user = await getCurrentUser()
 
-  if (!user) return null
+  if (!user) redirect('/login?redirect=/customer/bookings/' + params.id)
 
   const { data: booking } = await supabase
     .from('bookings')
@@ -75,7 +76,7 @@ export default async function CustomerBookingDetailPage({
     .single<BookingWithRelations>()
 
   if (!booking || booking.customer_id !== user.id) {
-    return null
+    notFound()
   }
 
   const canCancel = ['pending', 'accepted'].includes(booking.status)

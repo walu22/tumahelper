@@ -24,10 +24,10 @@ export function Header({ user }: { user: AppUser | null }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/nannies" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/customer/book?category=nanny" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Nannies
             </Link>
-            <Link href="/house-cleaners" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link href="/customer/book?category=cleaning" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Cleaning
             </Link>
             <Link href="/hire" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
@@ -79,10 +79,10 @@ export function Header({ user }: { user: AppUser | null }) {
 
         {isOpen && (
           <div className="md:hidden border-t py-4 space-y-3">
-            <Link href="/nannies" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
+            <Link href="/customer/book?category=nanny" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
               Nannies
             </Link>
-            <Link href="/house-cleaners" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
+            <Link href="/customer/book?category=cleaning" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
               Cleaning
             </Link>
             <Link href="/hire" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>

@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 import { formatDate, formatTime, formatCurrency } from '@/utils/formatters'
 import { CalendarCheck, MapPin, Clock, User } from 'lucide-react'
 import Link from 'next/link'
@@ -28,7 +29,7 @@ const statusVariants: Record<string, 'warning' | 'info' | 'success' | 'destructi
 
 async function BookingsList({ statusFilter }: { statusFilter?: string }) {
   const user = await getCurrentUser()
-  if (!user) return null
+  if (!user) redirect('/login?redirect=/customer/bookings')
 
   const supabase = createServerSupabaseClient()
   let query = supabase
