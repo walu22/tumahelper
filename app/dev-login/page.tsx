@@ -21,13 +21,15 @@ export default function DevLoginPage({
       redirect(`/login?email=${encodeURIComponent(account.email)}`);
     }
 
+    let result;
     try {
-      const result = await signIn({ email: account.email, password: "dev123" });
-      redirect(result.redirect);
+      result = await signIn({ email: account.email, password: "dev123" });
     } catch (error) {
       const message = error instanceof AuthError ? error.message : "Login failed";
       redirect(`/dev-login?error=${encodeURIComponent(message)}`);
     }
+
+    redirect(result.redirect);
   }
 
   return (
