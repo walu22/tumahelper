@@ -18,11 +18,12 @@ function LoginForm() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ email, password }),
       })
 
       const data = await res.json()
-      if (!data.success) throw new Error(data.error || 'Login failed')
+      if (!res.ok || !data.success) throw new Error(data.error || 'Login failed')
 
       const redirect = searchParams.get('redirect') || data.data.redirect || '/dashboard'
       window.location.href = redirect
