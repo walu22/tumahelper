@@ -1,3 +1,13 @@
+import {
+  Baby,
+  Briefcase,
+  Clock3,
+  Home,
+  Shirt,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
+
 export const LUSAKA_AREAS = [
   "Kabulonga",
   "Woodlands",
@@ -9,60 +19,161 @@ export const LUSAKA_AREAS = [
   "Longacres",
 ];
 
-export const SERVICES = [
+export const HERO_CATEGORIES: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/nannies", label: "Nannies", icon: Baby },
+  { href: "/house-cleaners", label: "Cleaning", icon: Home },
+  { href: "/house-cleaners", label: "Express", icon: Clock3 },
+  { href: "/house-cleaners", label: "Laundry", icon: Shirt },
+  { href: "/jobs", label: "Full-time", icon: Briefcase },
+  { href: "/workers", label: "Browse all", icon: Sparkles },
+];
+
+export const PLATFORM_OFFERINGS = [
+  {
+    title: "Bookings",
+    description: "One-off cleans, childcare, laundry, and express help — booked in minutes.",
+    href: "/workers",
+  },
+  {
+    title: "Placements",
+    description: "Full-time nannies, housekeepers, and live-in workers matched within 48 hours.",
+    href: "/jobs",
+  },
+  {
+    title: "Trust Hub",
+    description: "NRC checks, reference verification, trust scores, and reviews on every profile.",
+    href: "/workers",
+  },
+];
+
+export const PLATFORM_STATS = [
+  { value: "500+", label: "Bookings completed", sub: "Across Lusaka" },
+  { value: "100+", label: "Verified workers", sub: "NRC & reference checked" },
+  { value: "4.8★", label: "Average rating", sub: "From real families" },
+  { value: "48hr", label: "Full-time matching", sub: "Priority placements" },
+];
+
+export const POPULAR_SERVICES = [
+  {
+    slug: "house-cleaners",
+    title: "Indoor cleaning",
+    description: "3.5–8 hours top-to-bottom home cleaning.",
+    price: "From K250",
+  },
   {
     slug: "nannies",
-    title: "Nannies & childcare",
-    description: "Babysitting, after-school care, live-in support.",
+    title: "Nanny & childcare",
+    description: "Babysitting, after-school, and supervised help.",
     price: "From K200/day",
-    image: "/images/home-family.jpg",
-    span: "col-span-1 row-span-1",
-    dark: false,
   },
   {
     slug: "house-cleaners",
-    title: "House cleaning",
-    description: "Deep cleans, laundry, and weekly upkeep across Lusaka.",
+    title: "Express cleaning",
+    description: "1–3 hours for tidying, dishes, and laundry.",
     price: "From K150",
-    image: "/images/cleaning-service.jpg",
-    span: "col-span-1 md:col-span-2 row-span-1",
-    dark: false,
+  },
+  {
+    slug: "house-cleaners",
+    title: "Laundry & ironing",
+    description: "Fresh, folded, and ready-to-wear laundry.",
+    price: "From K80",
   },
   {
     slug: "jobs",
-    title: "Full-time help",
-    description: "Live-in nannies, housekeepers, and domestic workers — matched in 48 hours.",
-    price: "From K800/mo",
-    image: "/images/hero-home.jpg",
-    span: "col-span-1 md:col-span-2 md:row-span-2",
-    dark: true,
+    title: "Moving clean",
+    description: "Move-in and move-out deep cleaning.",
+    price: "From K400",
   },
   {
-    slug: "house-cleaners",
-    title: "Express visits",
-    description: "1–3 hour tidying, dishes, and priority tasks.",
-    price: "From K150",
-    image: "/images/cleaning-service.jpg",
-    span: "col-span-1 row-span-1",
-    dark: false,
+    slug: "jobs",
+    title: "Mom's helper",
+    description: "Supervised help with children and around the home.",
+    price: "From K180",
   },
+];
+
+export const FULL_TIME_ROLES = [
+  {
+    title: "Full-time housekeeper",
+    description: "Daily cleaning, laundry, and household management.",
+    href: "/jobs",
+  },
+  {
+    title: "Full-time nanny",
+    description: "Dedicated childcare for families needing ongoing support.",
+    href: "/jobs",
+  },
+  {
+    title: "Live-in domestic worker",
+    description: "Long-term help tailored to your household.",
+    href: "/jobs",
+  },
+];
+
+export const HAPPINESS_PLEDGE = [
+  {
+    title: "TumaHelper guarantee",
+    description: "Not satisfied? We'll help you find a replacement within 48 hours.",
+  },
+  {
+    title: "Vetted workers",
+    description: "Every worker is NRC-verified and reference-checked before joining.",
+  },
+  {
+    title: "Dedicated support",
+    description: "WhatsApp and email support when you need help choosing or booking.",
+  },
+];
+
+export const SAFETY_SIGNALS = [
+  "Ratings and reviews from other families",
+  "Reference and background checks completed",
+  "2+ years experience preferred for featured workers",
+  "Trust scores based on real job performance",
 ];
 
 export const PROCESS_STEPS = [
   {
-    step: "01",
-    title: "Tell us what you need",
-    body: "Choose a service, pick your area, and browse verified profiles.",
+    step: "1",
+    title: "Choose a worker",
+    body: "Browse by price, skills, area, and reviews.",
   },
   {
-    step: "02",
-    title: "Meet your match",
-    body: "Compare trust scores, reviews, and verification badges before you book.",
+    step: "2",
+    title: "Book as early as today",
+    body: "Schedule one-off help or start a full-time placement.",
   },
   {
-    step: "03",
-    title: "Book with confidence",
-    body: "Confirm online. Rate your experience. Build trust for the whole community.",
+    step: "3",
+    title: "Review all in one place",
+    body: "Book, rate, and build trust — all on TumaHelper.",
+  },
+];
+
+export const SWEEP_STARS = [
+  {
+    name: "Sarah Mulenga",
+    category: "Indoor",
+    area: "Kabulonga",
+    quote: "Loved her professional attitude, pleasant disposition and thorough cleaning.",
+    rating: 4.9,
+    href: "/workers",
+  },
+  {
+    name: "Mary Phiri",
+    category: "Childcare",
+    area: "Woodlands",
+    quote: "Our kids took to her immediately. Reliable, warm, and always on time.",
+    rating: 4.8,
+    href: "/workers",
+  },
+  {
+    name: "Grace Banda",
+    category: "Indoor",
+    area: "Roma",
+    quote: "So much effort — she even cleaned the mirrors. Our kitchen looks amazing again!",
+    rating: 4.9,
+    href: "/workers",
   },
 ];
 

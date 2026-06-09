@@ -1,11 +1,15 @@
 import { getServerClient } from "@/lib/supabase";
 import { LandingHero } from "@/components/landing/hero";
 import { TrustMarquee } from "@/components/landing/trust-marquee";
-import { ServicesBento } from "@/components/landing/services-bento";
+import { PlatformOfferings } from "@/components/landing/platform-offerings";
+import { PlatformStats } from "@/components/landing/platform-stats";
+import { PopularServices } from "@/components/landing/popular-services";
 import { ProcessSection } from "@/components/landing/process";
 import { ProductMoment } from "@/components/landing/product-moment";
-import { WorkersShowcase } from "@/components/landing/workers-showcase";
+import { SweepStarsSection } from "@/components/landing/sweep-stars";
 import { StoriesSection } from "@/components/landing/stories";
+import { HappinessPledge } from "@/components/landing/happiness-pledge";
+import { WorkerRecruitment } from "@/components/landing/worker-recruitment";
 import { LandingFaqCta } from "@/components/landing/landing-faq-cta";
 import type { PublicWorkerProfile } from "@/types";
 
@@ -39,11 +43,15 @@ export default async function HomePage() {
     <div className="overflow-x-hidden">
       <LandingHero />
       <TrustMarquee />
-      <ServicesBento />
+      <PlatformOfferings />
+      <PlatformStats />
+      <PopularServices />
       <ProcessSection />
       <ProductMoment />
-      <WorkersShowcase workers={featuredWorkers} />
+      <SweepStarsSection workers={featuredWorkers} />
       <StoriesSection reviews={testimonials} />
+      <HappinessPledge />
+      <WorkerRecruitment />
       <LandingFaqCta />
     </div>
   );
