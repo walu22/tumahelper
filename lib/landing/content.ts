@@ -1,10 +1,4 @@
-export type ServiceIconKey =
-  | "indoor"
-  | "nanny"
-  | "express"
-  | "laundry"
-  | "moving"
-  | "moms-helper";
+export type ServiceIconKey = "indoor" | "nanny" | "fulltime" | "browse";
 
 export const LUSAKA_AREAS = [
   "Kabulonga",
@@ -20,10 +14,8 @@ export const LUSAKA_AREAS = [
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
   { href: "/customer/book?category=nanny", label: "Nannies", icon: "nanny" },
   { href: "/customer/book?category=cleaning", label: "Cleaning", icon: "indoor" },
-  { href: "/customer/book?category=cleaning", label: "Express", icon: "express" },
-  { href: "/customer/book?category=cleaning", label: "Laundry", icon: "laundry" },
-  { href: "/jobs", label: "Full-time", icon: "moving" },
-  { href: "/workers", label: "Browse all", icon: "moms-helper" },
+  { href: "/jobs", label: "Full-time", icon: "fulltime" },
+  { href: "/workers", label: "Browse all", icon: "browse" },
 ];
 
 export const PLATFORM_OFFERINGS = [
@@ -47,64 +39,6 @@ export const PLATFORM_OFFERINGS = [
       "Every worker is NRC-checked and reference-verified. See trust scores, reviews, and skills before you invite someone in.",
     href: "/workers",
     variant: "teal" as const,
-  },
-];
-
-export const POPULAR_SERVICES: {
-  slug: string;
-  bookHref: string;
-  title: string;
-  description: string;
-  price: string;
-  icon: ServiceIconKey;
-}[] = [
-  {
-    slug: "house-cleaners",
-    bookHref: "/customer/book?category=cleaning",
-    title: "Indoor cleaning",
-    description: "3.5–8 hours top-to-bottom home cleaning across Lusaka.",
-    price: "From K250",
-    icon: "indoor",
-  },
-  {
-    slug: "nannies",
-    bookHref: "/customer/book?category=nanny",
-    title: "Nanny & childcare",
-    description: "Babysitting, after-school pickup, and supervised help at home.",
-    price: "From K200/day",
-    icon: "nanny",
-  },
-  {
-    slug: "house-cleaners",
-    bookHref: "/customer/book?category=cleaning",
-    title: "Express cleaning",
-    description: "1–3 hours for tidying, dishes, and quick laundry.",
-    price: "From K150",
-    icon: "express",
-  },
-  {
-    slug: "house-cleaners",
-    bookHref: "/customer/book?category=cleaning",
-    title: "Laundry & ironing",
-    description: "Fresh, folded, and ready-to-wear — done at your home.",
-    price: "From K80",
-    icon: "laundry",
-  },
-  {
-    slug: "jobs",
-    bookHref: "/jobs",
-    title: "Moving clean",
-    description: "Move-in and move-out deep cleaning before the keys handover.",
-    price: "From K400",
-    icon: "moving",
-  },
-  {
-    slug: "jobs",
-    bookHref: "/customer/book?category=nanny",
-    title: "Mom's helper",
-    description: "An extra pair of hands with the kids and around the house.",
-    price: "From K180",
-    icon: "moms-helper",
   },
 ];
 
