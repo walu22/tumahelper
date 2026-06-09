@@ -47,6 +47,16 @@ export function LandingHero() {
             </Link>
           </div>
 
+          <p className="mb-8 text-sm text-muted-foreground">
+            Are you a worker?{" "}
+            <Link
+              href="/onboarding/worker"
+              className="font-semibold text-primary hover:underline"
+            >
+              Apply now
+            </Link>
+          </p>
+
           <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
             {TRUST_POINTS.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-2">
