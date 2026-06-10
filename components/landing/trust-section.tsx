@@ -16,7 +16,7 @@ export function TrustSection() {
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8">
               In Lusaka, hiring domestic help often means word-of-mouth and hope.
-              TumaHelper adds NRC checks, reference calls, trust scores, and reviews —
+              TumaHelper adds NRC checks, reference calls, trust scores, and reviews,
               so you can book with confidence, not guesswork.
             </p>
             <Link

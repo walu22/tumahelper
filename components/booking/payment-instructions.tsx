@@ -66,7 +66,7 @@ export function PaymentInstructions({
       }
 
       setLocalStatus("paid");
-      toast.success("Payment proof uploaded — we'll confirm shortly");
+      toast.success("Payment proof uploaded. We'll confirm shortly");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -112,7 +112,7 @@ export function PaymentInstructions({
           <span className="font-mono">097 000 0001</span> · TumaHelper Ltd
         </p>
         <p className="text-muted-foreground text-xs pt-1">
-          Cash on arrival is also fine — agree with your worker before the visit.
+          Cash on arrival is also fine. Agree with your worker before the visit.
         </p>
       </div>
 

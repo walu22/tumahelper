@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react";
 import { FAQ_ITEMS } from "@/lib/landing/content";
 
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "260970000000";
-const whatsappHref = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent("Hi TumaHelper — I need help finding a worker in Lusaka.")}`;
+const whatsappHref = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent("Hi TumaHelper, I need help finding a worker in Lusaka.")}`;
 
 export function LandingFaqCta() {
   return (
@@ -37,7 +37,7 @@ export function LandingFaqCta() {
               Ready when you are.
             </h2>
             <p className="text-primary-foreground/80 leading-relaxed mb-8">
-              Find verified help for your home — or join as a worker and build
+              Find verified help for your home, or join as a worker and build
               a reputation that opens doors across Lusaka.
             </p>
           </div>

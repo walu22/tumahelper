@@ -3,14 +3,14 @@ import { MessageCircle, CalendarCheck, ArrowRight, HeartHandshake } from "lucide
 
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "260970000000";
 const whatsappHref = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
-  "Hi TumaHelper — I'm looking for permanent domestic help in Lusaka (full-time nanny / housekeeper / live-in). Can you help?"
+  "Hi TumaHelper, I'm looking for permanent domestic help in Lusaka (full-time nanny / housekeeper / live-in). Can you help?"
 )}`;
 
 const STEPS = [
   {
     icon: CalendarCheck,
     title: "Book first",
-    body: "Try a verified nanny or cleaner for a visit — or book them regularly.",
+    body: "Try a verified nanny or cleaner for a visit, or book them regularly.",
   },
   {
     icon: HeartHandshake,
@@ -35,7 +35,7 @@ export default function HirePage() {
           Need a full-time nanny or housekeeper?
         </h1>
         <p className="text-lg text-muted-foreground leading-relaxed mb-10">
-          TumaHelper is built for booking verified help first — then hiring permanently
+          TumaHelper is built for booking verified help first, then hiring permanently
           when you find the right person. We help Lusaka families with live-in nannies,
           full-time housekeepers, and long-term domestic workers.
         </p>
@@ -57,8 +57,8 @@ export default function HirePage() {
         <div className="rounded-3xl bg-surface border border-border p-8 space-y-4">
           <h2 className="font-display text-xl font-semibold">Get in touch</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Tell us what you need — area in Lusaka, live-in or live-out, nanny or
-            housekeeper — and we&apos;ll help you find a match.
+            Tell us what you need: area in Lusaka, live-in or live-out, nanny or
+            housekeeper. We&apos;ll help you find a match.
           </p>
 
           <a

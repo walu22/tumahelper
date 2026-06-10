@@ -61,7 +61,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         description: "Regular maintenance clean for occupied homes.",
         included: [
           "All bedrooms & living areas",
-          "Bathrooms — sinks, toilets, surfaces",
+          "Bathrooms: sinks, toilets, surfaces",
           "Kitchen surfaces & appliances (exterior)",
           "Sweep, mop & vacuum floors",
           "Beds made & bins emptied",
@@ -73,7 +73,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "deep",
         label: "Deep clean",
-        description: "Thorough top-to-bottom clean — ideal for first visits or seasonal refreshes.",
+        description: "Thorough top-to-bottom clean, ideal for first visits or seasonal refreshes.",
         included: [
           "Everything in a standard clean",
           "Detailed bathroom scrubbing",
@@ -88,7 +88,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "move",
         label: "Move-in / move-out",
-        description: "Empty or nearly empty home — walls, cupboards, and all rooms.",
+        description: "Empty or nearly empty home: walls, cupboards, and all rooms.",
         included: [
           "Full deep clean of all rooms",
           "Inside empty cupboards & wardrobes",
@@ -150,7 +150,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "regular",
         label: "Regular part-time",
-        description: "Scheduled recurring help — same nanny, consistent routine.",
+        description: "Scheduled recurring help with the same nanny and a consistent routine.",
         included: [
           "Consistent weekly schedule",
           "Childcare routine you agree on",
