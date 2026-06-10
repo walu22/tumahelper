@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { BookingTimeline } from '@/components/booking-timeline'
 import { CancelBookingButton } from '@/components/booking/cancel-booking-button'
 import { BookingReviewSection } from '@/components/booking/booking-review-section'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createAuthenticatedServerClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
 import { redirect, notFound } from 'next/navigation'
 import { formatDate, formatTime, formatCurrency } from '@/utils/formatters'
@@ -63,10 +63,11 @@ export default async function CustomerBookingDetailPage({
 }: {
   params: { id: string }
 }) {
-  const supabase = createServerSupabaseClient()
   const user = await getCurrentUser()
 
   if (!user) redirect('/login?redirect=/customer/bookings/' + params.id)
+
+  const supabase = createAuthenticatedServerClient()
 
   const { data: booking } = await supabase
     .from('bookings')
@@ -76,9 +77,10 @@ export default async function CustomerBookingDetailPage({
       category:category_id(name)
     `)
     .eq('id', params.id)
+    .eq('customer_id', user.id)
     .single<BookingWithRelations>()
 
-  if (!booking || booking.customer_id !== user.id) {
+  if (!booking) {
     notFound()
   }
 

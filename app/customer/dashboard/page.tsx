@@ -4,10 +4,10 @@ import { BookingCard } from '@/components/booking/booking-card'
 import { Plus, Calendar, Clock, Star } from 'lucide-react'
 import Link from 'next/link'
 import { getCurrentUser } from '@/lib/auth'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createAuthenticatedServerClient } from '@/lib/supabase-server'
 
 export default async function CustomerDashboard() {
-  const supabase = createServerSupabaseClient()
+  const supabase = createAuthenticatedServerClient()
   const user = await getCurrentUser()
 
   let upcoming = 0
