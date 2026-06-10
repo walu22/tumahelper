@@ -1,77 +1,50 @@
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 
-export interface BookingTimeWindow {
-  /** Default / anchor start time for the window (HH:mm) */
-  value: string;
-  title: string;
-  subtitle: string;
-  /** Inclusive window start (hour, can be .5) */
-  startHour: number;
-  /** Exclusive window end (hour, can be .5) */
-  endHour: number;
-}
+export type ArrivalPeriod = "morning" | "afternoon" | "evening";
 
-export interface BookingStartSlot {
+export interface ArrivalTimeOption {
   value: string;
   label: string;
-  /** When the visit ends if this start is chosen */
-  endLabel: string;
+  period: ArrivalPeriod;
+  /** Latest hour the visit may end (24h, e.g. 17 = 5 PM) */
+  latestEndHour: number;
+}
+
+export interface ArrivalTimeChoice extends ArrivalTimeOption {
   selectable: boolean;
-  group?: "available" | "too_late";
+  finishLabel: string;
 }
 
-const CLEANING_WINDOWS: BookingTimeWindow[] = [
-  {
-    value: "08:00",
-    title: "Morning",
-    subtitle: "8:00 AM – 12:00 PM",
-    startHour: 8,
-    endHour: 12,
-  },
-  {
-    value: "12:00",
-    title: "Midday",
-    subtitle: "12:00 – 2:00 PM",
-    startHour: 12,
-    endHour: 14,
-  },
-  {
-    value: "14:00",
-    title: "Afternoon",
-    subtitle: "2:00 – 5:00 PM",
-    startHour: 14,
-    endHour: 17,
-  },
+const PERIOD_LABELS: Record<ArrivalPeriod, string> = {
+  morning: "Morning",
+  afternoon: "Afternoon",
+  evening: "Evening",
+};
+
+const PERIOD_HINTS: Record<ArrivalPeriod, string> = {
+  morning: "8 AM – 12 PM",
+  afternoon: "12 PM – 5 PM",
+  evening: "5 PM – 9 PM",
+};
+
+const DAYTIME_ARRIVALS: ArrivalTimeOption[] = [
+  { value: "08:00", label: "8:00 AM", period: "morning", latestEndHour: 17 },
+  { value: "09:00", label: "9:00 AM", period: "morning", latestEndHour: 17 },
+  { value: "10:00", label: "10:00 AM", period: "morning", latestEndHour: 17 },
+  { value: "11:00", label: "11:00 AM", period: "morning", latestEndHour: 17 },
+  { value: "12:00", label: "12:00 PM", period: "afternoon", latestEndHour: 17 },
+  { value: "13:00", label: "1:00 PM", period: "afternoon", latestEndHour: 17 },
+  { value: "14:00", label: "2:00 PM", period: "afternoon", latestEndHour: 17 },
+  { value: "15:00", label: "3:00 PM", period: "afternoon", latestEndHour: 17 },
+  { value: "16:00", label: "4:00 PM", period: "afternoon", latestEndHour: 17 },
 ];
 
-const NANNY_EXTRA_WINDOWS: BookingTimeWindow[] = [
-  {
-    value: "07:00",
-    title: "Early morning",
-    subtitle: "7:00 – 9:00 AM",
-    startHour: 7,
-    endHour: 9,
-  },
-  {
-    value: "17:00",
-    title: "Evening",
-    subtitle: "5:00 – 9:00 PM",
-    startHour: 17,
-    endHour: 21,
-  },
+const EVENING_ARRIVALS: ArrivalTimeOption[] = [
+  { value: "17:00", label: "5:00 PM", period: "evening", latestEndHour: 21 },
+  { value: "18:00", label: "6:00 PM", period: "evening", latestEndHour: 21 },
+  { value: "19:00", label: "7:00 PM", period: "evening", latestEndHour: 21 },
+  { value: "20:00", label: "8:00 PM", period: "evening", latestEndHour: 21 },
 ];
-
-const ALL_WINDOWS: BookingTimeWindow[] = [
-  NANNY_EXTRA_WINDOWS[0],
-  ...CLEANING_WINDOWS,
-  NANNY_EXTRA_WINDOWS[1],
-];
-
-const SLOT_STEP_HOURS = 0.5;
-
-function padTime(hour: number, minute = 0) {
-  return `${String(Math.floor(hour)).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-}
 
 function parseTimeValue(value: string) {
   const [h, m] = value.split(":").map(Number);
@@ -86,99 +59,83 @@ function formatTime12(value: string) {
   return `${hour12}:${String(m ?? 0).padStart(2, "0")} ${period}`;
 }
 
-function addHoursToTime(startValue: string, hours: number) {
-  const totalMinutes = Math.round(parseTimeValue(startValue) * 60 + hours * 60);
-  const h = Math.floor(totalMinutes / 60);
-  const m = totalMinutes % 60;
-  return padTime(h, m);
+function finishTimeLabel(startValue: string, durationHours: number) {
+  const endHour = parseTimeValue(startValue) + durationHours;
+  const h = Math.floor(endHour);
+  const m = Math.round((endHour - h) * 60);
+  return formatTime12(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
 }
 
-/** Time windows for booking — value is the default start time for the window */
-export function getBookingTimeWindows(category?: ServiceCategoryKey): BookingTimeWindow[] {
-  if (category === "nanny") return ALL_WINDOWS;
-  return CLEANING_WINDOWS;
+export function getArrivalTimeOptions(category?: ServiceCategoryKey): ArrivalTimeOption[] {
+  if (category === "nanny") return [...DAYTIME_ARRIVALS, ...EVENING_ARRIVALS];
+  return DAYTIME_ARRIVALS;
 }
 
-export function getWindowForStartTime(
-  serviceTime: string,
-  category?: ServiceCategoryKey
-): BookingTimeWindow | undefined {
-  if (!serviceTime) return undefined;
-  const start = parseTimeValue(serviceTime);
-  const matches = getBookingTimeWindows(category).filter(
-    (window) => start >= window.startHour && start < window.endHour
-  );
-  if (matches.length === 0) return undefined;
-  if (matches.length === 1) return matches[0];
-
-  // Overlapping windows (e.g. Early morning 7–9 vs Morning 8–12): prefer the wider
-  // window so 8:00 AM maps to Morning, not Early morning.
-  return matches.reduce((best, window) =>
-    window.endHour - window.startHour > best.endHour - best.startHour ? window : best
-  );
-}
-
-/** 30-minute start slots inside a window, filtered by booking duration (SweepSouth-style). */
-export function getStartSlotsForWindow(
-  window: BookingTimeWindow,
+export function getArrivalChoices(
+  category: ServiceCategoryKey | undefined,
   durationHours: number
-): BookingStartSlot[] {
-  const slots: BookingStartSlot[] = [];
-  const safeDuration = Math.max(durationHours, 0.5);
-
-  for (
-    let hour = window.startHour;
-    hour < window.endHour;
-    hour += SLOT_STEP_HOURS
-  ) {
-    const value = padTime(hour, Number.isInteger(hour) ? 0 : 30);
-    const endValue = addHoursToTime(value, safeDuration);
-    const endHour = parseTimeValue(endValue);
-    const selectable = endHour <= window.endHour + 1e-9;
-    const label = `${formatTime12(value)} – ${formatTime12(endValue)}`;
-
-    slots.push({
-      value,
-      label,
-      endLabel: formatTime12(endValue),
+): ArrivalTimeChoice[] {
+  const duration = Math.max(durationHours, 0.5);
+  return getArrivalTimeOptions(category).map((option) => {
+    const finishHour = parseTimeValue(option.value) + duration;
+    const selectable = finishHour <= option.latestEndHour + 1e-9;
+    return {
+      ...option,
       selectable,
-      group: selectable ? "available" : "too_late",
-    });
-  }
-
-  return slots;
+      finishLabel: finishTimeLabel(option.value, duration),
+    };
+  });
 }
 
-export function getFirstSelectableSlot(
-  window: BookingTimeWindow,
+export function getArrivalChoice(
+  serviceTime: string,
+  category: ServiceCategoryKey | undefined,
   durationHours: number
-): BookingStartSlot | undefined {
-  return getStartSlotsForWindow(window, durationHours).find((slot) => slot.selectable);
+): ArrivalTimeChoice | undefined {
+  return getArrivalChoices(category, durationHours).find(
+    (choice) => choice.value === serviceTime
+  );
 }
 
-export function isWindowAvailable(window: BookingTimeWindow, durationHours: number) {
-  return getStartSlotsForWindow(window, durationHours).some((slot) => slot.selectable);
-}
-
-export function isStartTimeValid(
+export function isArrivalTimeValid(
   serviceTime: string,
   durationHours: number,
   category?: ServiceCategoryKey
 ) {
-  const window = getWindowForStartTime(serviceTime, category);
-  if (!window) return false;
-  const slot = getStartSlotsForWindow(window, durationHours).find((s) => s.value === serviceTime);
-  return !!slot?.selectable;
+  const choice = getArrivalChoice(serviceTime, category, durationHours);
+  return !!choice?.selectable;
+}
+
+export function getArrivalPeriodGroups(
+  category: ServiceCategoryKey | undefined,
+  durationHours: number
+) {
+  const choices = getArrivalChoices(category, durationHours);
+  const periods: ArrivalPeriod[] =
+    category === "nanny" ? ["morning", "afternoon", "evening"] : ["morning", "afternoon"];
+
+  return periods
+    .map((period) => ({
+      period,
+      label: PERIOD_LABELS[period],
+      hint: PERIOD_HINTS[period],
+      choices: choices.filter((choice) => choice.period === period),
+    }))
+    .filter((group) => group.choices.length > 0);
 }
 
 export function formatBookingTime(value: string): string {
-  const window = ALL_WINDOWS.find((w) => w.value === value);
-  if (window) return `${window.title} (${window.subtitle})`;
-
-  const matchedWindow = getWindowForStartTime(value);
-  if (matchedWindow) {
-    return `${formatTime12(value)} (${matchedWindow.title.toLowerCase()})`;
-  }
-
+  if (!value) return "";
   return formatTime12(value);
+}
+
+/** @deprecated Use formatBookingTime — kept for any legacy window-style values */
+export function getBookingTimeWindows(category?: ServiceCategoryKey) {
+  return getArrivalTimeOptions(category).map((option) => ({
+    value: option.value,
+    title: option.label,
+    subtitle: PERIOD_HINTS[option.period],
+    startHour: parseTimeValue(option.value),
+    endHour: option.latestEndHour,
+  }));
 }

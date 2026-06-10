@@ -23,9 +23,7 @@ import { ServiceConfigPanel } from '@/components/services/service-config-panel'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
 import {
-  getFirstSelectableSlot,
-  getWindowForStartTime,
-  isStartTimeValid,
+  isArrivalTimeValid,
 } from '@/lib/booking/time-slots'
 import {
   categorySlugToKey,
@@ -266,11 +264,8 @@ export function BookingWizard() {
 
   useEffect(() => {
     if (!serviceTime || durationHours == null || !serviceCategory) return
-    if (isStartTimeValid(serviceTime, durationHours, serviceCategory)) return
-
-    const window = getWindowForStartTime(serviceTime, serviceCategory)
-    const fallback = window ? getFirstSelectableSlot(window, durationHours) : undefined
-    setServiceTime(fallback?.value ?? '')
+    if (isArrivalTimeValid(serviceTime, durationHours, serviceCategory)) return
+    setServiceTime('')
   }, [durationHours, serviceCategory, serviceTime])
 
   const filteredWorkers = workers.filter((w) => {
@@ -489,9 +484,16 @@ export function BookingWizard() {
                     <div>
                       <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {selectedCategory?.name}: pick when and where, then set your scope.
+                        {selectedCategory?.name}: set your service, then when and where.
                       </p>
                     </div>
+
+                    <ServiceConfigPanel
+                      category={serviceDetails.category}
+                      value={serviceDetails}
+                      onChange={setServiceDetails}
+                      showPriceHint={false}
+                    />
 
                     <BookingScheduleFields
                       serviceDate={serviceDate}
@@ -506,18 +508,11 @@ export function BookingWizard() {
                       durationHours={serviceDetails.durationHours}
                     />
 
-                    <ServiceConfigPanel
-                      category={serviceDetails.category}
-                      value={serviceDetails}
-                      onChange={setServiceDetails}
-                      showPriceHint={false}
-                    />
-
                     {!canProceedDetails && (
                       <p className="text-sm text-muted-foreground text-center">
                         {!hasScheduleDetails
-                          ? 'Choose a date, time window, and address above to continue.'
-                          : 'Select an age range for each child below to continue.'}
+                          ? 'Choose a date, arrival time, and address to continue.'
+                          : 'Select an age range for each child to continue.'}
                       </p>
                     )}
 

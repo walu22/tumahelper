@@ -122,7 +122,7 @@ test.describe("Nanny booking end-to-end", () => {
     await expect(page.locator("#service-date")).toBeVisible({ timeout: 15_000 });
 
     await page.locator("#service-date").fill(tomorrowIsoDate());
-    await page.getByRole("button", { name: "Morning 8:00 AM – 12:00 PM" }).click();
+    await page.getByRole("button", { name: "8:00 AM" }).click();
     await page.locator("#service-address").fill("Plot 12, Kabulonga, Lusaka");
     await page.locator("#child-age").selectOption("3-5");
 
@@ -166,7 +166,7 @@ test.describe("Nanny booking end-to-end", () => {
     await expect(continueBtn).toBeDisabled();
 
     await page.locator("#service-date").fill(tomorrowIsoDate());
-    await page.getByRole("button", { name: "Evening 5:00 – 9:00 PM" }).click();
+    await page.getByRole("button", { name: "7:00 PM" }).click();
     await page.locator("#service-address").fill("Plot 12, Kabulonga, Lusaka");
     await expect(continueBtn).toBeDisabled();
 
