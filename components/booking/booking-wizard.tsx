@@ -283,11 +283,19 @@ export function BookingWizard() {
 
   const selectWorker = useCallback(
     (worker: WorkerSummary) => {
+      if (!serviceDate || !serviceTime || locationAddress.length < 5) {
+        toast.error('Please choose a date, time, and address first')
+        goToStep(STEP.DETAILS)
+        return
+      }
       setSelectedWorker(worker)
       goToStep(STEP.PAYMENT)
     },
-    [goToStep]
+    [goToStep, serviceDate, serviceTime, locationAddress]
   )
+
+  const hasScheduleDetails =
+    !!serviceDate && !!serviceTime && locationAddress.length >= 5
 
   const canProceedDetails =
     !!serviceDetails &&
@@ -463,16 +471,9 @@ export function BookingWizard() {
                     <div>
                       <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {selectedCategory?.name}: set your scope, schedule, and location.
+                        {selectedCategory?.name}: pick when and where, then set your scope.
                       </p>
                     </div>
-
-                    <ServiceConfigPanel
-                      category={serviceDetails.category}
-                      value={serviceDetails}
-                      onChange={setServiceDetails}
-                      showPriceHint={false}
-                    />
 
                     <BookingScheduleFields
                       serviceDate={serviceDate}
@@ -484,6 +485,19 @@ export function BookingWizard() {
                       onAddressChange={setLocationAddress}
                       onDescriptionChange={setDescription}
                     />
+
+                    <ServiceConfigPanel
+                      category={serviceDetails.category}
+                      value={serviceDetails}
+                      onChange={setServiceDetails}
+                      showPriceHint={false}
+                    />
+
+                    {!canProceedDetails && (
+                      <p className="text-sm text-muted-foreground text-center">
+                        Fill in the date, time, and address above to continue.
+                      </p>
+                    )}
 
                     <div className="flex justify-between pt-2 gap-3">
                       <Button
@@ -602,7 +616,16 @@ export function BookingWizard() {
                     Edit details
                   </Button>
                   {selectedWorker && (
-                    <Button onClick={() => goToStep(STEP.PAYMENT)}>
+                    <Button
+                      onClick={() => {
+                        if (!hasScheduleDetails) {
+                          toast.error('Please choose a date, time, and address first')
+                          goToStep(STEP.DETAILS)
+                          return
+                        }
+                        goToStep(STEP.PAYMENT)
+                      }}
+                    >
                       Continue with {selectedWorker.full_name.split(' ')[0]}
                       <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -645,6 +668,20 @@ export function BookingWizard() {
 
                 {selectedWorker && (
                   <>
+                    {!hasScheduleDetails && (
+                      <BookingScheduleFields
+                        serviceDate={serviceDate}
+                        serviceTime={serviceTime}
+                        locationAddress={locationAddress}
+                        description={description}
+                        onDateChange={setServiceDate}
+                        onTimeChange={setServiceTime}
+                        onAddressChange={setLocationAddress}
+                        onDescriptionChange={setDescription}
+                        compact
+                      />
+                    )}
+
                     <div>
                       <label className="text-sm font-medium mb-1.5 block">
                         Service fee (ZMW)
