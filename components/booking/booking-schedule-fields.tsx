@@ -1,13 +1,9 @@
 "use client";
 
-import { Calendar, Clock, MapPin } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Calendar, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  getArrivalChoice,
-  getArrivalPeriodGroups,
-} from "@/lib/booking/time-slots";
+import { getStartTimeOptions } from "@/lib/booking/time-slots";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 
 interface BookingScheduleFieldsProps {
@@ -22,7 +18,6 @@ interface BookingScheduleFieldsProps {
   minDate?: string;
   compact?: boolean;
   category?: ServiceCategoryKey;
-  durationHours?: number;
 }
 
 export function BookingScheduleFields({
@@ -37,16 +32,9 @@ export function BookingScheduleFields({
   minDate,
   compact = false,
   category,
-  durationHours = 4,
 }: BookingScheduleFieldsProps) {
   const today = minDate ?? new Date().toISOString().split("T")[0];
-  const periodGroups = getArrivalPeriodGroups(category, durationHours);
-  const selectedChoice = serviceTime
-    ? getArrivalChoice(serviceTime, category, durationHours)
-    : undefined;
-  const hasAnySelectable = periodGroups.some((group) =>
-    group.choices.some((choice) => choice.selectable)
-  );
+  const startTimes = getStartTimeOptions(category);
 
   return (
     <div
@@ -60,14 +48,14 @@ export function BookingScheduleFields({
         <div>
           <h3 className="font-semibold">When &amp; where</h3>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Pick a date, arrival time, and address in Lusaka.
+            Choose when the visit should happen and where in Lusaka.
           </p>
         </div>
       </div>
 
       <div>
         <label htmlFor="service-date" className="text-sm font-medium mb-1.5 block">
-          Date <span className="text-primary">*</span>
+          Select start date: <span className="text-primary">*</span>
         </label>
         <Input
           id="service-date"
@@ -81,71 +69,23 @@ export function BookingScheduleFields({
       </div>
 
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <Clock className="h-4 w-4 text-primary" />
-          <p className="text-sm font-medium">
-            Arrival time <span className="text-primary">*</span>
-          </p>
-        </div>
-        <p className="text-xs text-muted-foreground mb-3">
-          When should they get to you? Based on your {durationHours}-hour booking.
-        </p>
-
-        {!hasAnySelectable ? (
-          <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-            No arrival times fit a {durationHours}-hour visit before 5 PM (or 9 PM for
-            evening). Shorten the duration above, then pick a time.
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {periodGroups.map((group) => (
-              <div key={group.period}>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-                  {group.label}{" "}
-                  <span className="font-normal normal-case">({group.hint})</span>
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {group.choices.map((choice) => (
-                    <button
-                      key={choice.value}
-                      type="button"
-                      disabled={!choice.selectable}
-                      title={
-                        choice.selectable
-                          ? `Done by about ${choice.finishLabel}`
-                          : `Need an earlier time for ${durationHours} hours`
-                      }
-                      onClick={() => onTimeChange(choice.value)}
-                      className={cn(
-                        "rounded-full px-4 py-2 text-sm font-medium border transition-colors min-w-[5.5rem]",
-                        !choice.selectable &&
-                          "opacity-40 cursor-not-allowed border-border bg-muted/30",
-                        choice.selectable &&
-                          serviceTime === choice.value &&
-                          "border-primary bg-primary text-primary-foreground",
-                        choice.selectable &&
-                          serviceTime !== choice.value &&
-                          "border-border bg-white hover:border-primary/40"
-                      )}
-                    >
-                      {choice.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {selectedChoice?.selectable && (
-          <p className="text-xs text-muted-foreground mt-3">
-            Arrive at{" "}
-            <span className="font-medium text-foreground">{selectedChoice.label}</span>
-            {" · "}
-            done by about{" "}
-            <span className="font-medium text-foreground">{selectedChoice.finishLabel}</span>
-          </p>
-        )}
+        <label htmlFor="service-start-time" className="text-sm font-medium mb-1.5 block">
+          Select start time: <span className="text-primary">*</span>
+        </label>
+        <select
+          id="service-start-time"
+          className="w-full max-w-xs border border-border rounded-lg px-3 py-2 text-sm bg-white"
+          value={serviceTime}
+          onChange={(e) => onTimeChange(e.target.value)}
+          required
+        >
+          <option value="">Choose a time</option>
+          {startTimes.map((slot) => (
+            <option key={slot.value} value={slot.value}>
+              {slot.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

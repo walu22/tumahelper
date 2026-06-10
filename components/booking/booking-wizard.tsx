@@ -23,9 +23,6 @@ import { ServiceConfigPanel } from '@/components/services/service-config-panel'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
 import {
-  isArrivalTimeValid,
-} from '@/lib/booking/time-slots'
-import {
   categorySlugToKey,
   defaultServiceDetails,
   paramToCategoryKey,
@@ -258,15 +255,6 @@ export function BookingWizard() {
       pricePrefilled.current = true
     }
   }, [step, serviceDetails, amount])
-
-  const durationHours = serviceDetails?.durationHours
-  const serviceCategory = serviceDetails?.category
-
-  useEffect(() => {
-    if (!serviceTime || durationHours == null || !serviceCategory) return
-    if (isArrivalTimeValid(serviceTime, durationHours, serviceCategory)) return
-    setServiceTime('')
-  }, [durationHours, serviceCategory, serviceTime])
 
   const filteredWorkers = workers.filter((w) => {
     if (!searchQuery) return true
@@ -505,13 +493,12 @@ export function BookingWizard() {
                       onAddressChange={setLocationAddress}
                       onDescriptionChange={setDescription}
                       category={serviceDetails.category}
-                      durationHours={serviceDetails.durationHours}
                     />
 
                     {!canProceedDetails && (
                       <p className="text-sm text-muted-foreground text-center">
                         {!hasScheduleDetails
-                          ? 'Choose a date, arrival time, and address to continue.'
+                          ? 'Choose a date, start time, and address to continue.'
                           : 'Select an age range for each child to continue.'}
                       </p>
                     )}
@@ -696,7 +683,6 @@ export function BookingWizard() {
                         onAddressChange={setLocationAddress}
                         onDescriptionChange={setDescription}
                         category={serviceDetails.category}
-                        durationHours={serviceDetails.durationHours}
                         compact
                       />
                     )}
