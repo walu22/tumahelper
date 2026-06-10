@@ -10,7 +10,13 @@ import {
   type ServiceDetails,
   getServiceType,
 } from "@/lib/services/catalog";
-import { suggestPrice } from "@/lib/services/utils";
+import { suggestDuration, suggestPrice } from "@/lib/services/utils";
+
+const HOME_SIZE_PRESETS = [
+  { id: "small", label: "Small", sub: "1–2 bedrooms", bedrooms: 2, bathrooms: 1 },
+  { id: "medium", label: "Medium", sub: "3–4 bedrooms", bedrooms: 3, bathrooms: 2 },
+  { id: "large", label: "Large", sub: "5+ bedrooms", bedrooms: 5, bathrooms: 3 },
+] as const;
 
 interface ServiceConfigPanelProps {
   category: ServiceCategoryKey;
@@ -28,6 +34,13 @@ export function ServiceConfigPanel({
   const entry = SERVICE_CATALOG[category];
   const selectedType = getServiceType(category, value.serviceType);
   const price = suggestPrice(value);
+  const recommendedHours = suggestDuration(value);
+  const showHourSuggestion = recommendedHours !== value.durationHours;
+
+  function applyHomePreset(bedrooms: number, bathrooms: number) {
+    const next = { ...value, bedrooms, bathrooms };
+    onChange({ ...next, durationHours: suggestDuration(next) });
+  }
 
   function update(patch: Partial<ServiceDetails>) {
     onChange({ ...value, ...patch });
@@ -89,7 +102,34 @@ export function ServiceConfigPanel({
       )}
 
       {category === "cleaning" ? (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium mb-2">Home size</p>
+            <div className="grid grid-cols-3 gap-2">
+              {HOME_SIZE_PRESETS.map((preset) => {
+                const active =
+                  (value.bedrooms ?? 3) === preset.bedrooms &&
+                  (value.bathrooms ?? 2) === preset.bathrooms;
+                return (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => applyHomePreset(preset.bedrooms, preset.bathrooms)}
+                    className={cn(
+                      "rounded-xl border-2 p-3 text-left transition-colors",
+                      active
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/40"
+                    )}
+                  >
+                    <p className="text-sm font-semibold">{preset.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{preset.sub}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium mb-1.5 block">Bedrooms</label>
             <select
@@ -118,6 +158,7 @@ export function ServiceConfigPanel({
               ))}
             </select>
           </div>
+        </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -159,7 +200,23 @@ export function ServiceConfigPanel({
       )}
 
       <div>
-        <p className="text-sm font-medium mb-2">Duration</p>
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <p className="text-sm font-medium">Duration</p>
+          {showHourSuggestion && (
+            <button
+              type="button"
+              onClick={() => update({ durationHours: recommendedHours })}
+              className="text-xs font-semibold text-primary hover:underline"
+            >
+              Use recommended {recommendedHours}h
+            </button>
+          )}
+        </div>
+        {showHourSuggestion && (
+          <p className="text-xs text-muted-foreground mb-2">
+            Based on your home size and extras, we recommend {recommendedHours} hours.
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           {DURATION_OPTIONS.map((h) => (
             <button
