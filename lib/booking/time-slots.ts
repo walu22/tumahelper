@@ -105,8 +105,16 @@ export function getWindowForStartTime(
 ): BookingTimeWindow | undefined {
   if (!serviceTime) return undefined;
   const start = parseTimeValue(serviceTime);
-  return getBookingTimeWindows(category).find(
+  const matches = getBookingTimeWindows(category).filter(
     (window) => start >= window.startHour && start < window.endHour
+  );
+  if (matches.length === 0) return undefined;
+  if (matches.length === 1) return matches[0];
+
+  // Overlapping windows (e.g. Early morning 7–9 vs Morning 8–12): prefer the wider
+  // window so 8:00 AM maps to Morning, not Early morning.
+  return matches.reduce((best, window) =>
+    window.endHour - window.startHour > best.endHour - best.startHour ? window : best
   );
 }
 

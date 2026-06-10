@@ -102,7 +102,9 @@ export function BookingScheduleFields({
         <div className="grid sm:grid-cols-2 gap-2">
           {timeWindows.map((window) => {
             const available = isWindowAvailable(window, durationHours);
-            const isSelected = selectedWindow?.value === window.value;
+            const isSelected =
+              !!serviceTime &&
+              getWindowForStartTime(serviceTime, category)?.value === window.value;
 
             return (
               <button
