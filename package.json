@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test:e2e": "playwright test",
+    "test:e2e:nanny": "playwright test e2e/nanny-booking.spec.ts",
     "setup": "node scripts/setup-local.mjs",
     "setup:auth": "node scripts/seed-auth-users.mjs",
     "setup:credentials": "node scripts/create-credentials.mjs",
@@ -31,6 +33,7 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/forms": "^0.5.0",
     "@types/node": "^20.12.0",
     "@types/react": "^18.3.0",
