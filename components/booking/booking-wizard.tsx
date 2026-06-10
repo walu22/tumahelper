@@ -498,7 +498,7 @@ export function BookingWizard() {
                     {!canProceedDetails && (
                       <p className="text-sm text-muted-foreground text-center">
                         {!hasScheduleDetails
-                          ? 'Choose a date, start time, and address above to continue.'
+                          ? 'Choose a date, time window, and address above to continue.'
                           : 'Select an age range for each child below to continue.'}
                       </p>
                     )}

@@ -207,6 +207,9 @@ export function nannyChildAgesComplete(details: ServiceDetails): boolean {
   if (details.category !== "nanny") return true;
   const count = details.children ?? 1;
   const ages = details.childAgeGroups ?? [];
+  if (count === 1) {
+    return typeof ages[0] === "string" && ages[0].length > 0;
+  }
   return (
     ages.length >= count &&
     ages.slice(0, count).every((age) => typeof age === "string" && age.length > 0)

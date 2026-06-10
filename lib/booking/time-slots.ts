@@ -1,33 +1,39 @@
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 
-export interface BookingStartSlot {
+export interface BookingTimeWindow {
+  /** Start time stored in booking (HH:mm) */
   value: string;
-  label: string;
+  title: string;
+  subtitle: string;
 }
 
-const ALL_SLOTS: BookingStartSlot[] = [
-  { value: "07:00", label: "7:00 AM" },
-  { value: "08:00", label: "8:00 AM" },
-  { value: "09:00", label: "9:00 AM" },
-  { value: "10:00", label: "10:00 AM" },
-  { value: "12:00", label: "12:00 PM" },
-  { value: "14:00", label: "2:00 PM" },
-  { value: "16:00", label: "4:00 PM" },
-  { value: "17:00", label: "5:00 PM" },
-  { value: "18:00", label: "6:00 PM" },
+const CLEANING_WINDOWS: BookingTimeWindow[] = [
+  { value: "08:00", title: "Morning", subtitle: "8:00 AM – 12:00 PM" },
+  { value: "12:00", title: "Midday", subtitle: "12:00 – 2:00 PM" },
+  { value: "14:00", title: "Afternoon", subtitle: "2:00 – 5:00 PM" },
 ];
 
-const CLEANING_VALUES = new Set(["08:00", "09:00", "10:00", "12:00", "14:00", "16:00"]);
+const NANNY_EXTRA_WINDOWS: BookingTimeWindow[] = [
+  { value: "07:00", title: "Early morning", subtitle: "7:00 – 9:00 AM" },
+  { value: "17:00", title: "Evening", subtitle: "5:00 – 9:00 PM" },
+];
 
-/** Daytime slots for cleaning; nannies also get early morning + evening babysitting starts */
-export function getBookingStartSlots(category?: ServiceCategoryKey): BookingStartSlot[] {
-  if (category === "nanny") return ALL_SLOTS;
-  return ALL_SLOTS.filter((s) => CLEANING_VALUES.has(s.value));
+const ALL_WINDOWS: BookingTimeWindow[] = [
+  NANNY_EXTRA_WINDOWS[0],
+  ...CLEANING_WINDOWS,
+  NANNY_EXTRA_WINDOWS[1],
+];
+
+/** Time windows for booking — value is the window start time sent to the API */
+export function getBookingTimeWindows(category?: ServiceCategoryKey): BookingTimeWindow[] {
+  if (category === "nanny") return ALL_WINDOWS;
+  return CLEANING_WINDOWS;
 }
 
 export function formatBookingTime(value: string): string {
-  const slot = ALL_SLOTS.find((s) => s.value === value);
-  if (slot) return slot.label;
+  const window = ALL_WINDOWS.find((w) => w.value === value);
+  if (window) return `${window.title} (${window.subtitle})`;
+
   const [h, m] = value.split(":").map(Number);
   if (Number.isNaN(h)) return value;
   const period = h >= 12 ? "PM" : "AM";

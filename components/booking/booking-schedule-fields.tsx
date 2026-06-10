@@ -4,7 +4,7 @@ import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getBookingStartSlots } from "@/lib/booking/time-slots";
+import { getBookingTimeWindows } from "@/lib/booking/time-slots";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 
 interface BookingScheduleFieldsProps {
@@ -35,7 +35,7 @@ export function BookingScheduleFields({
   category,
 }: BookingScheduleFieldsProps) {
   const today = minDate ?? new Date().toISOString().split("T")[0];
-  const startSlots = getBookingStartSlots(category);
+  const timeWindows = getBookingTimeWindows(category);
 
   return (
     <div
@@ -71,27 +71,37 @@ export function BookingScheduleFields({
 
       <div>
         <p className="text-sm font-medium mb-1">
-          Start time <span className="text-primary">*</span>
+          Time window <span className="text-primary">*</span>
         </p>
         <p className="text-xs text-muted-foreground mb-3">
           {category === "nanny"
-            ? "Includes evening slots for babysitting. Visit length is set in your service details below."
-            : "Pick a start time. Visit length is set in your service details below."}
+            ? "Pick when help should arrive. Evening works well for babysitting."
+            : "Pick when your cleaner should arrive. Exact start time is agreed with your worker."}
         </p>
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-          {startSlots.map((slot) => (
+        <div className="grid sm:grid-cols-2 gap-2">
+          {timeWindows.map((window) => (
             <button
-              key={slot.value}
+              key={window.value}
               type="button"
-              onClick={() => onTimeChange(slot.value)}
+              onClick={() => onTimeChange(window.value)}
               className={cn(
-                "rounded-xl border-2 px-2 py-2.5 text-sm font-medium transition-colors",
-                serviceTime === slot.value
+                "rounded-xl border-2 px-3 py-3 text-left transition-colors",
+                serviceTime === window.value
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-white text-foreground hover:border-primary/40"
+                  : "border-border bg-white hover:border-primary/40"
               )}
             >
-              {slot.label}
+              <p className="text-sm font-semibold">{window.title}</p>
+              <p
+                className={cn(
+                  "text-xs mt-0.5",
+                  serviceTime === window.value
+                    ? "text-primary-foreground/80"
+                    : "text-muted-foreground"
+                )}
+              >
+                {window.subtitle}
+              </p>
             </button>
           ))}
         </div>
