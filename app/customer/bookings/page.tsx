@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createAuthenticatedServerClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { formatDate, formatTime, formatCurrency } from '@/utils/formatters'
@@ -31,7 +31,7 @@ async function BookingsList({ statusFilter }: { statusFilter?: string }) {
   const user = await getCurrentUser()
   if (!user) redirect('/login?redirect=/customer/bookings')
 
-  const supabase = createServerSupabaseClient()
+  const supabase = createAuthenticatedServerClient()
   let query = supabase
     .from('bookings')
     .select(`

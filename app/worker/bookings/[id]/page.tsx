@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createAuthenticatedServerClient } from "@/lib/supabase-server";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { BookingTimeline } from "@/components/booking-timeline";
@@ -22,7 +22,7 @@ export default async function WorkerBookingDetailPage({
   if (!user) redirect("/login");
   if (user.role !== "worker") redirect("/dashboard");
 
-  const supabase = createServerSupabaseClient();
+  const supabase = createAuthenticatedServerClient();
 
   const { data: booking, error } = await supabase
     .from("bookings")

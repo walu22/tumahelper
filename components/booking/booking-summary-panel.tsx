@@ -4,6 +4,7 @@ import { MapPin, Calendar, Clock } from "lucide-react";
 import { getServiceType } from "@/lib/services/catalog";
 import type { ServiceDetails } from "@/lib/services/catalog";
 import { formatServiceSummary, suggestPrice } from "@/lib/services/utils";
+import { formatBookingTime } from "@/lib/booking/time-slots";
 import { formatCurrency } from "@/lib/utils";
 
 interface BookingSummaryPanelProps {
@@ -29,10 +30,7 @@ function formatDateLabel(isoDate: string): string {
 
 function formatTimeLabel(time: string): string {
   if (!time) return "";
-  const [h, m] = time.split(":").map(Number);
-  const period = h >= 12 ? "pm" : "am";
-  const hour12 = h % 12 || 12;
-  return `${hour12}:${String(m).padStart(2, "0")}${period}`;
+  return formatBookingTime(time);
 }
 
 export function BookingSummaryPanel({

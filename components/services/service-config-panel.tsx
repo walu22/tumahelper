@@ -53,13 +53,27 @@ export function ServiceConfigPanel({
     update({ addons });
   }
 
-  function toggleAgeGroup(id: string) {
-    const current = value.childAgeGroups ?? [];
-    const next = current.includes(id)
-      ? current.filter((a) => a !== id)
-      : [...current, id];
-    update({ childAgeGroups: next.length ? next : current });
+  function setChildrenCount(count: number) {
+    const ages = (value.childAgeGroups ?? []).slice(0, count);
+    update({
+      children: count,
+      childAgeGroups: count === 1 ? ages.slice(0, 1) : ages,
+    });
   }
+
+  function setChildAge(index: number, ageId: string) {
+    const count = value.children ?? 1;
+    if (count === 1) {
+      update({ childAgeGroups: ageId ? [ageId] : [] });
+      return;
+    }
+    const ages = Array.from({ length: count }, (_, i) => value.childAgeGroups?.[i] ?? "");
+    ages[index] = ageId;
+    update({ childAgeGroups: ages });
+  }
+
+  const childCount = value.children ?? 1;
+  const singleChildAge = value.childAgeGroups?.[0] ?? "";
 
   return (
     <div className="space-y-6">
@@ -167,7 +181,7 @@ export function ServiceConfigPanel({
             <select
               className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
               value={value.children ?? 1}
-              onChange={(e) => update({ children: parseInt(e.target.value, 10) })}
+              onChange={(e) => setChildrenCount(parseInt(e.target.value, 10))}
             >
               {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>
@@ -177,24 +191,58 @@ export function ServiceConfigPanel({
             </select>
           </div>
           <div>
-            <p className="text-sm font-medium mb-2">Age groups</p>
-            <div className="flex flex-wrap gap-2">
-              {CHILD_AGE_GROUPS.map(({ id, label }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => toggleAgeGroup(id)}
-                  className={cn(
-                    "rounded-full px-3 py-1.5 text-xs font-medium border transition-colors",
-                    value.childAgeGroups?.includes(id)
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground hover:border-primary/40"
-                  )}
+            {childCount === 1 ? (
+              <>
+                <label htmlFor="child-age" className="text-sm font-medium mb-1.5 block">
+                  Child&apos;s age range <span className="text-primary">*</span>
+                </label>
+                <select
+                  id="child-age"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                  value={singleChildAge}
+                  onChange={(e) => setChildAge(0, e.target.value)}
                 >
-                  {label}
-                </button>
-              ))}
-            </div>
+                  <option value="">Select age range</option>
+                  {CHILD_AGE_GROUPS.map(({ id, label }) => (
+                    <option key={id} value={id}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-medium mb-1">Children&apos;s ages</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Select an age range for each of your {childCount} children.
+                </p>
+                <div className="space-y-3">
+                  {Array.from({ length: childCount }, (_, index) => (
+                    <div key={index}>
+                      <label
+                        htmlFor={`child-age-${index}`}
+                        className="text-xs font-medium text-muted-foreground mb-1 block"
+                      >
+                        Child {index + 1}
+                      </label>
+                      <select
+                        id={`child-age-${index}`}
+                        className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                        value={value.childAgeGroups?.[index] ?? ""}
+                        onChange={(e) => setChildAge(index, e.target.value)}
+                      >
+                        <option value="">Select age range</option>
+                        {CHILD_AGE_GROUPS.map(({ id, label }) => (
+                          <option key={id} value={id}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

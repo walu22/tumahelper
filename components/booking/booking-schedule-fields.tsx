@@ -3,6 +3,8 @@
 import { Calendar, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { getStartTimeOptions } from "@/lib/booking/time-slots";
+import type { ServiceCategoryKey } from "@/lib/services/catalog";
 
 interface BookingScheduleFieldsProps {
   serviceDate: string;
@@ -15,6 +17,7 @@ interface BookingScheduleFieldsProps {
   onDescriptionChange: (value: string) => void;
   minDate?: string;
   compact?: boolean;
+  category?: ServiceCategoryKey;
 }
 
 export function BookingScheduleFields({
@@ -28,8 +31,10 @@ export function BookingScheduleFields({
   onDescriptionChange,
   minDate,
   compact = false,
+  category,
 }: BookingScheduleFieldsProps) {
   const today = minDate ?? new Date().toISOString().split("T")[0];
+  const startTimes = getStartTimeOptions(category);
 
   return (
     <div
@@ -48,34 +53,39 @@ export function BookingScheduleFields({
         </div>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="service-date" className="text-sm font-medium mb-1.5 block">
-            Date <span className="text-primary">*</span>
-          </label>
-          <Input
-            id="service-date"
-            type="date"
-            value={serviceDate}
-            onChange={(e) => onDateChange(e.target.value)}
-            min={today}
-            required
-            className="bg-white"
-          />
-        </div>
-        <div>
-          <label htmlFor="service-time" className="text-sm font-medium mb-1.5 block">
-            Time <span className="text-primary">*</span>
-          </label>
-          <Input
-            id="service-time"
-            type="time"
-            value={serviceTime}
-            onChange={(e) => onTimeChange(e.target.value)}
-            required
-            className="bg-white"
-          />
-        </div>
+      <div>
+        <label htmlFor="service-date" className="text-sm font-medium mb-1.5 block">
+          Select start date: <span className="text-primary">*</span>
+        </label>
+        <Input
+          id="service-date"
+          type="date"
+          value={serviceDate}
+          onChange={(e) => onDateChange(e.target.value)}
+          min={today}
+          required
+          className="bg-white max-w-xs"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="service-start-time" className="text-sm font-medium mb-1.5 block">
+          Select start time: <span className="text-primary">*</span>
+        </label>
+        <select
+          id="service-start-time"
+          className="w-full max-w-xs border border-border rounded-lg px-3 py-2 text-sm bg-white"
+          value={serviceTime}
+          onChange={(e) => onTimeChange(e.target.value)}
+          required
+        >
+          <option value="">Choose a time</option>
+          {startTimes.map((slot) => (
+            <option key={slot.value} value={slot.value}>
+              {slot.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

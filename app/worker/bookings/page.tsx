@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createAuthenticatedServerClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
@@ -31,7 +31,7 @@ async function BookingsList({ statusFilter }: { statusFilter?: string }) {
   const user = await getCurrentUser()
   if (!user) return null
 
-  const supabase = createServerSupabaseClient()
+  const supabase = createAuthenticatedServerClient()
   let query = supabase
     .from('bookings')
     .select(`

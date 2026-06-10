@@ -34,6 +34,7 @@ import {
   parseServiceDetailsFromParams,
   resolveFunnelParam,
   suggestPrice,
+  nannyChildAgesComplete,
 } from '@/lib/services/utils'
 
 interface Category {
@@ -180,6 +181,11 @@ export function BookingWizard() {
     fetch(`/api/workers?category=${categorySlug}&available=true`)
       .then((r) => r.json())
       .then((res) => {
+        if (!res.success) {
+          toast.error(res.error?.message || 'Could not load workers')
+          setWorkers([])
+          return
+        }
         const list: WorkerSummary[] = res.data || []
         setWorkers(list)
         const preId = preselectedWorkerRef.current
@@ -191,7 +197,10 @@ export function BookingWizard() {
           setSelectedWorker(null)
         }
       })
-      .catch(() => setWorkers([]))
+      .catch(() => {
+        toast.error('Could not load workers')
+        setWorkers([])
+      })
       .finally(() => setWorkersLoading(false))
   }, [categorySlug, workerProfileId])
 
@@ -297,11 +306,11 @@ export function BookingWizard() {
   const hasScheduleDetails =
     !!serviceDate && !!serviceTime && locationAddress.length >= 5
 
+  const hasNannyAges =
+    !serviceDetails || nannyChildAgesComplete(serviceDetails)
+
   const canProceedDetails =
-    !!serviceDetails &&
-    !!serviceDate &&
-    !!serviceTime &&
-    locationAddress.length >= 5
+    !!serviceDetails && hasScheduleDetails && hasNannyAges
 
   const canProceedPayment =
     !!selectedWorker &&
@@ -471,9 +480,16 @@ export function BookingWizard() {
                     <div>
                       <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {selectedCategory?.name}: pick when and where, then set your scope.
+                        {selectedCategory?.name}: set your service, then when and where.
                       </p>
                     </div>
+
+                    <ServiceConfigPanel
+                      category={serviceDetails.category}
+                      value={serviceDetails}
+                      onChange={setServiceDetails}
+                      showPriceHint={false}
+                    />
 
                     <BookingScheduleFields
                       serviceDate={serviceDate}
@@ -484,18 +500,14 @@ export function BookingWizard() {
                       onTimeChange={setServiceTime}
                       onAddressChange={setLocationAddress}
                       onDescriptionChange={setDescription}
-                    />
-
-                    <ServiceConfigPanel
                       category={serviceDetails.category}
-                      value={serviceDetails}
-                      onChange={setServiceDetails}
-                      showPriceHint={false}
                     />
 
                     {!canProceedDetails && (
                       <p className="text-sm text-muted-foreground text-center">
-                        Fill in the date, time, and address above to continue.
+                        {!hasScheduleDetails
+                          ? 'Choose a date, start time, and address to continue.'
+                          : 'Select an age range for each child to continue.'}
                       </p>
                     )}
 
@@ -678,6 +690,7 @@ export function BookingWizard() {
                         onTimeChange={setServiceTime}
                         onAddressChange={setLocationAddress}
                         onDescriptionChange={setDescription}
+                        category={serviceDetails.category}
                         compact
                       />
                     )}
