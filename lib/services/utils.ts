@@ -1,4 +1,5 @@
 import {
+  DURATION_OPTIONS,
   SERVICE_CATALOG,
   defaultServiceDetails,
   getAddon,
@@ -7,6 +8,66 @@ import {
   type ServiceCategoryKey,
   type ServiceDetails,
 } from "./catalog";
+
+/** Hours each add-on typically adds to a visit */
+const ADDON_HOUR_INCREMENT: Record<string, number> = {
+  laundry: 1.5,
+  ironing: 1,
+  oven: 0.5,
+  fridge: 0.5,
+  windows: 1,
+  cabinets: 1,
+  meal_prep: 0.5,
+  homework: 0.5,
+  light_tidying: 0.5,
+  school_pickup: 0.5,
+};
+
+/** Marketing-friendly funnel aliases → book query params */
+export const FUNNEL_ALIASES: Record<
+  string,
+  { category: ServiceCategoryKey; type?: string }
+> = {
+  "indoor-cleaning": { category: "cleaning", type: "standard" },
+  "deep-clean": { category: "cleaning", type: "deep" },
+  "move-clean": { category: "cleaning", type: "move" },
+  babysitting: { category: "nanny", type: "babysitting" },
+  "after-school": { category: "nanny", type: "after_school" },
+};
+
+export function resolveFunnelParam(
+  funnel: string | null
+): { category: ServiceCategoryKey; type?: string } | null {
+  if (!funnel) return null;
+  const key = funnel.toLowerCase().replace(/\s+/g, "-");
+  return FUNNEL_ALIASES[key] ?? null;
+}
+
+export function suggestDuration(details: ServiceDetails): number {
+  const type = getServiceType(details.category, details.serviceType);
+  if (!type) return 4;
+
+  let hours = type.defaultHours;
+
+  if (details.category === "cleaning") {
+    const beds = details.bedrooms ?? 3;
+    const baths = details.bathrooms ?? 2;
+    hours += Math.max(0, beds - 2) * 0.5;
+    hours += Math.max(0, baths - 1) * 0.5;
+  } else {
+    hours += Math.max(0, (details.children ?? 1) - 1) * 0.5;
+  }
+
+  for (const addonId of details.addons) {
+    hours += ADDON_HOUR_INCREMENT[addonId] ?? 0.5;
+  }
+
+  hours = Math.max(DURATION_OPTIONS[0], Math.min(DURATION_OPTIONS[DURATION_OPTIONS.length - 1], hours));
+
+  return DURATION_OPTIONS.reduce((best, opt) =>
+    Math.abs(opt - hours) < Math.abs(best - hours) ? opt : best
+  );
+}
 
 export function suggestPrice(details: ServiceDetails): {
   min: number;

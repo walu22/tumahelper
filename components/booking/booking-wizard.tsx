@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { supabaseClient } from '@/lib/supabase-client'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -21,16 +20,19 @@ import {
   Loader2,
 } from 'lucide-react'
 import { ServiceConfigPanel } from '@/components/services/service-config-panel'
-import { ServiceSummary } from '@/components/services/service-summary'
+import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
+import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
 import {
   categorySlugToKey,
   defaultServiceDetails,
   paramToCategoryKey,
+  type ServiceCategoryKey,
   type ServiceDetails,
 } from '@/lib/services/catalog'
 import {
   formatServiceSummary,
   parseServiceDetailsFromParams,
+  resolveFunnelParam,
   suggestPrice,
 } from '@/lib/services/utils'
 
@@ -68,6 +70,15 @@ const categoryParamToSlug: Record<string, string> = {
   'house-cleaner': 'house-cleaning',
 }
 
+/** 0 = pick service (optional prelude), 1 = Details, 2 = Worker, 3 = Payment */
+const STEP = { PICK: 0, DETAILS: 1, WORKER: 2, PAYMENT: 3 } as const
+
+const PROGRESS_STEPS = [
+  { num: STEP.DETAILS, label: 'Details' },
+  { num: STEP.WORKER, label: 'Worker' },
+  { num: STEP.PAYMENT, label: 'Payment' },
+]
+
 function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
   return {
     id: w.id as string,
@@ -86,10 +97,24 @@ function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
   }
 }
 
-function getInitialStep(categoryParam: string | null, workerProfileId: string | null) {
-  if (workerProfileId) return 4
-  if (categoryParam && paramToCategoryKey(categoryParam)) return 2
-  return 1
+function resolveCategoryFromParams(
+  categoryParam: string | null,
+  funnelParam: string | null
+): ServiceCategoryKey | null {
+  const fromCategory = paramToCategoryKey(categoryParam)
+  if (fromCategory) return fromCategory
+  const funnel = resolveFunnelParam(funnelParam)
+  return funnel?.category ?? null
+}
+
+function getInitialStep(
+  categoryParam: string | null,
+  funnelParam: string | null,
+  workerProfileId: string | null
+) {
+  if (workerProfileId) return STEP.DETAILS
+  if (resolveCategoryFromParams(categoryParam, funnelParam)) return STEP.DETAILS
+  return STEP.PICK
 }
 
 export function BookingWizard() {
@@ -97,11 +122,14 @@ export function BookingWizard() {
   const searchParams = useSearchParams()
   const workerProfileId = searchParams.get('worker')
   const categoryParam = searchParams.get('category')
+  const funnelParam = searchParams.get('funnel')
   const preselectedWorkerRef = useRef<string | null>(null)
   const urlInitDone = useRef(false)
   const pricePrefilled = useRef(false)
 
-  const [step, setStep] = useState(() => getInitialStep(categoryParam, workerProfileId))
+  const [step, setStep] = useState<number>(() =>
+    getInitialStep(categoryParam, funnelParam, workerProfileId)
+  )
   const [submitting, setSubmitting] = useState(false)
   const [deepLinkLoading, setDeepLinkLoading] = useState(!!workerProfileId)
 
@@ -168,19 +196,25 @@ export function BookingWizard() {
   }, [categorySlug, workerProfileId])
 
   useEffect(() => {
-    if (urlInitDone.current || workerProfileId || !categoryParam || categories.length === 0) return
-    const slug = categoryParamToSlug[categoryParam]
-    if (!slug) return
+    if (urlInitDone.current || workerProfileId || categories.length === 0) return
+
+    const key = resolveCategoryFromParams(categoryParam, funnelParam)
+    if (!key) return
+
+    const slug = key === 'nanny' ? 'nanny-services' : 'house-cleaning'
     const cat = categories.find((c) => c.slug === slug)
     if (!cat) return
 
     const parsed = parseServiceDetailsFromParams(searchParams)
-    const key = paramToCategoryKey(categoryParam)!
+    const funnel = resolveFunnelParam(funnelParam)
+    let details = parsed ?? defaultServiceDetails(key)
+    if (funnel?.type) details = { ...details, serviceType: funnel.type }
+
     setSelectedCategory(cat)
-    setServiceDetails(parsed ?? defaultServiceDetails(key))
-    setStep(2)
+    setServiceDetails(details)
+    setStep(STEP.DETAILS)
     urlInitDone.current = true
-  }, [categoryParam, categories, workerProfileId, searchParams])
+  }, [categoryParam, funnelParam, categories, workerProfileId, searchParams])
 
   useEffect(() => {
     if (urlInitDone.current || !workerProfileId || categoriesLoading || categories.length === 0) return
@@ -191,7 +225,7 @@ export function BookingWizard() {
       .then((res) => {
         if (!res.success || !res.data) {
           toast.error('Worker not found')
-          setStep(3)
+          setStep(STEP.WORKER)
           return
         }
         const w = mapApiWorker(res.data)
@@ -203,18 +237,18 @@ export function BookingWizard() {
         setServiceDetails(parsed ?? defaultServiceDetails(key))
         preselectedWorkerRef.current = w.user_id
         setSelectedWorker(w)
-        setStep(4)
+        setStep(STEP.DETAILS)
         urlInitDone.current = true
       })
       .catch(() => {
         toast.error('Could not load worker')
-        setStep(3)
+        setStep(STEP.WORKER)
       })
       .finally(() => setDeepLinkLoading(false))
   }, [workerProfileId, categories, categoriesLoading, searchParams])
 
   useEffect(() => {
-    if (step === 4 && serviceDetails && !amount && !pricePrefilled.current) {
+    if (step === STEP.PAYMENT && serviceDetails && !amount && !pricePrefilled.current) {
       const { typical } = suggestPrice(serviceDetails)
       setAmount(String(typical))
       pricePrefilled.current = true
@@ -242,7 +276,7 @@ export function BookingWizard() {
       if (!key) return
       setSelectedCategory(cat)
       setServiceDetails(defaultServiceDetails(key))
-      goToStep(2)
+      goToStep(STEP.DETAILS)
     },
     [goToStep]
   )
@@ -250,12 +284,18 @@ export function BookingWizard() {
   const selectWorker = useCallback(
     (worker: WorkerSummary) => {
       setSelectedWorker(worker)
-      goToStep(4)
+      goToStep(STEP.PAYMENT)
     },
     [goToStep]
   )
 
-  const canProceedStep4 =
+  const canProceedDetails =
+    !!serviceDetails &&
+    !!serviceDate &&
+    !!serviceTime &&
+    locationAddress.length >= 5
+
+  const canProceedPayment =
     !!selectedWorker &&
     !!serviceDetails &&
     !!serviceDate &&
@@ -271,16 +311,17 @@ export function BookingWizard() {
   async function handleSubmit() {
     if (!selectedCategory || !serviceDetails) {
       toast.error('Please configure your service')
-      goToStep(2)
+      goToStep(STEP.DETAILS)
       return
     }
     if (!selectedWorker) {
       toast.error('Please choose a worker')
-      goToStep(3)
+      goToStep(STEP.WORKER)
       return
     }
     if (!serviceDate || !serviceTime || locationAddress.length < 5 || !amount) {
-      toast.error('Please fill in date, time, location, and fee')
+      toast.error('Please complete your booking details')
+      goToStep(STEP.DETAILS)
       return
     }
 
@@ -307,7 +348,7 @@ export function BookingWizard() {
         throw new Error(data.error?.message || 'Failed to create booking')
       }
 
-      toast.success('Booking created — complete payment on the next screen')
+      toast.success('Booking created. Complete payment on the next screen')
       router.push(`/customer/bookings/${data.data.id}`)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')
@@ -316,48 +357,53 @@ export function BookingWizard() {
     }
   }
 
-  const steps = [
-    { num: 1, label: 'Service' },
-    { num: 2, label: 'Details' },
-    { num: 3, label: 'Worker' },
-    { num: 4, label: 'Schedule' },
-  ]
-
-  const today = new Date().toISOString().split('T')[0]
+  const summaryProps = serviceDetails
+    ? {
+        details: serviceDetails,
+        categoryName: selectedCategory?.name,
+        serviceDate,
+        serviceTime,
+        locationAddress,
+        workerName: selectedWorker?.full_name,
+        amount,
+      }
+    : null
 
   return (
     <div className="min-h-screen">
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Book a Service</h1>
-          <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1">
-            {steps.map((s) => (
-              <div key={s.num} className="flex items-center gap-2 shrink-0">
-                <div
-                  className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    s.num === step
-                      ? 'bg-primary text-white'
-                      : s.num < step
-                        ? 'bg-primary/20 text-primary'
-                        : 'bg-gray-100 text-muted-foreground'
-                  }`}
-                >
-                  {s.num}
+          {step >= STEP.DETAILS && (
+            <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1">
+              {PROGRESS_STEPS.map((s, i) => (
+                <div key={s.num} className="flex items-center gap-2 shrink-0">
+                  <div
+                    className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                      s.num === step
+                        ? 'bg-primary text-white'
+                        : s.num < step
+                          ? 'bg-primary/20 text-primary'
+                          : 'bg-gray-100 text-muted-foreground'
+                    }`}
+                  >
+                    {i + 1}
+                  </div>
+                  <span
+                    className={`text-sm ${s.num === step ? 'font-medium' : 'text-muted-foreground'}`}
+                  >
+                    {s.label}
+                  </span>
+                  {i < PROGRESS_STEPS.length - 1 && <div className="h-0.5 w-6 bg-gray-200" />}
                 </div>
-                <span
-                  className={`text-sm ${s.num === step ? 'font-medium' : 'text-muted-foreground'}`}
-                >
-                  {s.label}
-                </span>
-                {s.num < 4 && <div className="h-0.5 w-6 bg-gray-200" />}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <Card>
-          <CardContent className="p-6">
-            {step === 1 && (
+        {step === STEP.PICK && (
+          <Card>
+            <CardContent className="p-6">
               <div className="space-y-4">
                 <h2 className="text-xl font-semibold mb-4">What do you need?</h2>
                 {categoriesLoading ? (
@@ -390,44 +436,93 @@ export function BookingWizard() {
                   })
                 )}
               </div>
-            )}
+            </CardContent>
+          </Card>
+        )}
 
-            {step === 2 && serviceDetails && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold">Configure your visit</h2>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {selectedCategory?.name} — choose type, scope, and extras
-                  </p>
-                </div>
-
-                <ServiceConfigPanel
-                  category={serviceDetails.category}
-                  value={serviceDetails}
-                  onChange={setServiceDetails}
+        {step === STEP.DETAILS && serviceDetails && (
+          <div className="lg:grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+            {summaryProps && (
+              <>
+                <BookingSummaryPanel
+                  {...summaryProps}
+                  className="hidden lg:block lg:sticky lg:top-8"
                 />
-
-                <div className="flex justify-between pt-2">
-                  <Button variant="outline" onClick={() => goToStep(1)}>
-                    <ChevronLeft className="mr-2 h-4 w-4" />
-                    Back
-                  </Button>
-                  <Button onClick={() => goToStep(3)}>
-                    Choose worker
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+                <BookingSummaryPanel {...summaryProps} className="lg:hidden mb-2" />
+              </>
             )}
 
-            {step === 3 && (
-              <div className="space-y-4">
-                {serviceDetails && (
-                  <ServiceSummary details={serviceDetails} />
+            <Card>
+              <CardContent className="p-6 space-y-6">
+                {deepLinkLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <h2 className="text-xl font-semibold">Booking details</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {selectedCategory?.name}: set your scope, schedule, and location.
+                      </p>
+                    </div>
+
+                    <ServiceConfigPanel
+                      category={serviceDetails.category}
+                      value={serviceDetails}
+                      onChange={setServiceDetails}
+                      showPriceHint={false}
+                    />
+
+                    <BookingScheduleFields
+                      serviceDate={serviceDate}
+                      serviceTime={serviceTime}
+                      locationAddress={locationAddress}
+                      description={description}
+                      onDateChange={setServiceDate}
+                      onTimeChange={setServiceTime}
+                      onAddressChange={setLocationAddress}
+                      onDescriptionChange={setDescription}
+                    />
+
+                    <div className="flex justify-between pt-2 gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => goToStep(STEP.PICK)}
+                        disabled={!!categoryParam || !!funnelParam}
+                      >
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Back
+                      </Button>
+                      <Button onClick={() => goToStep(STEP.WORKER)} disabled={!canProceedDetails}>
+                        Choose worker
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </>
                 )}
-                <div className="flex items-center justify-between gap-4 pt-2">
-                  <h2 className="text-xl font-semibold">Choose a worker</h2>
-                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {step === STEP.WORKER && (
+          <div className="lg:grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+            {summaryProps && (
+              <BookingSummaryPanel
+                {...summaryProps}
+                className="hidden lg:block lg:sticky lg:top-8"
+              />
+            )}
+
+            <Card>
+              <CardContent className="p-6 space-y-4">
+                {summaryProps && (
+                  <BookingSummaryPanel {...summaryProps} className="lg:hidden" />
+                )}
+
+                <h2 className="text-xl font-semibold">Choose a worker</h2>
+
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -449,7 +544,7 @@ export function BookingWizard() {
                       : 'No available workers for this service right now.'}
                   </div>
                 ) : (
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                  <div className="space-y-3 max-h-[28rem] overflow-y-auto">
                     {filteredWorkers.map((worker) => (
                       <button
                         key={worker.id}
@@ -501,63 +596,55 @@ export function BookingWizard() {
                   </div>
                 )}
 
-                <div className="flex justify-start pt-2">
-                  <Button variant="outline" onClick={() => goToStep(2)}>
+                <div className="flex justify-between pt-2 gap-3">
+                  <Button variant="outline" onClick={() => goToStep(STEP.DETAILS)}>
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Edit details
                   </Button>
+                  {selectedWorker && (
+                    <Button onClick={() => goToStep(STEP.PAYMENT)}>
+                      Continue with {selectedWorker.full_name.split(' ')[0]}
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {step === STEP.PAYMENT && serviceDetails && (
+          <div className="lg:grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+            {summaryProps && (
+              <BookingSummaryPanel
+                {...summaryProps}
+                className="hidden lg:block lg:sticky lg:top-8"
+              />
             )}
 
-            {step === 4 && (
-              <div className="space-y-6">
-                {deepLinkLoading ? (
-                  <div className="flex justify-center py-12">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  </div>
-                ) : (
+            <Card>
+              <CardContent className="p-6 space-y-6">
+                {summaryProps && (
+                  <BookingSummaryPanel {...summaryProps} className="lg:hidden" />
+                )}
+
+                <div>
+                  <h2 className="text-xl font-semibold mb-1">Confirm & pay</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedWorker
+                      ? `Review your booking with ${selectedWorker.full_name}`
+                      : 'Choose a worker to continue'}
+                  </p>
+                </div>
+
+                {!selectedWorker && (
+                  <Button variant="outline" onClick={() => goToStep(STEP.WORKER)}>
+                    Choose a worker
+                  </Button>
+                )}
+
+                {selectedWorker && (
                   <>
-                    <div>
-                      <h2 className="text-xl font-semibold mb-1">Schedule & confirm</h2>
-                      <p className="text-sm text-muted-foreground">
-                        {selectedWorker
-                          ? `Booking ${selectedWorker.full_name}`
-                          : 'Choose a worker to continue'}
-                      </p>
-                    </div>
-
-                    {serviceDetails && <ServiceSummary details={serviceDetails} />}
-
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-medium mb-1.5 block">Date</label>
-                        <Input
-                          type="date"
-                          value={serviceDate}
-                          onChange={(e) => setServiceDate(e.target.value)}
-                          min={today}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-1.5 block">Time</label>
-                        <Input
-                          type="time"
-                          value={serviceTime}
-                          onChange={(e) => setServiceTime(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium mb-1.5 block">Address in Lusaka</label>
-                      <Input
-                        placeholder="e.g. Plot 12, Kabulonga"
-                        value={locationAddress}
-                        onChange={(e) => setLocationAddress(e.target.value)}
-                      />
-                    </div>
-
                     <div>
                       <label className="text-sm font-medium mb-1.5 block">
                         Service fee (ZMW)
@@ -570,30 +657,16 @@ export function BookingWizard() {
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                       />
-                      {serviceDetails && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Suggested K{suggestPrice(serviceDetails).typical} based on your scope.
-                          Platform fee (10%) added at checkout.
-                        </p>
-                      )}
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Suggested K{suggestPrice(serviceDetails).typical} based on your scope.
+                        Platform fee (10%) added at checkout.
+                      </p>
                     </div>
 
-                    <div>
-                      <label className="text-sm font-medium mb-1.5 block">
-                        Additional notes (optional)
-                      </label>
-                      <Textarea
-                        placeholder="Gate code, access instructions, special requests..."
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        rows={3}
-                      />
-                    </div>
-
-                    {selectedWorker && amount && parseFloat(amount) >= 1 && (
+                    {amount && parseFloat(amount) >= 1 && (
                       <div className="rounded-lg bg-gray-50 border p-4 space-y-2 text-sm">
                         <p className="font-medium text-xs text-muted-foreground uppercase tracking-wide">
-                          {serviceDetails ? formatServiceSummary(serviceDetails) : 'Booking summary'}
+                          {formatServiceSummary(serviceDetails)}
                         </p>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Service fee</span>
@@ -611,13 +684,13 @@ export function BookingWizard() {
                     )}
 
                     <div className="flex justify-between pt-2 gap-3">
-                      <Button variant="outline" onClick={() => goToStep(3)}>
+                      <Button variant="outline" onClick={() => goToStep(STEP.WORKER)}>
                         <ChevronLeft className="mr-2 h-4 w-4" />
                         Change worker
                       </Button>
                       <Button
                         onClick={handleSubmit}
-                        disabled={submitting || !canProceedStep4}
+                        disabled={submitting || !canProceedPayment}
                         className="min-w-[10rem]"
                       >
                         {submitting ? (
@@ -632,10 +705,10 @@ export function BookingWizard() {
                     </div>
                   </>
                 )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </main>
     </div>
   )
