@@ -17,8 +17,8 @@ export function ServicesDetailSection() {
             Know exactly what you&apos;re booking.
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            Choose a service type, set your home or family details, and add extras — just like
-            you would on SweepSouth, tailored for Lusaka.
+            Choose a service type, set your home or family details, and add extras tailored
+            for Lusaka homes.
           </p>
         </div>
 

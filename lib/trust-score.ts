@@ -137,7 +137,7 @@ export function calculateTrustScore(
   let color: string;
 
   if (isProvisional) {
-    label = "New — Building Trust";
+    label = "New, building trust";
     color = "#9E9E9E";
   } else if (score >= 90) {
     label = "Exceptional";
@@ -174,7 +174,7 @@ export function calculateTrustScore(
 }
 
 export function getTrustScoreLabel(score: number, isProvisional: boolean): { label: string; color: string } {
-  if (isProvisional) return { label: "New — Building Trust", color: "#9E9E9E" };
+  if (isProvisional) return { label: "New, building trust", color: "#9E9E9E" };
   if (score >= 90) return { label: "Exceptional", color: "#1B7A3F" };
   if (score >= 75) return { label: "Trusted", color: "#4CAF50" };
   if (score >= 60) return { label: "Good", color: "#FFC107" };

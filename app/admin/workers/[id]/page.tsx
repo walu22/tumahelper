@@ -87,7 +87,7 @@ export default function AdminWorkerDetailPage({ params }: { params: { id: string
                     <MapPin className="h-3 w-3" /> {profile.area}, {profile.city}
                   </p>
                   <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                    <Briefcase className="h-3 w-3" /> {profile.category.replace('_', ' ')} — {profile.experience_years} years
+                    <Briefcase className="h-3 w-3" /> {profile.category.replace('_', ' ')} · {profile.experience_years} years
                   </p>
                 </div>
                 <VerificationBadge level={profile.verification_level} size="lg" />

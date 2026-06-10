@@ -43,7 +43,7 @@ export default async function JobsPage() {
             <Link href="/hire" className="font-semibold text-primary hover:underline">
               request a permanent placement
             </Link>
-            — this page is for workers finding jobs.
+            . This page is for workers finding jobs.
           </p>
         </div>
 

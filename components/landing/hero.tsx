@@ -24,7 +24,7 @@ export function LandingHero() {
             Book verified nannies &amp; cleaners.
           </h1>
           <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
-            One-off or regular visits — with a path to permanent hire when you&apos;re ready.
+            One-off or regular visits, with a path to permanent hire when you&apos;re ready.
           </p>
         </div>
 

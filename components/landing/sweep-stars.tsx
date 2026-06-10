@@ -37,7 +37,7 @@ export function SweepStarsSection({ workers }: { workers: PublicWorkerProfile[] 
             Top-rated workers in Lusaka
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed">
-            Real profiles, verified and ready to help — book directly from their page.
+            Real profiles, verified and ready to help. Book directly from their page.
           </p>
         </div>
 

@@ -20,7 +20,7 @@ export function PlatformOfferings() {
             Nannies and house cleaners, verified for Lusaka homes.
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            Book for a single visit or set up regular help — then hire permanently
+            Book for a single visit or set up regular help, then hire permanently
             when you find the right person.
           </p>
         </div>
