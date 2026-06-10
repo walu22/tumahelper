@@ -1,4 +1,5 @@
 import {
+  CHILD_AGE_GROUPS,
   DURATION_OPTIONS,
   SERVICE_CATALOG,
   defaultServiceDetails,
@@ -119,8 +120,12 @@ export function formatServiceSummary(details: ServiceDetails): string {
     parts.push(
       `${details.children ?? 1} ${details.children === 1 ? "child" : "children"}`
     );
-    if (details.childAgeGroups?.length) {
-      parts.push(`ages ${details.childAgeGroups.join(", ")}`);
+    const ageLabels = (details.childAgeGroups ?? [])
+      .slice(0, details.children ?? 1)
+      .map((id) => CHILD_AGE_GROUPS.find((g) => g.id === id)?.label ?? id)
+      .filter(Boolean);
+    if (ageLabels.length) {
+      parts.push(`ages ${ageLabels.join(", ")}`);
     }
   }
 
@@ -196,4 +201,14 @@ export function mergeServiceDetails(
   parsed: ServiceDetails | null
 ): ServiceDetails {
   return parsed ?? defaultServiceDetails(category);
+}
+
+export function nannyChildAgesComplete(details: ServiceDetails): boolean {
+  if (details.category !== "nanny") return true;
+  const count = details.children ?? 1;
+  const ages = details.childAgeGroups ?? [];
+  return (
+    ages.length >= count &&
+    ages.slice(0, count).every((age) => typeof age === "string" && age.length > 0)
+  );
 }

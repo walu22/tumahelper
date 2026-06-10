@@ -1,8 +1,11 @@
 "use client";
 
 import { Calendar, MapPin } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { getBookingStartSlots } from "@/lib/booking/time-slots";
+import type { ServiceCategoryKey } from "@/lib/services/catalog";
 
 interface BookingScheduleFieldsProps {
   serviceDate: string;
@@ -15,6 +18,7 @@ interface BookingScheduleFieldsProps {
   onDescriptionChange: (value: string) => void;
   minDate?: string;
   compact?: boolean;
+  category?: ServiceCategoryKey;
 }
 
 export function BookingScheduleFields({
@@ -28,8 +32,10 @@ export function BookingScheduleFields({
   onDescriptionChange,
   minDate,
   compact = false,
+  category,
 }: BookingScheduleFieldsProps) {
   const today = minDate ?? new Date().toISOString().split("T")[0];
+  const startSlots = getBookingStartSlots(category);
 
   return (
     <div
@@ -48,33 +54,46 @@ export function BookingScheduleFields({
         </div>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="service-date" className="text-sm font-medium mb-1.5 block">
-            Date <span className="text-primary">*</span>
-          </label>
-          <Input
-            id="service-date"
-            type="date"
-            value={serviceDate}
-            onChange={(e) => onDateChange(e.target.value)}
-            min={today}
-            required
-            className="bg-white"
-          />
-        </div>
-        <div>
-          <label htmlFor="service-time" className="text-sm font-medium mb-1.5 block">
-            Time <span className="text-primary">*</span>
-          </label>
-          <Input
-            id="service-time"
-            type="time"
-            value={serviceTime}
-            onChange={(e) => onTimeChange(e.target.value)}
-            required
-            className="bg-white"
-          />
+      <div>
+        <label htmlFor="service-date" className="text-sm font-medium mb-1.5 block">
+          Date <span className="text-primary">*</span>
+        </label>
+        <Input
+          id="service-date"
+          type="date"
+          value={serviceDate}
+          onChange={(e) => onDateChange(e.target.value)}
+          min={today}
+          required
+          className="bg-white max-w-xs"
+        />
+      </div>
+
+      <div>
+        <p className="text-sm font-medium mb-1">
+          Start time <span className="text-primary">*</span>
+        </p>
+        <p className="text-xs text-muted-foreground mb-3">
+          {category === "nanny"
+            ? "Includes evening slots for babysitting. Visit length is set in your service details below."
+            : "Pick a start time. Visit length is set in your service details below."}
+        </p>
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {startSlots.map((slot) => (
+            <button
+              key={slot.value}
+              type="button"
+              onClick={() => onTimeChange(slot.value)}
+              className={cn(
+                "rounded-xl border-2 px-2 py-2.5 text-sm font-medium transition-colors",
+                serviceTime === slot.value
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-white text-foreground hover:border-primary/40"
+              )}
+            >
+              {slot.label}
+            </button>
+          ))}
         </div>
       </div>
 

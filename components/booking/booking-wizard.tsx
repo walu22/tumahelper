@@ -34,6 +34,7 @@ import {
   parseServiceDetailsFromParams,
   resolveFunnelParam,
   suggestPrice,
+  nannyChildAgesComplete,
 } from '@/lib/services/utils'
 
 interface Category {
@@ -297,11 +298,11 @@ export function BookingWizard() {
   const hasScheduleDetails =
     !!serviceDate && !!serviceTime && locationAddress.length >= 5
 
+  const hasNannyAges =
+    !serviceDetails || nannyChildAgesComplete(serviceDetails)
+
   const canProceedDetails =
-    !!serviceDetails &&
-    !!serviceDate &&
-    !!serviceTime &&
-    locationAddress.length >= 5
+    !!serviceDetails && hasScheduleDetails && hasNannyAges
 
   const canProceedPayment =
     !!selectedWorker &&
@@ -484,6 +485,7 @@ export function BookingWizard() {
                       onTimeChange={setServiceTime}
                       onAddressChange={setLocationAddress}
                       onDescriptionChange={setDescription}
+                      category={serviceDetails.category}
                     />
 
                     <ServiceConfigPanel
@@ -495,7 +497,9 @@ export function BookingWizard() {
 
                     {!canProceedDetails && (
                       <p className="text-sm text-muted-foreground text-center">
-                        Fill in the date, time, and address above to continue.
+                        {!hasScheduleDetails
+                          ? 'Choose a date, start time, and address above to continue.'
+                          : 'Select an age range for each child below to continue.'}
                       </p>
                     )}
 
@@ -678,6 +682,7 @@ export function BookingWizard() {
                         onTimeChange={setServiceTime}
                         onAddressChange={setLocationAddress}
                         onDescriptionChange={setDescription}
+                        category={serviceDetails.category}
                         compact
                       />
                     )}

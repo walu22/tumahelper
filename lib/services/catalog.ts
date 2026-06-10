@@ -217,7 +217,7 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
     serviceType: firstType.id,
     durationHours: firstType.defaultHours,
     children: 1,
-    childAgeGroups: ["3-5"],
+    childAgeGroups: [],
     addons: [],
   };
 }
