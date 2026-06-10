@@ -21,14 +21,14 @@ export const PLATFORM_OFFERINGS = [
   {
     title: "Nannies & childcare",
     description:
-      "Babysitting, after-school help, or regular childcare — book a verified nanny for the times you need.",
+      "Babysitting, after-school help, or regular childcare. Book a verified nanny for the times you need.",
     href: "/customer/book?category=nanny",
     variant: "pink" as const,
   },
   {
     title: "House cleaning",
     description:
-      "One-off deep cleans or regular visits — book a verified cleaner across Lusaka.",
+      "One-off deep cleans or regular visits. Book a verified cleaner across Lusaka.",
     href: "/customer/book?category=cleaning",
     variant: "green" as const,
   },
@@ -60,7 +60,7 @@ export const SAFETY_SIGNALS = [
   "NRC identity checks on every worker",
   "Employer reference verification before profiles go live",
   "Trust scores updated after each completed job",
-  "Pay via MTN MoMo, Airtel Money, or cash — with proof upload",
+  "Pay via MTN MoMo, Airtel Money, or cash, with proof upload",
 ];
 
 export const FAQ_ITEMS = [
@@ -70,7 +70,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: "How do I pay?",
-    a: "After booking, pay via MTN Mobile Money or Airtel Money and upload your confirmation screenshot. Cash on arrival works too — just agree with your worker beforehand.",
+    a: "After booking, pay via MTN Mobile Money or Airtel Money and upload your confirmation screenshot. Cash on arrival works too. Just agree with your worker beforehand.",
   },
   {
     q: "Can I book once or regularly?",
@@ -82,6 +82,6 @@ export const FAQ_ITEMS = [
   },
   {
     q: "Which areas do you cover?",
-    a: "We serve households across Lusaka — Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, Chelstone, and surrounding areas.",
+    a: "We serve households across Lusaka, including Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, Chelstone, and surrounding areas.",
   },
 ];

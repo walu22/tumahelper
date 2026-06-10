@@ -147,7 +147,7 @@ export function RegisterForm() {
               autoComplete="tel"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Zambian format: +26097XXXXXXX — used for MoMo payments and contact
+              Zambian format: +26097XXXXXXX, used for MoMo payments and contact
             </p>
           </div>
 

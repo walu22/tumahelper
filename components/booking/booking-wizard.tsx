@@ -307,7 +307,7 @@ export function BookingWizard() {
         throw new Error(data.error?.message || 'Failed to create booking')
       }
 
-      toast.success('Booking created — complete payment on the next screen')
+      toast.success('Booking created. Complete payment on the next screen')
       router.push(`/customer/bookings/${data.data.id}`)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')
@@ -397,7 +397,7 @@ export function BookingWizard() {
                 <div>
                   <h2 className="text-xl font-semibold">Configure your visit</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {selectedCategory?.name} — choose type, scope, and extras
+                    {selectedCategory?.name}: choose type, scope, and extras
                   </p>
                 </div>
 
