@@ -25,7 +25,7 @@ function tomorrowIsoDate() {
 }
 
 /** Dev bypass session cookie (matches lib/auth/session.ts) */
-function customerDevCookie() {
+function customerDevCookie(baseURL: string) {
   const payload = {
     id: "f0000000-0000-0000-0000-000000000001",
     role: "customer",
@@ -38,17 +38,14 @@ function customerDevCookie() {
   return {
     name: "tumahelper-dev-session",
     value,
-    domain: "localhost",
-    path: "/",
+    url: baseURL.replace(/\/$/, ""),
     httpOnly: true,
     sameSite: "Lax" as const,
   };
 }
 
-async function loginAsCustomer(page: Page) {
-  await page.context().addCookies([customerDevCookie()]);
-  await page.goto("/customer/dashboard");
-  await expect(page).toHaveURL(/\/customer\/dashboard/);
+async function loginAsCustomer(page: Page, baseURL: string) {
+  await page.context().addCookies([customerDevCookie(baseURL)]);
 }
 
 test.describe("Nanny booking end-to-end", () => {
@@ -88,7 +85,7 @@ test.describe("Nanny booking end-to-end", () => {
     });
   });
 
-  test("customer can book babysitting from login through confirmation", async ({ page }) => {
+  test("customer can book babysitting from login through confirmation", async ({ page, baseURL }) => {
     test.setTimeout(60_000);
 
     let capturedBookingBody: Record<string, unknown> | null = null;
@@ -115,7 +112,7 @@ test.describe("Nanny booking end-to-end", () => {
       });
     });
 
-    await loginAsCustomer(page);
+    await loginAsCustomer(page, baseURL!);
 
     await page.goto("/customer/book?category=nanny&type=babysitting");
     await expect(page.getByRole("heading", { name: "Book a Service" })).toBeVisible();
@@ -157,8 +154,8 @@ test.describe("Nanny booking end-to-end", () => {
     });
   });
 
-  test("blocks progress without date, time window, and child age", async ({ page }) => {
-    await loginAsCustomer(page);
+  test("blocks progress without date, start time, and child age", async ({ page, baseURL }) => {
+    await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book?category=nanny&type=babysitting");
     await expect(page.locator("#service-date")).toBeVisible({ timeout: 15_000 });
 
@@ -174,8 +171,8 @@ test.describe("Nanny booking end-to-end", () => {
     await expect(continueBtn).toBeEnabled();
   });
 
-  test("single child shows one age dropdown, not multi-select chips", async ({ page }) => {
-    await loginAsCustomer(page);
+  test("single child shows one age dropdown, not multi-select chips", async ({ page, baseURL }) => {
+    await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book?category=nanny&type=babysitting");
     await expect(page.locator("#child-age")).toBeVisible({ timeout: 15_000 });
     await expect(page.locator("#child-age")).toHaveCount(1);
