@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getRouteHandlerClient } from "@/lib/supabase";
+import { getAdminClient } from "@/lib/supabase";
 import { successResponse, errorResponse } from "@/lib/auth";
 import { calculateTrustScore } from "@/lib/trust-score";
 
@@ -9,16 +9,13 @@ export async function GET(
 ) {
   try {
     const { id } = params;
-    const supabase = getRouteHandlerClient();
+    const supabase = getAdminClient();
 
     const { data: profile, error: profileError } = await supabase
       .from("worker_profiles")
-      .select(`
-        *,
-        users!inner(id, status)
-      `)
+      .select("*")
       .eq("id", id)
-      .eq("users.status", "active")
+      .eq("verification_status", "approved")
       .single();
 
     if (profileError || !profile) {

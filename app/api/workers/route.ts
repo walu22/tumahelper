@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getRouteHandlerClient } from "@/lib/supabase";
+import { getAdminClient } from "@/lib/supabase";
 import { successResponse, errorResponse } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
@@ -14,14 +14,12 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
 
-    const supabase = getRouteHandlerClient();
+    // Service role: public worker browse must not join `users` via anon RLS (returns empty).
+    const supabase = getAdminClient();
     let query = supabase
       .from("worker_profiles")
-      .select(`
-        *,
-        users!inner(id, phone, status)
-      `)
-      .eq("users.status", "active");
+      .select("*", { count: "exact" })
+      .eq("verification_status", "approved");
 
     if (category) query = query.eq("category", category);
     if (city) query = query.eq("city", city);

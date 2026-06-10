@@ -181,6 +181,11 @@ export function BookingWizard() {
     fetch(`/api/workers?category=${categorySlug}&available=true`)
       .then((r) => r.json())
       .then((res) => {
+        if (!res.success) {
+          toast.error(res.error?.message || 'Could not load workers')
+          setWorkers([])
+          return
+        }
         const list: WorkerSummary[] = res.data || []
         setWorkers(list)
         const preId = preselectedWorkerRef.current
@@ -192,7 +197,10 @@ export function BookingWizard() {
           setSelectedWorker(null)
         }
       })
-      .catch(() => setWorkers([]))
+      .catch(() => {
+        toast.error('Could not load workers')
+        setWorkers([])
+      })
       .finally(() => setWorkersLoading(false))
   }, [categorySlug, workerProfileId])
 
