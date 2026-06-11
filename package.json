@@ -9,6 +9,7 @@
     "lint": "next lint",
     "test:e2e": "playwright test",
     "test:e2e:nanny": "playwright test e2e/nanny-booking.spec.ts",
+    "test:e2e:report": "playwright show-report",
     "setup": "node scripts/setup-local.mjs",
     "setup:auth": "node scripts/seed-auth-users.mjs",
     "setup:credentials": "node scripts/create-credentials.mjs",

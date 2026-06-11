@@ -1,80 +1,17 @@
-import { expect, test, type Page } from "@playwright/test";
-
-const MOCK_NANNY_WORKER = {
-  id: "b0000000-0000-0000-0000-000000000001",
-  user_id: "a0000000-0000-0000-0000-000000000001",
-  full_name: "Sarah Mulenga",
-  city: "Lusaka",
-  area: "Kabulonga",
-  category: "nanny",
-  profile_photo_url: null,
-  average_rating: 4.8,
-  total_reviews: 8,
-  trust_score: 87,
-  verification_level: "gold",
-  experience_years: 5,
-  availability_status: "available",
-};
+import { expect, test } from "@playwright/test";
+import { loginAsCustomer } from "./helpers/auth";
+import {
+  MOCK_CATEGORIES,
+  MOCK_NANNY_WORKER,
+  mockServiceCategories,
+  tomorrowIsoDate,
+} from "./helpers/mocks";
 
 const MOCK_BOOKING_ID = "c0000000-0000-0000-0000-000000000001";
 
-function tomorrowIsoDate() {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().split("T")[0];
-}
-
-/** Dev bypass session cookie (matches lib/auth/session.ts) */
-function customerDevCookie(baseURL: string) {
-  const payload = {
-    id: "f0000000-0000-0000-0000-000000000001",
-    role: "customer",
-    email: "client@tumahelper.dev",
-    phone: "+260976666666",
-    full_name: "Demo Customer",
-    exp: Date.now() + 1000 * 60 * 60 * 24 * 365,
-  };
-  const value = Buffer.from(JSON.stringify(payload)).toString("base64url");
-  return {
-    name: "tumahelper-dev-session",
-    value,
-    url: baseURL.replace(/\/$/, ""),
-    httpOnly: true,
-    sameSite: "Lax" as const,
-  };
-}
-
-async function loginAsCustomer(page: Page, baseURL: string) {
-  await page.context().addCookies([customerDevCookie(baseURL)]);
-}
-
 test.describe("Nanny booking end-to-end", () => {
   test.beforeEach(async ({ page }) => {
-    await page.route("**/rest/v1/service_categories**", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        headers: { "content-range": "0-1/2" },
-        body: JSON.stringify([
-          {
-            id: "11111111-1111-1111-1111-111111111111",
-            name: "Nanny Services",
-            slug: "nanny-services",
-            icon: "baby",
-            sort_order: 1,
-            is_active: true,
-          },
-          {
-            id: "22222222-2222-2222-2222-222222222222",
-            name: "House Cleaning",
-            slug: "house-cleaning",
-            icon: "home",
-            sort_order: 2,
-            is_active: true,
-          },
-        ]),
-      });
-    });
+    await mockServiceCategories(page);
 
     await page.route("**/api/workers?category=nanny*", async (route) => {
       await route.fulfill({
@@ -141,7 +78,7 @@ test.describe("Nanny booking end-to-end", () => {
 
     expect(capturedBookingBody).toMatchObject({
       workerId: MOCK_NANNY_WORKER.user_id,
-      categoryId: "11111111-1111-1111-1111-111111111111",
+      categoryId: MOCK_CATEGORIES[0].id,
       serviceDate: tomorrowIsoDate(),
       serviceTime: "08:00",
       locationAddress: "Plot 12, Kabulonga, Lusaka",
