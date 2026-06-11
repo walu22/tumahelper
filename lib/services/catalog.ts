@@ -229,3 +229,20 @@ export function getServiceType(category: ServiceCategoryKey, typeId: string) {
 export function getAddon(category: ServiceCategoryKey, addonId: string) {
   return SERVICE_CATALOG[category].addons.find((a) => a.id === addonId);
 }
+
+/** Flat list for booking entry (category inferred from service type). */
+export function catalogServiceTypeOptions() {
+  const order: ServiceCategoryKey[] = ["nanny", "cleaning"];
+  return order.flatMap((categoryKey) => {
+    const entry = SERVICE_CATALOG[categoryKey];
+    return entry.types.map((type) => ({
+      categoryKey,
+      categoryTitle: entry.title,
+      type,
+    }));
+  });
+}
+
+export function categoryKeyToDbSlug(categoryKey: ServiceCategoryKey) {
+  return categoryKey === "nanny" ? "nanny-services" : "house-cleaning";
+}

@@ -115,7 +115,7 @@ test.describe("Nanny booking end-to-end", () => {
     await loginAsCustomer(page, baseURL!);
 
     await page.goto("/customer/book?category=nanny&type=babysitting");
-    await expect(page.getByRole("heading", { name: "Book a Service" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Book a service" })).toBeVisible();
     await expect(page.locator("#service-date")).toBeVisible({ timeout: 15_000 });
 
     await page.locator("#service-date").fill(tomorrowIsoDate());

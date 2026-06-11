@@ -11,8 +11,6 @@ import { toast } from 'sonner'
 import {
   Search,
   MapPin,
-  Users,
-  Home,
   Star,
   Shield,
   ChevronRight,
@@ -22,9 +20,12 @@ import {
 import { ServiceConfigPanel } from '@/components/services/service-config-panel'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
+import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
+  categoryKeyToDbSlug,
   categorySlugToKey,
   defaultServiceDetails,
+  getServiceType,
   paramToCategoryKey,
   type ServiceCategoryKey,
   type ServiceDetails,
@@ -210,7 +211,7 @@ export function BookingWizard() {
     const key = resolveCategoryFromParams(categoryParam, funnelParam)
     if (!key) return
 
-    const slug = key === 'nanny' ? 'nanny-services' : 'house-cleaning'
+    const slug = categoryKeyToDbSlug(key)
     const cat = categories.find((c) => c.slug === slug)
     if (!cat) return
 
@@ -238,7 +239,7 @@ export function BookingWizard() {
           return
         }
         const w = mapApiWorker(res.data)
-        const slug = w.category === 'nanny' ? 'nanny-services' : 'house-cleaning'
+        const slug = categoryKeyToDbSlug(w.category === 'nanny' ? 'nanny' : 'cleaning')
         const cat = categories.find((c) => c.slug === slug)
         const key = categorySlugToKey(slug)!
         const parsed = parseServiceDetailsFromParams(searchParams)
@@ -279,15 +280,21 @@ export function BookingWizard() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
-  const selectCategory = useCallback(
-    (cat: Category) => {
-      const key = categorySlugToKey(cat.slug)
-      if (!key) return
+  const selectServiceType = useCallback(
+    (categoryKey: ServiceCategoryKey, serviceTypeId: string) => {
+      const cat = categories.find((c) => c.slug === categoryKeyToDbSlug(categoryKey))
+      if (!cat) return
+
+      const typeOption = getServiceType(categoryKey, serviceTypeId)
+      const details = defaultServiceDetails(categoryKey)
+      details.serviceType = serviceTypeId
+      if (typeOption) details.durationHours = typeOption.defaultHours
+
       setSelectedCategory(cat)
-      setServiceDetails(defaultServiceDetails(key))
+      setServiceDetails(details)
       goToStep(STEP.DETAILS)
     },
-    [goToStep]
+    [categories, goToStep]
   )
 
   const selectWorker = useCallback(
@@ -390,7 +397,9 @@ export function BookingWizard() {
     <div className="min-h-screen">
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Book a Service</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            {step === STEP.PICK ? 'What do you need?' : 'Book a service'}
+          </h1>
           {step >= STEP.DETAILS && (
             <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1">
               {PROGRESS_STEPS.map((s, i) => (
@@ -421,38 +430,13 @@ export function BookingWizard() {
         {step === STEP.PICK && (
           <Card>
             <CardContent className="p-6">
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold mb-4">What do you need?</h2>
-                {categoriesLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                  </div>
-                ) : (
-                  categories.map((cat) => {
-                    const Icon = cat.icon === 'baby' ? Users : cat.icon === 'home' ? Home : MapPin
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => selectCategory(cat)}
-                        className="w-full p-6 border-2 rounded-lg transition-colors text-left flex items-center gap-4 hover:border-primary hover:bg-primary/5"
-                      >
-                        <div className="h-12 w-12 rounded-full flex items-center justify-center bg-primary/10 text-primary">
-                          <Icon className="h-6 w-6" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{cat.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {cat.slug.includes('nanny')
-                              ? 'Babysitting, after-school, newborn care & more'
-                              : 'Standard, deep, or move-in/out cleans'}
-                          </p>
-                        </div>
-                        <ChevronRight className="ml-auto h-5 w-5 text-muted-foreground" />
-                      </button>
-                    )
-                  })
-                )}
-              </div>
+              {categoriesLoading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <ServiceTypePicker onSelect={selectServiceType} />
+              )}
             </CardContent>
           </Card>
         )}
