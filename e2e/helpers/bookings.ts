@@ -1,0 +1,8 @@
+export const MOCK_LIFECYCLE_BOOKING_ID = "c0000000-0000-0000-0000-000000000010";
+
+export function tinyPngBuffer() {
+  return Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+    "base64"
+  );
+}

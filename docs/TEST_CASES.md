@@ -21,7 +21,7 @@ Master test catalog for TumaHelper (Lusaka nanny + cleaning marketplace).
 | Admin | `admin@tumahelper.dev` |
 | Employer | `employer@tumahelper.dev` |
 
-Run automated tests: `npm run test:e2e`
+Run automated tests: `npm run test:e2e` · Unit tests: `npm run test:unit`
 
 ---
 
@@ -121,8 +121,8 @@ Run automated tests: `npm run test:e2e`
 
 | ID | Priority | Title | Preconditions | Steps | Expected result | Auto |
 |----|----------|-------|---------------|-------|-----------------|------|
-| BD-001 | P0 | Customer can open own booking detail | Booking exists for customer | Visit `/customer/bookings/{id}` | Page loads; worker name, date, status visible; no 404 | Manual |
-| BD-002 | P1 | Payment proof upload | Pending booking, unpaid | Upload screenshot on detail page | `payment_status` → paid; success feedback | Manual |
+| BD-001 | P0 | Customer can open own booking detail | Booking exists for customer | Visit `/customer/bookings/{id}` | Page loads; worker name, date, status visible; no 404 | payment-proof.spec |
+| BD-002 | P1 | Payment proof upload | Pending booking, unpaid | Upload screenshot on detail page | `payment_status` → paid; success feedback | payment-proof.spec |
 | BD-003 | P1 | Customer can cancel pending booking | Status pending | Click cancel, confirm | Status cancelled; worker notified | Manual |
 | BD-004 | P2 | Customer cannot cancel completed booking | Status completed | Attempt cancel | Action blocked or hidden | Manual |
 | BD-005 | P2 | Review after completion | Status completed | Submit star rating + comment | Review saved; worker rating updated | Manual |
@@ -136,10 +136,10 @@ Run automated tests: `npm run test:e2e`
 | ID | Priority | Title | Preconditions | Steps | Expected result | Auto |
 |----|----------|-------|---------------|-------|-----------------|------|
 | WRK-001 | P1 | Worker dashboard loads | Worker logged in | Visit `/worker/dashboard` | Upcoming bookings, profile summary | auth-access.spec |
-| WRK-002 | P1 | Worker accepts pending booking | Worker assigned, pending | Open booking → Accept | Status → accepted | Manual |
-| WRK-003 | P1 | Worker declines booking | Pending booking | Decline with reason | Status → declined; customer notified | Manual |
-| WRK-004 | P1 | Worker marks in progress | Accepted booking | Start job | Status → in_progress | Manual |
-| WRK-005 | P1 | Worker marks completed | In progress | Complete job | Status → completed; trust score recalc | Manual |
+| WRK-002 | P1 | Worker accepts pending booking | Worker assigned, pending | Open booking → Accept | Status → accepted | booking-lifecycle.spec |
+| WRK-003 | P1 | Worker declines booking | Pending booking | Decline with reason | Status → declined; customer notified | booking-lifecycle.spec |
+| WRK-004 | P1 | Worker marks in progress | Accepted booking | Start job | Status → in_progress | booking-lifecycle.spec |
+| WRK-005 | P1 | Worker marks completed | In progress | Complete job | Status → completed; trust score recalc | booking-lifecycle.spec |
 | WRK-006 | P2 | Worker edits profile | Worker logged in | `/worker/profile` → save changes | Profile updated via API | Manual |
 | WRK-007 | P2 | Worker uploads NRC document | Worker logged in | Upload valid image/PDF | Document queued for admin review | Manual |
 | WRK-008 | P2 | Unapproved worker hidden from book API | Worker not approved | Customer books same category | Worker not in available list | Manual |
@@ -228,8 +228,8 @@ Run automated tests: `npm run test:e2e`
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| 1 | Booking entry + nanny flow + auth guards + cleaning flow | In progress (`e2e/`) |
-| 2 | Booking detail, payment upload, worker status changes | Planned |
+| 1 | Booking entry + nanny/cleaning flow + auth guards | Done (`e2e/`) |
+| 2 | Booking detail, payment upload, worker status changes | Done (`booking-lifecycle`, `payment-proof`) |
 | 3 | Admin queues, employer jobs | Planned |
 | 4 | Unit tests: trust score, validations, fee math, status machine | Planned |
 
