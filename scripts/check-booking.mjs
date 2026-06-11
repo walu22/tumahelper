@@ -108,8 +108,16 @@ console.log("   It does NOT mean your fix failed.");
 console.log("\n--- What to do in the browser ---");
 if (!hasCodeFix) {
   console.log("1. git pull origin master");
-  console.log("2. Restart: npm run dev");
+  console.log("2. Delete cache: Remove-Item -Recurse -Force .next   (PowerShell)");
+  console.log("3. Restart: npm run dev");
+} else {
+  console.log("1. git pull origin master  (get latest auth fix too)");
+  console.log("2. Delete cache: Remove-Item -Recurse -Force .next   (PowerShell)");
+  console.log("3. Restart: npm run dev");
 }
-console.log(`3. Log in at http://localhost:3000/dev-login as customer`);
-console.log(`4. Open http://localhost:3000/customer/bookings/${bookingId}`);
+console.log("4. Log in at http://localhost:3000/dev-login as customer");
+console.log("   OR /login as client@tumahelper.dev (must be user id f0000000-...)");
+console.log(`5. Open http://localhost:3000/customer/bookings/${bookingId}`);
 console.log("   You should see Booking #" + booking.booking_code);
+console.log("\nIf still 404: your browser session user id may not match customer_id above.");
+console.log("Use /dev-login → customer, or sign out and sign in again.");

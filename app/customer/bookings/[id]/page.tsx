@@ -15,6 +15,8 @@ import type { ServiceDetails } from '@/lib/services/catalog'
 import { ArrowLeft, MapPin, Calendar, Clock, FileText, User } from 'lucide-react'
 import type { BookingStatus } from '@/types'
 
+export const dynamic = 'force-dynamic'
+
 const statusStyles: Record<BookingStatus, 'success' | 'warning' | 'destructive' | 'default' | 'secondary' | 'info' | 'outline'> = {
   pending: 'warning',
   accepted: 'info',
@@ -58,6 +60,7 @@ interface BookingWithRelations {
   service_details: ServiceDetails | null
   worker: { full_name: string | null; profile_photo_url: string | null; phone: string | null }
   category: { name: string } | null
+  category_id: string | null
 }
 
 export default async function CustomerBookingDetailPage({
@@ -73,21 +76,28 @@ export default async function CustomerBookingDetailPage({
 
   const { data: bookingRow, error } = await supabase
     .from('bookings')
-    .select(`
-      *,
-      category:category_id(name)
-    `)
+    .select('*')
     .eq('id', params.id)
-    .eq('customer_id', user.id)
-    .single<Omit<BookingWithRelations, 'worker'>>()
+    .maybeSingle<Omit<BookingWithRelations, 'worker' | 'category'>>()
 
-  if (error || !bookingRow) {
+  if (error || !bookingRow || bookingRow.customer_id !== user.id) {
     notFound()
+  }
+
+  let category: { name: string } | null = null
+  if (bookingRow.category_id) {
+    const { data: categoryRow } = await supabase
+      .from('service_categories')
+      .select('name')
+      .eq('id', bookingRow.category_id)
+      .maybeSingle()
+    category = categoryRow ?? null
   }
 
   const worker = await fetchWorkerDisplay(supabase, bookingRow.worker_id)
   const booking: BookingWithRelations = {
     ...bookingRow,
+    category,
     worker: worker ?? { full_name: null, profile_photo_url: null, phone: null },
   }
 

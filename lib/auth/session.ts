@@ -135,8 +135,13 @@ function readDevUserFromCookieStore(
 export async function resolveUserFromRequest(
   request: NextRequest
 ): Promise<User | null> {
+  const devUser = readDevUserFromCookieStore(
+    (name) => request.cookies.get(name)?.value
+  );
+  if (devUser) return devUser;
+
   if (isDevBypassEnabled()) {
-    return readDevUserFromCookieStore((name) => request.cookies.get(name)?.value);
+    return null;
   }
 
   const token = readSupabaseTokenFromCookieStore(
@@ -149,8 +154,11 @@ export async function resolveUserFromRequest(
 }
 
 export async function resolveUserFromCookies(): Promise<User | null> {
+  const devUser = readDevUserFromCookieStore((name) => cookies().get(name)?.value);
+  if (devUser) return devUser;
+
   if (isDevBypassEnabled()) {
-    return readDevUserFromCookieStore((name) => cookies().get(name)?.value);
+    return null;
   }
 
   const token = readSupabaseTokenFromCookieStore(
