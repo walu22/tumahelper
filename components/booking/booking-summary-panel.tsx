@@ -1,9 +1,9 @@
 "use client";
 
-import { MapPin, Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, MapPin, User } from "lucide-react";
 import { getServiceType } from "@/lib/services/catalog";
 import type { ServiceDetails } from "@/lib/services/catalog";
-import { formatServiceSummary, suggestPrice } from "@/lib/services/utils";
+import { getServiceScopeLines, suggestPrice } from "@/lib/services/utils";
 import { formatBookingTime } from "@/lib/booking/time-slots";
 import { formatCurrency } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ interface BookingSummaryPanelProps {
   locationAddress?: string;
   workerName?: string;
   amount?: string;
+  hidePriceEstimate?: boolean;
   className?: string;
 }
 
@@ -28,11 +29,6 @@ function formatDateLabel(isoDate: string): string {
   });
 }
 
-function formatTimeLabel(time: string): string {
-  if (!time) return "";
-  return formatBookingTime(time);
-}
-
 export function BookingSummaryPanel({
   details,
   categoryName,
@@ -41,74 +37,86 @@ export function BookingSummaryPanel({
   locationAddress = "",
   workerName,
   amount,
+  hidePriceEstimate = false,
   className = "",
 }: BookingSummaryPanelProps) {
   const type = getServiceType(details.category, details.serviceType);
   const price = suggestPrice(details);
+  const scopeLines = getServiceScopeLines(details);
   const hasWhen = !!(serviceDate && serviceTime);
   const hasWhere = locationAddress.length >= 5;
 
   return (
-    <aside
-      className={`rounded-2xl border border-border bg-white p-5 space-y-4 ${className}`}
-    >
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-        Booking details
-      </h3>
-
-      <div className="space-y-3 text-sm">
-        <div>
-          <p className="text-xs font-medium text-muted-foreground mb-0.5">What</p>
-          <p className="font-semibold">{type?.label ?? categoryName ?? "Service"}</p>
-          <p className="text-muted-foreground mt-0.5">{formatServiceSummary(details)}</p>
-        </div>
-
-        {hasWhere && (
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-0.5">Where</p>
-            <p className="flex items-start gap-1.5 text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-              {locationAddress}
-            </p>
-          </div>
-        )}
-
-        {hasWhen && (
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-0.5">When</p>
-            <p className="flex items-center gap-3 text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Calendar className="h-3.5 w-3.5" />
-                {formatDateLabel(serviceDate)}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" />
-                {formatTimeLabel(serviceTime)}
-              </span>
-            </p>
-          </div>
-        )}
-
-        {workerName && (
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-0.5">Worker</p>
-            <p className="font-medium">{workerName}</p>
-          </div>
-        )}
+    <aside className={`rounded-2xl border border-border bg-white overflow-hidden ${className}`}>
+      <div className="px-5 py-4 border-b border-border bg-surface/60">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1">
+          Your booking
+        </p>
+        <p className="font-display text-lg font-bold leading-snug">
+          {type?.label ?? categoryName ?? "Service"}
+        </p>
       </div>
 
-      <div className="rounded-xl bg-primary/5 border border-primary/15 p-3 text-sm">
-        <p className="font-semibold text-primary text-xs uppercase tracking-wide mb-1">
-          Typical price
-        </p>
-        <p className="text-muted-foreground">
-          K{price.min} – K{price.max}
-          {amount && parseFloat(amount) >= 1 && (
-            <span className="block mt-1 font-semibold text-foreground">
-              Agreed fee: {formatCurrency(Math.round(parseFloat(amount) * 100))}
-            </span>
-          )}
-        </p>
+      <div className="px-5 py-4 space-y-4">
+        {scopeLines.length > 0 && (
+          <ul className="space-y-1.5 text-sm text-muted-foreground">
+            {scopeLines.map((line) => (
+              <li key={line} className="leading-snug">
+                {line}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {(hasWhere || hasWhen || workerName) && (
+          <div className="space-y-3 pt-1 border-t border-border/80">
+            {hasWhere && (
+              <div className="flex items-start gap-2.5 text-sm">
+                <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <span className="text-foreground leading-snug">{locationAddress}</span>
+              </div>
+            )}
+
+            {hasWhen && (
+              <div className="flex items-start gap-2.5 text-sm">
+                <Calendar className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <div className="leading-snug">
+                  <p className="font-medium text-foreground">{formatDateLabel(serviceDate)}</p>
+                  <p className="text-muted-foreground flex items-center gap-1 mt-0.5">
+                    <Clock className="h-3.5 w-3.5" />
+                    {formatBookingTime(serviceTime)}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {workerName && (
+              <div className="flex items-center gap-2.5 text-sm">
+                <User className="h-4 w-4 text-primary shrink-0" />
+                <span className="font-medium text-foreground">{workerName}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!hidePriceEstimate && (
+          <div className="rounded-xl bg-primary/5 border border-primary/15 px-4 py-3 text-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-1">
+              Typical price
+            </p>
+            <p className="font-semibold text-foreground">
+              K{price.min} – K{price.max}
+            </p>
+            {amount && parseFloat(amount) >= 1 && (
+              <p className="text-muted-foreground mt-1">
+                Agreed fee:{" "}
+                <span className="font-semibold text-foreground">
+                  {formatCurrency(Math.round(parseFloat(amount) * 100))}
+                </span>
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </aside>
   );

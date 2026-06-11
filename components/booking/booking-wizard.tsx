@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { supabaseClient } from '@/lib/supabase-client'
-import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
 import {
   Search,
@@ -18,7 +17,9 @@ import {
   Loader2,
 } from 'lucide-react'
 import { ServiceConfigPanel } from '@/components/services/service-config-panel'
+import { BookingStepShell } from '@/components/booking/booking-step-shell'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
+import { BookingPaymentTotals } from '@/components/booking/booking-payment-totals'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
@@ -31,7 +32,6 @@ import {
   type ServiceDetails,
 } from '@/lib/services/catalog'
 import {
-  formatServiceSummary,
   parseServiceDetailsFromParams,
   resolveFunnelParam,
   suggestPrice,
@@ -119,6 +119,32 @@ function getInitialStep(
   return STEP.PICK
 }
 
+function initServiceDetailsFromParams(
+  searchParams: URLSearchParams,
+  categoryParam: string | null,
+  funnelParam: string | null,
+  workerProfileId: string | null
+): ServiceDetails | null {
+  if (workerProfileId) return null
+
+  const key = resolveCategoryFromParams(categoryParam, funnelParam)
+  if (!key) return null
+
+  const parsed = parseServiceDetailsFromParams(searchParams)
+  const funnel = resolveFunnelParam(funnelParam)
+  let details = parsed ?? defaultServiceDetails(key)
+  if (funnel?.type) details = { ...details, serviceType: funnel.type }
+
+  const typeOption = getServiceType(key, details.serviceType)
+  if (typeOption) details.durationHours = typeOption.defaultHours
+
+  return details
+}
+
+function workerCategorySlug(category: ServiceCategoryKey) {
+  return category === 'nanny' ? 'nanny' : 'house_cleaner'
+}
+
 export function BookingWizard() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -139,7 +165,9 @@ export function BookingWizard() {
   const [categoriesLoading, setCategoriesLoading] = useState(true)
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(null)
+  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(() =>
+    initServiceDetailsFromParams(searchParams, categoryParam, funnelParam, workerProfileId)
+  )
   const [workers, setWorkers] = useState<WorkerSummary[]>([])
   const [workersLoading, setWorkersLoading] = useState(false)
   const [selectedWorker, setSelectedWorker] = useState<WorkerSummary | null>(null)
@@ -170,7 +198,9 @@ export function BookingWizard() {
 
   const categorySlug = selectedCategory
     ? categoryWorkerSlug[selectedCategory.slug] || selectedCategory.slug
-    : ''
+    : serviceDetails
+      ? workerCategorySlug(serviceDetails.category)
+      : ''
 
   useEffect(() => {
     if (!categorySlug) {
@@ -206,25 +236,14 @@ export function BookingWizard() {
   }, [categorySlug, workerProfileId])
 
   useEffect(() => {
-    if (urlInitDone.current || workerProfileId || categories.length === 0) return
+    if (!serviceDetails || categories.length === 0) return
 
-    const key = resolveCategoryFromParams(categoryParam, funnelParam)
-    if (!key) return
-
-    const slug = categoryKeyToDbSlug(key)
+    const slug = categoryKeyToDbSlug(serviceDetails.category)
     const cat = categories.find((c) => c.slug === slug)
-    if (!cat) return
-
-    const parsed = parseServiceDetailsFromParams(searchParams)
-    const funnel = resolveFunnelParam(funnelParam)
-    let details = parsed ?? defaultServiceDetails(key)
-    if (funnel?.type) details = { ...details, serviceType: funnel.type }
-
-    setSelectedCategory(cat)
-    setServiceDetails(details)
-    setStep(STEP.DETAILS)
-    urlInitDone.current = true
-  }, [categoryParam, funnelParam, categories, workerProfileId, searchParams])
+    if (cat && cat.id !== selectedCategory?.id) {
+      setSelectedCategory(cat)
+    }
+  }, [serviceDetails, categories, selectedCategory])
 
   useEffect(() => {
     if (urlInitDone.current || !workerProfileId || categoriesLoading || categories.length === 0) return
@@ -282,16 +301,14 @@ export function BookingWizard() {
 
   const selectServiceType = useCallback(
     (categoryKey: ServiceCategoryKey, serviceTypeId: string) => {
-      const cat = categories.find((c) => c.slug === categoryKeyToDbSlug(categoryKey))
-      if (!cat) return
-
       const typeOption = getServiceType(categoryKey, serviceTypeId)
       const details = defaultServiceDetails(categoryKey)
       details.serviceType = serviceTypeId
       if (typeOption) details.durationHours = typeOption.defaultHours
 
-      setSelectedCategory(cat)
+      const cat = categories.find((c) => c.slug === categoryKeyToDbSlug(categoryKey))
       setServiceDetails(details)
+      if (cat) setSelectedCategory(cat)
       goToStep(STEP.DETAILS)
     },
     [categories, goToStep]
@@ -333,9 +350,13 @@ export function BookingWizard() {
   const totalCents = amountInCents + platformFee
 
   async function handleSubmit() {
-    if (!selectedCategory || !serviceDetails) {
+    if (!serviceDetails) {
       toast.error('Please configure your service')
       goToStep(STEP.DETAILS)
+      return
+    }
+    if (!selectedCategory) {
+      toast.error('Service categories are still loading. Please try again in a moment.')
       return
     }
     if (!selectedWorker) {
@@ -430,29 +451,17 @@ export function BookingWizard() {
         {step === STEP.PICK && (
           <Card>
             <CardContent className="p-6">
-              {categoriesLoading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <ServiceTypePicker onSelect={selectServiceType} />
-              )}
+              <ServiceTypePicker onSelect={selectServiceType} />
             </CardContent>
           </Card>
         )}
 
         {step === STEP.DETAILS && serviceDetails && (
-          <div className="lg:grid lg:grid-cols-[280px_1fr] gap-6 items-start">
-            {summaryProps && (
-              <>
-                <BookingSummaryPanel
-                  {...summaryProps}
-                  className="hidden lg:block lg:sticky lg:top-8"
-                />
-                <BookingSummaryPanel {...summaryProps} className="lg:hidden mb-2" />
-              </>
-            )}
-
+          <BookingStepShell
+            summary={
+              summaryProps ? <BookingSummaryPanel {...summaryProps} /> : undefined
+            }
+          >
             <Card>
               <CardContent className="p-6 space-y-6">
                 {deepLinkLoading ? (
@@ -464,7 +473,7 @@ export function BookingWizard() {
                     <div>
                       <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {selectedCategory?.name}: set your service, then when and where.
+                        Set your service, then when and where.
                       </p>
                     </div>
 
@@ -513,24 +522,17 @@ export function BookingWizard() {
                 )}
               </CardContent>
             </Card>
-          </div>
+          </BookingStepShell>
         )}
 
         {step === STEP.WORKER && (
-          <div className="lg:grid lg:grid-cols-[280px_1fr] gap-6 items-start">
-            {summaryProps && (
-              <BookingSummaryPanel
-                {...summaryProps}
-                className="hidden lg:block lg:sticky lg:top-8"
-              />
-            )}
-
+          <BookingStepShell
+            summary={
+              summaryProps ? <BookingSummaryPanel {...summaryProps} /> : undefined
+            }
+          >
             <Card>
               <CardContent className="p-6 space-y-4">
-                {summaryProps && (
-                  <BookingSummaryPanel {...summaryProps} className="lg:hidden" />
-                )}
-
                 <h2 className="text-xl font-semibold">Choose a worker</h2>
 
                 <div className="relative">
@@ -629,30 +631,23 @@ export function BookingWizard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </BookingStepShell>
         )}
 
         {step === STEP.PAYMENT && serviceDetails && (
-          <div className="lg:grid lg:grid-cols-[280px_1fr] gap-6 items-start">
-            {summaryProps && (
-              <BookingSummaryPanel
-                {...summaryProps}
-                className="hidden lg:block lg:sticky lg:top-8"
-              />
-            )}
-
+          <BookingStepShell
+            summary={
+              summaryProps ? (
+                <BookingSummaryPanel {...summaryProps} hidePriceEstimate />
+              ) : undefined
+            }
+          >
             <Card>
               <CardContent className="p-6 space-y-6">
-                {summaryProps && (
-                  <BookingSummaryPanel {...summaryProps} className="lg:hidden" />
-                )}
-
                 <div>
-                  <h2 className="text-xl font-semibold mb-1">Confirm & pay</h2>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedWorker
-                      ? `Review your booking with ${selectedWorker.full_name}`
-                      : 'Choose a worker to continue'}
+                  <h2 className="text-xl font-semibold">Confirm & pay</h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Set your fee and confirm the booking.
                   </p>
                 </div>
 
@@ -679,45 +674,34 @@ export function BookingWizard() {
                       />
                     )}
 
-                    <div>
-                      <label className="text-sm font-medium mb-1.5 block">
+                    <div className="space-y-2">
+                      <label htmlFor="service-fee" className="text-sm font-medium">
                         Service fee (ZMW)
                       </label>
                       <Input
+                        id="service-fee"
                         type="number"
                         min="1"
                         step="1"
                         placeholder="e.g. 500"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
+                        className="text-lg h-12"
                       />
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-muted-foreground">
                         Suggested K{suggestPrice(serviceDetails).typical} based on your scope.
-                        Platform fee (10%) added at checkout.
                       </p>
                     </div>
 
                     {amount && parseFloat(amount) >= 1 && (
-                      <div className="rounded-lg bg-gray-50 border p-4 space-y-2 text-sm">
-                        <p className="font-medium text-xs text-muted-foreground uppercase tracking-wide">
-                          {formatServiceSummary(serviceDetails)}
-                        </p>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Service fee</span>
-                          <span>{formatCurrency(amountInCents)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Platform fee (10%)</span>
-                          <span>{formatCurrency(platformFee)}</span>
-                        </div>
-                        <div className="flex justify-between font-semibold border-t pt-2">
-                          <span>Total to pay</span>
-                          <span>{formatCurrency(totalCents)}</span>
-                        </div>
-                      </div>
+                      <BookingPaymentTotals
+                        amountInCents={amountInCents}
+                        platformFee={platformFee}
+                        totalCents={totalCents}
+                      />
                     )}
 
-                    <div className="flex justify-between pt-2 gap-3">
+                    <div className="flex flex-col-reverse sm:flex-row sm:justify-between pt-2 gap-3">
                       <Button variant="outline" onClick={() => goToStep(STEP.WORKER)}>
                         <ChevronLeft className="mr-2 h-4 w-4" />
                         Change worker
@@ -741,7 +725,7 @@ export function BookingWizard() {
                 )}
               </CardContent>
             </Card>
-          </div>
+          </BookingStepShell>
         )}
       </main>
     </div>

@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, ArrowRight, User, ShieldCheck } from "lucide-react";
 import type { PublicWorkerProfile } from "@/types";
-import { PRIMARY_BOOK_HREF } from "@/lib/landing/content";
 
 function categoryLabel(category: PublicWorkerProfile["category"]) {
   return category === "nanny" ? "Nanny" : "Cleaning";
@@ -90,7 +89,7 @@ export function SweepStarsSection({
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href={PRIMARY_BOOK_HREF}
+              href="/customer/book"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-95"
             >
               Book a service
@@ -150,7 +149,7 @@ export function SweepStarsSection({
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
-            href={PRIMARY_BOOK_HREF}
+            href="/customer/book"
             className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-95 w-full sm:w-auto"
           >
             Book a service
