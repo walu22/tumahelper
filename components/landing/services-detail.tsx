@@ -17,7 +17,7 @@ export function ServicesDetailSection() {
             Know exactly what you&apos;re booking.
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            Pick a service type below — then choose your date, start time, and address.
+            Pick a service type below, then choose your date, start time, and address.
             Most bookings take under two minutes.
           </p>
         </div>

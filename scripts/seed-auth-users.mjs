@@ -50,7 +50,7 @@ async function main() {
   for (const { phone, role } of ACCOUNTS) {
     const { data: user } = await supabase.from('users').select('id, email').eq('phone', phone).single()
     if (!user) {
-      console.log(`  SKIP ${phone} — not in public.users table`)
+      console.log(`  SKIP ${phone}: not in public.users table`)
       continue
     }
 
