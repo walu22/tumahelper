@@ -26,6 +26,11 @@ function loadEnv() {
   return merged;
 }
 
+const pagePath = "app/customer/bookings/[id]/page.tsx";
+const hasCodeFix =
+  fs.existsSync(pagePath) &&
+  fs.readFileSync(pagePath, "utf8").includes("fetchWorkerDisplay");
+
 const env = loadEnv();
 const url = env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
@@ -78,20 +83,33 @@ console.log(
     : "⚠️  Does NOT match demo dev customer — log in as the owner above"
 );
 
+console.log("\n--- Code fix check (local app) ---");
+console.log(
+  hasCodeFix
+    ? "✅ Your local code has the booking detail fix (fetchWorkerDisplay)"
+    : "❌ Your local code is still OLD — run: git pull origin master"
+);
+
 const { error: badJoinError } = await supabase
   .from("bookings")
   .select("id, worker:worker_id(full_name, profile_photo_url, phone)")
   .eq("id", bookingId)
   .maybeSingle();
 
+console.log("\n--- Why the page used to 404 (informational) ---");
 console.log(
   badJoinError
-    ? `\n❌ Old broken query still fails: ${badJoinError.message}`
-    : "\n✅ Old worker join query unexpectedly succeeded"
+    ? `ℹ️  The pre-fix page query fails in Supabase: ${badJoinError.message}`
+    : "ℹ️  Old worker join query succeeded (unexpected)"
 );
+console.log("   This line is normal. The script tests the OLD query on purpose.");
+console.log("   It does NOT mean your fix failed.");
 
-console.log("\nNext steps:");
-console.log("1. git pull origin cursor/fix-booking-detail-a8cb");
-console.log("2. Restart npm run dev");
-console.log("3. Log in as the customer who owns this booking");
+console.log("\n--- What to do in the browser ---");
+if (!hasCodeFix) {
+  console.log("1. git pull origin master");
+  console.log("2. Restart: npm run dev");
+}
+console.log(`3. Log in at http://localhost:3000/dev-login as customer`);
 console.log(`4. Open http://localhost:3000/customer/bookings/${bookingId}`);
+console.log("   You should see Booking #" + booking.booking_code);
