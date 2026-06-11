@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, Shield, Star, MapPin } from "lucide-react";
+import { Shield, Star, MapPin } from "lucide-react";
 import { CategoryScroller } from "./category-scroller";
 import { LogoMark } from "@/components/brand/logo";
-import { CLEANING_BOOK_HREF, NANNY_BOOK_HREF } from "@/lib/landing/content";
 
 const TRUST_POINTS = [
   { icon: Shield, label: "NRC verified workers" },
@@ -34,23 +33,6 @@ export function LandingHero() {
         </div>
 
         <div className="text-center max-w-3xl mx-auto">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mb-6">
-            <Link
-              href={NANNY_BOOK_HREF}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-10 py-4 text-sm font-semibold text-primary-foreground hover:opacity-95 transition-opacity w-full sm:w-auto"
-            >
-              Book a nanny
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href={CLEANING_BOOK_HREF}
-              className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-primary px-10 py-4 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors w-full sm:w-auto"
-            >
-              Book cleaning
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
           <p className="mb-6 text-sm text-muted-foreground">
             Need someone permanently?{" "}
             <Link href="/hire" className="font-semibold text-primary hover:underline">
