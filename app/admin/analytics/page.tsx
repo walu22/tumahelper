@@ -88,7 +88,7 @@ export default function AdminAnalyticsPage() {
         <CardHeader><CardTitle>Revenue Summary</CardTitle></CardHeader>
         <CardContent className="flex items-center justify-center h-48 text-muted-foreground">
           <BarChart3 className="h-8 w-8 mr-2" />
-          <span>Chart placeholder — integrate with Recharts</span>
+          <span>Chart placeholder. Integrate with Recharts.</span>
         </CardContent>
       </Card>
     </div>

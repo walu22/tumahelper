@@ -17,15 +17,14 @@ export function ServicesDetailSection() {
             Know exactly what you&apos;re booking.
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            Choose a service type, set your home or family details, and add extras tailored
-            for Lusaka homes.
+            Pick a service type below, then choose your date, start time, and address.
+            Most bookings take under two minutes.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {ORDER.map((key) => {
             const entry = SERVICE_CATALOG[key];
-            const featured = entry.types[0];
             const bookHref = buildBookUrl(defaultServiceDetails(key));
 
             return (
@@ -37,7 +36,7 @@ export function ServicesDetailSection() {
                 <p className="text-muted-foreground mb-6">{entry.tagline}</p>
 
                 <p className="text-sm font-semibold mb-3">Service types</p>
-                <ul className="space-y-3 mb-6">
+                <ul className="space-y-4 mb-6">
                   {entry.types.map((type) => (
                     <li key={type.id}>
                       <Link
@@ -46,10 +45,10 @@ export function ServicesDetailSection() {
                           serviceType: type.id,
                           durationHours: type.defaultHours,
                         })}
-                        className="group block rounded-xl border border-border p-4 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                        className="group block rounded-xl border border-border p-4 md:p-5 hover:border-primary/40 hover:bg-primary/5 transition-colors"
                       >
                         <div className="flex items-start justify-between gap-3">
-                          <div>
+                          <div className="min-w-0">
                             <p className="font-semibold group-hover:text-primary transition-colors">
                               {type.label}
                             </p>
@@ -61,26 +60,34 @@ export function ServicesDetailSection() {
                           </div>
                           <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0 mt-1" />
                         </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
 
-                <p className="text-sm font-semibold mb-2">
-                  Included in {featured.label.toLowerCase()}
-                </p>
-                <ul className="space-y-1.5 mb-6 flex-1">
-                  {featured.included.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                      {item}
+                        <div className="mt-4 pt-4 border-t border-border/80">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                            What&apos;s included
+                          </p>
+                          <ul className="space-y-1.5">
+                            {type.included.map((item) => (
+                              <li
+                                key={item}
+                                className="flex items-start gap-2 text-sm text-muted-foreground"
+                              >
+                                <Check className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </Link>
                     </li>
                   ))}
                 </ul>
 
                 {entry.addons.length > 0 && (
                   <>
-                    <p className="text-sm font-semibold mb-2">Optional extras</p>
+                    <p className="text-sm font-semibold mb-1">Optional extras</p>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Available to add during booking
+                    </p>
                     <div className="flex flex-wrap gap-2 mb-8">
                       {entry.addons.map((a) => (
                         <span

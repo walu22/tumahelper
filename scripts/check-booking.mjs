@@ -80,14 +80,14 @@ console.log("Demo dev customer id:", demoCustomerId);
 console.log(
   booking.customer_id === demoCustomerId
     ? "✅ Matches demo dev customer (client@tumahelper.dev)"
-    : "⚠️  Does NOT match demo dev customer — log in as the owner above"
+    : "⚠️  Does NOT match demo dev customer. Log in as the owner above"
 );
 
 console.log("\n--- Code fix check (local app) ---");
 console.log(
   hasCodeFix
     ? "✅ Your local code has the booking detail fix (fetchWorkerDisplay)"
-    : "❌ Your local code is still OLD — run: git pull origin master"
+    : "❌ Your local code is still OLD. Run: git pull origin master"
 );
 
 const { error: badJoinError } = await supabase

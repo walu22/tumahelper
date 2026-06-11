@@ -12,7 +12,7 @@ const sizes = {
   lg: { mark: 48, text: "text-2xl" },
 };
 
-/** TumaHelper mark — house with rising sun (SweepSouth-inspired) */
+/** TumaHelper mark: house with rising sun (SweepSouth-inspired) */
 export function LogoMark({ size = 36, className }: { size?: number; className?: string }) {
   return (
     <svg
@@ -55,7 +55,7 @@ export function LogoMark({ size = 36, className }: { size?: number; className?: 
       {/* Window */}
       <rect x="14" y="27" width="6" height="6" rx="1" fill="#80C5BC" />
       <rect x="28" y="27" width="6" height="6" rx="1" fill="#80C5BC" />
-      {/* Heart accent — care / home */}
+      {/* Heart accent: care / home */}
       <path
         d="M24 22.5C22.5 21 20 21.2 19 22.8C18 21.2 15.5 21 14 22.5C12.5 24 14 26.5 19 29.5C24 26.5 25.5 24 24 22.5Z"
         fill="#FE80C9"
