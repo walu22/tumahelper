@@ -110,35 +110,58 @@ export function suggestPrice(details: ServiceDetails): {
   return { min, max, typical };
 }
 
-export function formatServiceSummary(details: ServiceDetails): string {
-  const type = getServiceType(details.category, details.serviceType);
-  const parts: string[] = [type?.label ?? details.serviceType];
+export function formatAgeGroupsSummary(ageIds: string[]): string {
+  if (!ageIds.length) return "";
 
-  if (details.category === "cleaning") {
-    parts.push(`${details.bedrooms ?? 3} bed, ${details.bathrooms ?? 2} bath`);
-  } else {
-    parts.push(
-      `${details.children ?? 1} ${details.children === 1 ? "child" : "children"}`
-    );
-    const ageLabels = (details.childAgeGroups ?? [])
-      .slice(0, details.children ?? 1)
-      .map((id) => CHILD_AGE_GROUPS.find((g) => g.id === id)?.label ?? id)
-      .filter(Boolean);
-    if (ageLabels.length) {
-      parts.push(`ages ${ageLabels.join(", ")}`);
-    }
+  const counts = new Map<string, number>();
+  for (const id of ageIds) {
+    counts.set(id, (counts.get(id) ?? 0) + 1);
   }
 
-  parts.push(`${details.durationHours}h`);
+  return Array.from(counts.entries())
+    .map(([id, count]) => {
+      const label = CHILD_AGE_GROUPS.find((g) => g.id === id)?.label ?? id;
+      const short = label.replace(/\s*\([^)]+\)$/, "");
+      return count > 1 ? `${short} ×${count}` : short;
+    })
+    .join(", ");
+}
+
+/** Readable scope bullets for the booking summary (no service type label) */
+export function getServiceScopeLines(details: ServiceDetails): string[] {
+  const lines: string[] = [];
+
+  if (details.category === "cleaning") {
+    lines.push(`${details.bedrooms ?? 3} bedrooms · ${details.bathrooms ?? 2} bathrooms`);
+  } else {
+    const count = details.children ?? 1;
+    lines.push(`${count} ${count === 1 ? "child" : "children"}`);
+    const ages = (details.childAgeGroups ?? []).slice(0, count);
+    const ageSummary = formatAgeGroupsSummary(ages);
+    if (ageSummary) lines.push(ageSummary);
+  }
+
+  lines.push(`${details.durationHours} hours`);
 
   if (details.addons.length > 0) {
     const labels = details.addons
       .map((id) => getAddon(details.category, id)?.label ?? id)
       .join(", ");
-    parts.push(`+ ${labels}`);
+    lines.push(`Add-ons: ${labels}`);
   }
 
-  return parts.join(" · ");
+  return lines;
+}
+
+export function formatServiceScope(details: ServiceDetails): string {
+  return getServiceScopeLines(details).join(" · ");
+}
+
+export function formatServiceSummary(details: ServiceDetails): string {
+  const type = getServiceType(details.category, details.serviceType);
+  return [type?.label ?? details.serviceType, formatServiceScope(details)]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 export function buildBookUrl(details: ServiceDetails): string {
