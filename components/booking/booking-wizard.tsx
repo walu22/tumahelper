@@ -119,6 +119,32 @@ function getInitialStep(
   return STEP.PICK
 }
 
+function initServiceDetailsFromParams(
+  searchParams: URLSearchParams,
+  categoryParam: string | null,
+  funnelParam: string | null,
+  workerProfileId: string | null
+): ServiceDetails | null {
+  if (workerProfileId) return null
+
+  const key = resolveCategoryFromParams(categoryParam, funnelParam)
+  if (!key) return null
+
+  const parsed = parseServiceDetailsFromParams(searchParams)
+  const funnel = resolveFunnelParam(funnelParam)
+  let details = parsed ?? defaultServiceDetails(key)
+  if (funnel?.type) details = { ...details, serviceType: funnel.type }
+
+  const typeOption = getServiceType(key, details.serviceType)
+  if (typeOption) details.durationHours = typeOption.defaultHours
+
+  return details
+}
+
+function workerCategorySlug(category: ServiceCategoryKey) {
+  return category === 'nanny' ? 'nanny' : 'house_cleaner'
+}
+
 export function BookingWizard() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -139,7 +165,9 @@ export function BookingWizard() {
   const [categoriesLoading, setCategoriesLoading] = useState(true)
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(null)
+  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(() =>
+    initServiceDetailsFromParams(searchParams, categoryParam, funnelParam, workerProfileId)
+  )
   const [workers, setWorkers] = useState<WorkerSummary[]>([])
   const [workersLoading, setWorkersLoading] = useState(false)
   const [selectedWorker, setSelectedWorker] = useState<WorkerSummary | null>(null)
@@ -170,7 +198,9 @@ export function BookingWizard() {
 
   const categorySlug = selectedCategory
     ? categoryWorkerSlug[selectedCategory.slug] || selectedCategory.slug
-    : ''
+    : serviceDetails
+      ? workerCategorySlug(serviceDetails.category)
+      : ''
 
   useEffect(() => {
     if (!categorySlug) {
@@ -206,25 +236,14 @@ export function BookingWizard() {
   }, [categorySlug, workerProfileId])
 
   useEffect(() => {
-    if (urlInitDone.current || workerProfileId || categories.length === 0) return
+    if (!serviceDetails || categories.length === 0) return
 
-    const key = resolveCategoryFromParams(categoryParam, funnelParam)
-    if (!key) return
-
-    const slug = categoryKeyToDbSlug(key)
+    const slug = categoryKeyToDbSlug(serviceDetails.category)
     const cat = categories.find((c) => c.slug === slug)
-    if (!cat) return
-
-    const parsed = parseServiceDetailsFromParams(searchParams)
-    const funnel = resolveFunnelParam(funnelParam)
-    let details = parsed ?? defaultServiceDetails(key)
-    if (funnel?.type) details = { ...details, serviceType: funnel.type }
-
-    setSelectedCategory(cat)
-    setServiceDetails(details)
-    setStep(STEP.DETAILS)
-    urlInitDone.current = true
-  }, [categoryParam, funnelParam, categories, workerProfileId, searchParams])
+    if (cat && cat.id !== selectedCategory?.id) {
+      setSelectedCategory(cat)
+    }
+  }, [serviceDetails, categories, selectedCategory])
 
   useEffect(() => {
     if (urlInitDone.current || !workerProfileId || categoriesLoading || categories.length === 0) return
@@ -282,16 +301,14 @@ export function BookingWizard() {
 
   const selectServiceType = useCallback(
     (categoryKey: ServiceCategoryKey, serviceTypeId: string) => {
-      const cat = categories.find((c) => c.slug === categoryKeyToDbSlug(categoryKey))
-      if (!cat) return
-
       const typeOption = getServiceType(categoryKey, serviceTypeId)
       const details = defaultServiceDetails(categoryKey)
       details.serviceType = serviceTypeId
       if (typeOption) details.durationHours = typeOption.defaultHours
 
-      setSelectedCategory(cat)
+      const cat = categories.find((c) => c.slug === categoryKeyToDbSlug(categoryKey))
       setServiceDetails(details)
+      if (cat) setSelectedCategory(cat)
       goToStep(STEP.DETAILS)
     },
     [categories, goToStep]
@@ -333,9 +350,13 @@ export function BookingWizard() {
   const totalCents = amountInCents + platformFee
 
   async function handleSubmit() {
-    if (!selectedCategory || !serviceDetails) {
+    if (!serviceDetails) {
       toast.error('Please configure your service')
       goToStep(STEP.DETAILS)
+      return
+    }
+    if (!selectedCategory) {
+      toast.error('Service categories are still loading. Please try again in a moment.')
       return
     }
     if (!selectedWorker) {
@@ -430,13 +451,7 @@ export function BookingWizard() {
         {step === STEP.PICK && (
           <Card>
             <CardContent className="p-6">
-              {categoriesLoading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : (
-                <ServiceTypePicker onSelect={selectServiceType} />
-              )}
+              <ServiceTypePicker onSelect={selectServiceType} />
             </CardContent>
           </Card>
         )}
