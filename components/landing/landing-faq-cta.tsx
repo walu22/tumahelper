@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
-import { FAQ_ITEMS, PRIMARY_BOOK_HREF } from "@/lib/landing/content";
+import { CLEANING_BOOK_HREF, FAQ_ITEMS, NANNY_BOOK_HREF } from "@/lib/landing/content";
 
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "260970000000";
 const whatsappHref = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent("Hi TumaHelper, I need help finding a worker in Lusaka.")}`;
@@ -44,10 +44,16 @@ export function LandingFaqCta() {
 
           <div className="space-y-3">
             <Link
-              href={PRIMARY_BOOK_HREF}
+              href={NANNY_BOOK_HREF}
               className="flex items-center justify-center rounded-full bg-white text-primary py-3.5 text-sm font-semibold hover:opacity-95 transition-opacity"
             >
-              Book help now
+              Book a nanny
+            </Link>
+            <Link
+              href={CLEANING_BOOK_HREF}
+              className="flex items-center justify-center rounded-full border border-white/30 py-3.5 text-sm font-semibold hover:bg-white/10 transition-colors"
+            >
+              Book cleaning
             </Link>
             <Link
               href="/register?role=worker"

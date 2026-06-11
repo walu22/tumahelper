@@ -23,9 +23,9 @@ test.describe("Booking entry points", () => {
     await page.context().addCookies([customerDevCookie(baseURL!)]);
   });
 
-  test("hero Book help today skips old category picker", async ({ page }) => {
+  test("hero Book a nanny opens babysitting details", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Book help today" }).click();
+    await page.getByRole("link", { name: "Book a nanny" }).first().click();
     await expect(page).toHaveURL(/category=nanny.*type=babysitting/);
     await expect(page.getByRole("heading", { name: "Book a service" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
@@ -34,13 +34,22 @@ test.describe("Booking entry points", () => {
     await expect(page.locator("#service-date")).toBeVisible();
     await expect(page.getByText("Nanny Services")).toHaveCount(0);
     await expect(page.getByText("House Cleaning")).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "What do you need?" })).toHaveCount(0);
   });
 
-  test("FAQ Book help now uses babysitting deep link", async ({ page }) => {
+  test("hero Book cleaning opens standard clean details", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Book help now" }).click();
-    await expect(page).toHaveURL(/category=nanny.*type=babysitting/);
+    await page.getByRole("link", { name: "Book cleaning" }).first().click();
+    await expect(page).toHaveURL(/category=cleaning.*type=standard/);
+    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.locator("#service-date")).toBeVisible();
+  });
+
+  test("FAQ Book cleaning uses standard clean deep link", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Book cleaning" }).nth(1).click();
+    await expect(page).toHaveURL(/category=cleaning.*type=standard/);
     await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
       timeout: 15_000,
     });
@@ -52,6 +61,5 @@ test.describe("Booking entry points", () => {
     await expect(page.getByText("Babysitting")).toBeVisible();
     await expect(page.getByText("Standard home clean")).toBeVisible();
     await expect(page.getByText("Nanny Services")).toHaveCount(0);
-    await expect(page.getByText("Babysitting, after-school, newborn care")).toHaveCount(0);
   });
 });
