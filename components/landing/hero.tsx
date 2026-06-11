@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Shield, Star, MapPin } from "lucide-react";
 import { CategoryScroller } from "./category-scroller";
 import { LogoMark } from "@/components/brand/logo";
+import { PRIMARY_BOOK_HREF } from "@/lib/landing/content";
 
 const TRUST_POINTS = [
   { icon: Shield, label: "NRC verified workers" },
@@ -34,7 +35,7 @@ export function LandingHero() {
 
         <div className="text-center max-w-3xl mx-auto">
           <Link
-            href="/customer/book"
+            href={PRIMARY_BOOK_HREF}
             className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-10 py-4 text-sm font-semibold text-primary-foreground hover:opacity-95 transition-opacity w-full sm:w-auto mb-6"
           >
             Book help today
