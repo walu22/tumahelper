@@ -12,15 +12,34 @@ export default async function HomePage() {
   const supabase = getServerClient();
 
   let featuredWorkers: PublicWorkerProfile[] | null = null;
+  let availableCount: number | null = null;
 
   try {
-    const { data } = await supabase
+    const { count } = await supabase
+      .from("worker_profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("availability_status", "available");
+    availableCount = count;
+
+    const { data: featured } = await supabase
       .from("worker_profiles")
       .select("*")
       .eq("is_featured", true)
       .eq("availability_status", "available")
-      .limit(4);
-    featuredWorkers = data as PublicWorkerProfile[] | null;
+      .order("trust_score", { ascending: false })
+      .limit(5);
+
+    if (featured?.length) {
+      featuredWorkers = featured as PublicWorkerProfile[];
+    } else {
+      const { data } = await supabase
+        .from("worker_profiles")
+        .select("*")
+        .eq("availability_status", "available")
+        .order("trust_score", { ascending: false })
+        .limit(5);
+      featuredWorkers = (data as PublicWorkerProfile[] | null) ?? null;
+    }
   } catch {}
 
   return (
@@ -28,7 +47,7 @@ export default async function HomePage() {
       <LandingHero />
       <PlatformOfferings />
       <ServicesDetailSection />
-      <SweepStarsSection workers={featuredWorkers} />
+      <SweepStarsSection workers={featuredWorkers} availableCount={availableCount} />
       <TrustSection />
       <WorkerRecruitment />
       <LandingFaqCta />
