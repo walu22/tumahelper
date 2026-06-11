@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { BookingTimeline } from '@/components/booking-timeline'
 import { CancelBookingButton } from '@/components/booking/cancel-booking-button'
 import { BookingReviewSection } from '@/components/booking/booking-review-section'
+import { fetchWorkerDisplay } from '@/lib/bookings/worker-display'
 import { createAuthenticatedServerClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
 import { redirect, notFound } from 'next/navigation'
@@ -40,6 +41,7 @@ interface BookingWithRelations {
   id: string
   booking_code: string
   customer_id: string
+  worker_id: string
   status: BookingStatus
   service_date: string
   service_time: string
@@ -69,19 +71,24 @@ export default async function CustomerBookingDetailPage({
 
   const supabase = createAuthenticatedServerClient()
 
-  const { data: booking } = await supabase
+  const { data: bookingRow, error } = await supabase
     .from('bookings')
     .select(`
       *,
-      worker:worker_id(full_name, profile_photo_url, phone),
       category:category_id(name)
     `)
     .eq('id', params.id)
     .eq('customer_id', user.id)
-    .single<BookingWithRelations>()
+    .single<Omit<BookingWithRelations, 'worker'>>()
 
-  if (!booking) {
+  if (error || !bookingRow) {
     notFound()
+  }
+
+  const worker = await fetchWorkerDisplay(supabase, bookingRow.worker_id)
+  const booking: BookingWithRelations = {
+    ...bookingRow,
+    worker: worker ?? { full_name: null, profile_photo_url: null, phone: null },
   }
 
   const canCancel = ['pending', 'accepted'].includes(booking.status)
