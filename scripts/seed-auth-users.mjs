@@ -105,3 +105,18 @@ console.log('  worker@tumahelper.dev / dev123   (alias for provider@)')
 console.log('  provider@tumahelper.dev / dev123')
 console.log('  client@tumahelper.dev / dev123')
 console.log('\nOr one-click: http://localhost:3000/dev-login')
+
+console.log('\nVerifying logins...')
+const anon = createClient(
+  env.NEXT_PUBLIC_SUPABASE_URL,
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  { auth: { autoRefreshToken: false, persistSession: false } }
+)
+
+for (const account of PRIMARY_ACCOUNTS) {
+  const { error } = await anon.auth.signInWithPassword({
+    email: account.email,
+    password: PASSWORD,
+  })
+  console.log(`  ${error ? '✗' : '✓'} ${account.email}${error ? ` — ${error.message}` : ''}`)
+}
