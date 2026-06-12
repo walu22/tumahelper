@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
+import { getAdminClient } from "@/lib/supabase";
+import { createAuthenticatedRouteHandlerClient } from "@/lib/supabase-server";
 import { requireAuth, requireRole, successResponse, errorResponse } from "@/lib/auth";
 import { bookingSchema } from "@/lib/validations";
 import { generateBookingCode, calculatePlatformFee, calculateWorkerEarnings } from "@/lib/utils";
@@ -10,7 +11,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = bookingSchema.parse(body);
 
-    const supabase = getRouteHandlerClient();
     const adminClient = getAdminClient();
 
     const { data: worker } = await adminClient
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
 
-    const supabase = getRouteHandlerClient();
+    const supabase = createAuthenticatedRouteHandlerClient();
     let query = supabase.from("bookings").select(`
       *,
       worker:worker_id(full_name, profile_photo_url),

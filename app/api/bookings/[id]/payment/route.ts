@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getRouteHandlerClient } from "@/lib/supabase";
+import { createAuthenticatedRouteHandlerClient } from "@/lib/supabase-server";
 import { requireAuth, successResponse, errorResponse } from "@/lib/auth";
 
 export async function POST(
@@ -22,7 +22,7 @@ export async function POST(
       return errorResponse("FILE_TOO_LARGE", "Max 5MB", 400);
     }
 
-    const supabase = getRouteHandlerClient();
+    const supabase = createAuthenticatedRouteHandlerClient();
 
     const { data: booking } = await supabase
       .from("bookings")

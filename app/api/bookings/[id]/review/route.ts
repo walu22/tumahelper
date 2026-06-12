@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
+import { getAdminClient } from "@/lib/supabase";
+import { createAuthenticatedRouteHandlerClient } from "@/lib/supabase-server";
 import { requireAuth, successResponse, errorResponse } from "@/lib/auth";
 import { reviewSchema } from "@/lib/validations";
 import { calculateTrustScore } from "@/lib/trust-score";
@@ -14,7 +15,7 @@ export async function POST(
     const body = await request.json();
     const validated = reviewSchema.parse(body);
 
-    const supabase = getRouteHandlerClient();
+    const supabase = createAuthenticatedRouteHandlerClient();
     const adminClient = getAdminClient();
 
     const { data: booking } = await supabase

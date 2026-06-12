@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getRouteHandlerClient } from "@/lib/supabase";
+import { createAuthenticatedRouteHandlerClient } from "@/lib/supabase-server";
 import { requireAuth, successResponse, errorResponse } from "@/lib/auth";
 
 export async function GET(
@@ -9,7 +9,7 @@ export async function GET(
   try {
     const user = await requireAuth();
     const { id } = params;
-    const supabase = getRouteHandlerClient();
+    const supabase = createAuthenticatedRouteHandlerClient();
 
     const { data, error } = await supabase
       .from("bookings")

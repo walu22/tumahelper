@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getRouteHandlerClient } from "@/lib/supabase";
+import { createAuthenticatedRouteHandlerClient } from "@/lib/supabase-server";
 import { requireAuth, successResponse, errorResponse } from "@/lib/auth";
 import { z } from "zod";
 
@@ -17,7 +17,7 @@ export async function POST(
     const body = await request.json();
     const { reason } = cancelSchema.parse(body);
 
-    const supabase = getRouteHandlerClient();
+    const supabase = createAuthenticatedRouteHandlerClient();
 
     const { data: booking } = await supabase
       .from("bookings")

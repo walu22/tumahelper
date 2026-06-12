@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createServerComponentClient, createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { DEV_SESSION_COOKIE, isDevBypassEnabled } from '@/lib/auth/config'
 import { getAdminClient } from '@/lib/supabase'
@@ -22,6 +22,13 @@ function hasRealServiceRoleKey() {
   return Boolean(key && !key.includes('your-') && !key.includes('placeholder'))
 }
 
+function shouldUseAdminClientForAppAuth() {
+  if (process.env.NODE_ENV !== 'production' && hasRealServiceRoleKey()) {
+    return true
+  }
+  return isDevBypassEnabled() || isDevSessionActive()
+}
+
 export function createServerSupabaseClient() {
   const cookieStore = cookies()
   return createServerComponentClient({ cookies: () => cookieStore })
@@ -33,12 +40,20 @@ export function createServerSupabaseClient() {
  * active, use the service role and always filter by user id in the query.
  */
 export function createAuthenticatedServerClient() {
-  // Local dev: app auth (dev cookie or login) often lacks matching auth.uid() for RLS.
-  if (process.env.NODE_ENV !== 'production' && hasRealServiceRoleKey()) {
-    return getAdminClient()
-  }
-  if (isDevBypassEnabled() || isDevSessionActive()) {
+  if (shouldUseAdminClientForAppAuth()) {
     return getAdminClient()
   }
   return createServerSupabaseClient()
+}
+
+/**
+ * Route handlers share the same app-auth vs Supabase-auth split as server pages.
+ * Use this for booking mutations/reads after requireAuth() and explicit user checks.
+ */
+export function createAuthenticatedRouteHandlerClient() {
+  if (shouldUseAdminClientForAppAuth()) {
+    return getAdminClient()
+  }
+  const cookieStore = cookies()
+  return createRouteHandlerClient({ cookies: () => cookieStore })
 }

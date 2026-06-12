@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createAuthenticatedRouteHandlerClient } from '@/lib/supabase-server'
 import { requireUser } from '@/lib/auth'
 
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const supabase = createServerSupabaseClient()
+  const supabase = createAuthenticatedRouteHandlerClient()
 
   try {
     const user = await requireUser()
