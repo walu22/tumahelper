@@ -62,11 +62,15 @@ test.describe("Cleaning booking end-to-end", () => {
     await page.getByRole("button", { name: /Grace Phiri/i }).click();
 
     await expect(page.getByRole("heading", { name: "Confirm & pay" })).toBeVisible();
-    await page.getByRole("button", { name: "Confirm booking" }).click();
 
-    await expect(page).toHaveURL(new RegExp(`/customer/bookings/${MOCK_BOOKING_ID}`), {
-      timeout: 15_000,
-    });
+    const feeInput = page.getByRole("spinbutton");
+    await expect(feeInput).not.toHaveValue("", { timeout: 10_000 });
+    await expect(page.getByRole("button", { name: "Confirm booking" })).toBeEnabled();
+
+    await Promise.all([
+      page.waitForURL(new RegExp(`/customer/bookings/${MOCK_BOOKING_ID}`), { timeout: 15_000 }),
+      page.getByRole("button", { name: "Confirm booking" }).click(),
+    ]);
 
     expect(capturedBookingBody).toMatchObject({
       workerId: MOCK_CLEANER_WORKER.user_id,
