@@ -63,6 +63,19 @@ export function resolveLoginEmail(email: string) {
   return account?.email ?? normalized;
 }
 
+/** All emails that should authenticate to the same dev account (e.g. worker@ + provider@). */
+export function getLoginEmailsForAttempt(email: string): string[] {
+  const normalized = normalizeEmail(email);
+  const account = LOGIN_ACCOUNTS_BY_EMAIL[normalized];
+  if (!account) return [normalized];
+
+  const emails = new Set<string>([normalized, account.email]);
+  for (const [alias, acc] of Object.entries(LOGIN_ACCOUNTS_BY_EMAIL)) {
+    if (acc.id === account.id) emails.add(alias);
+  }
+  return Array.from(emails);
+}
+
 export function getRedirectForRole(role: string, fallback?: string | null) {
   if (fallback) {
     if (fallback.startsWith("/customer") && role !== "customer") {

@@ -1,9 +1,11 @@
 import { getRouteHandlerClient } from "@/lib/supabase";
 import {
+  DEV_PASSWORD,
+  getLoginEmailsForAttempt,
   getRedirectForRole,
   isDevBypassEnabled,
   LOGIN_ACCOUNTS_BY_EMAIL,
-  resolveLoginEmail,
+  normalizeEmail,
 } from "./config";
 import { clearDevSessionCookie, setDevSessionCookie } from "./session";
 
@@ -24,16 +26,16 @@ export async function signIn(params: {
   password: string;
   redirect?: string | null;
 }): Promise<SignInResult> {
-  const email = resolveLoginEmail(params.email);
   const password = params.password;
+  const loginEmail = normalizeEmail(params.email);
 
-  if (!email || !password) {
+  if (!loginEmail || !password) {
     throw new AuthError("Email and password are required");
   }
 
   if (isDevBypassEnabled()) {
-    const account = LOGIN_ACCOUNTS_BY_EMAIL[email];
-    if (!account || password !== "dev123") {
+    const account = LOGIN_ACCOUNTS_BY_EMAIL[loginEmail];
+    if (!account || password !== DEV_PASSWORD) {
       throw new AuthError("Invalid email or password");
     }
 
@@ -46,13 +48,26 @@ export async function signIn(params: {
   }
 
   const supabase = getRouteHandlerClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  let sessionUser: { id: string } | null = null;
+  let lastError: { message: string } | null = null;
 
-  if (error || !data.session || !data.user) {
-    throw new AuthError(error?.message || "Invalid email or password");
+  for (const email of getLoginEmailsForAttempt(loginEmail)) {
+    const result = await supabase.auth.signInWithPassword({ email, password });
+    if (result.data.session && result.data.user) {
+      sessionUser = result.data.user;
+      break;
+    }
+    lastError = result.error;
+  }
+
+  if (!sessionUser) {
+    const isKnownDevAccount = !!LOGIN_ACCOUNTS_BY_EMAIL[loginEmail];
+    if (isKnownDevAccount && password === DEV_PASSWORD) {
+      throw new AuthError(
+        "Dev password not recognized in Supabase. Run npm run setup:auth, or set DEV_AUTH_BYPASS=true in .env.local and restart the dev server."
+      );
+    }
+    throw new AuthError(lastError?.message || "Invalid email or password");
   }
 
   const { getAdminClient } = await import("@/lib/supabase");
@@ -60,7 +75,7 @@ export async function signIn(params: {
   const { data: profile } = await admin
     .from("users")
     .select("id, role, email")
-    .eq("id", data.user.id)
+    .eq("id", sessionUser.id)
     .maybeSingle();
 
   if (!profile?.role) {
@@ -72,7 +87,7 @@ export async function signIn(params: {
     user: {
       id: profile.id,
       role: profile.role,
-      email: profile.email || email,
+      email: profile.email || loginEmail,
     },
   };
 }
