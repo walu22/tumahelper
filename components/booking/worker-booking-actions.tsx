@@ -43,9 +43,11 @@ const STATUS_ACTIONS: Partial<
 export function WorkerBookingActions({
   bookingId,
   status,
+  onStatusChange,
 }: {
   bookingId: string;
   status: BookingStatus;
+  onStatusChange?: (status: BookingStatus) => void;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
@@ -68,6 +70,7 @@ export function WorkerBookingActions({
       }
 
       toast.success(`Booking ${newStatus.replace("_", " ")}`);
+      onStatusChange?.(newStatus);
       router.refresh();
 
       if (newStatus === "declined" || newStatus === "completed") {

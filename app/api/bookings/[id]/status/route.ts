@@ -3,15 +3,8 @@ import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
 import { requireAuth, successResponse, errorResponse } from "@/lib/auth";
 import { bookingStatusSchema } from "@/lib/validations";
 import { calculateTrustScore } from "@/lib/trust-score";
-
-const validTransitions: Record<string, string[]> = {
-  pending: ["accepted", "declined", "cancelled"],
-  accepted: ["in_progress", "cancelled"],
-  in_progress: ["completed", "cancelled"],
-  completed: [],
-  cancelled: [],
-  declined: [],
-};
+import { assertBookingStatusTransition } from "@/lib/bookings/status-transitions";
+import type { BookingStatus } from "@/types";
 
 export async function PATCH(
   request: NextRequest,
@@ -44,21 +37,18 @@ export async function PATCH(
       return errorResponse("FORBIDDEN", "Access denied", 403);
     }
 
-    const allowedTransitions = validTransitions[booking.status] || [];
-    if (!allowedTransitions.includes(status)) {
+    const allowedTransitions = assertBookingStatusTransition(
+      booking.status as BookingStatus,
+      status as BookingStatus,
+      isAdmin ? "admin" : isWorker ? "worker" : "customer"
+    );
+
+    if (!allowedTransitions.ok) {
       return errorResponse(
-        "INVALID_TRANSITION",
-        `Cannot transition from ${booking.status} to ${status}`,
-        400
+        allowedTransitions.code,
+        allowedTransitions.message,
+        allowedTransitions.code === "FORBIDDEN" ? 403 : 400
       );
-    }
-
-    if (isWorker && !["accepted", "declined", "in_progress", "completed"].includes(status)) {
-      return errorResponse("FORBIDDEN", "Worker cannot perform this action", 403);
-    }
-
-    if (isCustomer && status !== "cancelled") {
-      return errorResponse("FORBIDDEN", "Customer can only cancel bookings", 403);
     }
 
     const updateData: Record<string, unknown> = { status };

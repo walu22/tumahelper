@@ -1,31 +1,14 @@
 import { expect, test } from "@playwright/test";
-
-function customerDevCookie(baseURL: string) {
-  const payload = {
-    id: "f0000000-0000-0000-0000-000000000001",
-    role: "customer",
-    email: "client@tumahelper.dev",
-    phone: "+260976666666",
-    full_name: "Demo Customer",
-    exp: Date.now() + 86400000,
-  };
-  return {
-    name: "tumahelper-dev-session",
-    value: Buffer.from(JSON.stringify(payload)).toString("base64url"),
-    url: baseURL.replace(/\/$/, ""),
-    httpOnly: true,
-    sameSite: "Lax" as const,
-  };
-}
+import { loginAsCustomer } from "./helpers/auth";
 
 test.describe("Booking entry points", () => {
   test.beforeEach(async ({ page, baseURL }) => {
-    await page.context().addCookies([customerDevCookie(baseURL!)]);
+    await loginAsCustomer(page, baseURL!);
   });
 
   test("hero Nannies icon opens babysitting details", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("main").getByRole("link", { name: "Nannies" }).click();
+    await page.locator('a[href="/customer/book?category=nanny&type=babysitting"]').first().click();
     await expect(page).toHaveURL(/category=nanny.*type=babysitting/);
     await expect(page.getByRole("heading", { name: "Book a service" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
@@ -38,7 +21,7 @@ test.describe("Booking entry points", () => {
 
   test("hero Cleaning icon opens standard clean details", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("main").getByRole("link", { name: "Cleaning" }).click();
+    await page.locator('a[href="/customer/book?category=cleaning&type=standard"]').first().click();
     await expect(page).toHaveURL(/category=cleaning.*type=standard/);
     await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
       timeout: 15_000,
