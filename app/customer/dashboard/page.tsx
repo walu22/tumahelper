@@ -5,6 +5,7 @@ import { createAuthenticatedServerClient } from "@/lib/supabase-server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomerDashboardBookingItem } from "@/components/customer/customer-dashboard-booking-item";
+import { attachBookAgainHrefs } from "@/lib/bookings/book-again-enrich";
 import { WorkerStatCard } from "@/components/worker/worker-stat-card";
 import { formatCurrency } from "@/lib/utils";
 import {
@@ -47,15 +48,20 @@ export default async function CustomerDashboard() {
       platform_fee,
       payment_status,
       created_at,
+      worker_id,
+      category_id,
+      service_details,
       worker:worker_id(full_name)
     `)
     .eq("customer_id", user.id)
     .order("created_at", { ascending: false });
 
-  const bookings = (bookingRows || []).map((b) => ({
+  const normalized = (bookingRows || []).map((b) => ({
     ...b,
     worker: Array.isArray(b.worker) ? b.worker[0] : b.worker,
   }));
+
+  const bookings = await attachBookAgainHrefs(supabase, normalized);
 
   const upcoming = bookings.filter((b) =>
     ["pending", "accepted", "in_progress"].includes(b.status)
@@ -192,6 +198,7 @@ export default async function CustomerDashboard() {
                       key={booking.id}
                       booking={booking}
                       highlight
+                      bookAgainHref={booking.bookAgainHref}
                     />
                   ))}
                 </CardContent>
@@ -205,7 +212,11 @@ export default async function CustomerDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {awaitingWorker.slice(0, 3).map((booking) => (
-                    <CustomerDashboardBookingItem key={booking.id} booking={booking} />
+                    <CustomerDashboardBookingItem
+                      key={booking.id}
+                      booking={booking}
+                      bookAgainHref={booking.bookAgainHref}
+                    />
                   ))}
                 </CardContent>
               </Card>
@@ -225,7 +236,11 @@ export default async function CustomerDashboard() {
                 {recentBookings.length > 0 ? (
                   <div className="space-y-3">
                     {recentBookings.map((booking) => (
-                      <CustomerDashboardBookingItem key={booking.id} booking={booking} />
+                      <CustomerDashboardBookingItem
+                      key={booking.id}
+                      booking={booking}
+                      bookAgainHref={booking.bookAgainHref}
+                    />
                     ))}
                   </div>
                 ) : (
