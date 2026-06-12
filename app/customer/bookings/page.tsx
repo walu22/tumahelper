@@ -5,6 +5,7 @@ import { createAuthenticatedServerClient } from '@/lib/supabase-server'
 import { getCurrentUser } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { formatDate, formatTime, formatCurrency } from '@/utils/formatters'
+import { formatPaymentStatusLabel, paymentStatusBadgeVariant } from '@/lib/bookings/display-labels'
 import { CalendarCheck, MapPin, Clock, User } from 'lucide-react'
 import Link from 'next/link'
 import type { BookingStatus } from '@/types'
@@ -106,8 +107,8 @@ async function BookingsList({ statusFilter }: { statusFilter?: string }) {
 
               <div className="flex items-center justify-between mt-3 pt-3 border-t">
                 <span className="text-lg font-bold">{formatCurrency(booking.amount)}</span>
-                <Badge variant="outline" className="text-xs">
-                  {booking.payment_status === 'paid' ? 'Paid' : booking.payment_status === 'confirmed' ? 'Confirmed' : 'Pending'}
+                <Badge variant={paymentStatusBadgeVariant(booking.payment_status)} className="text-xs">
+                  {formatPaymentStatusLabel(booking.payment_status)}
                 </Badge>
               </div>
             </CardContent>

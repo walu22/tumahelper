@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { cn, getStatusBadgeColor } from '@/utils/formatters'
 import { formatDate, formatTime, formatCurrency } from '@/utils/formatters'
+import { formatPaymentStatusLabel, paymentStatusBadgeVariant } from '@/lib/bookings/display-labels'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, Clock, XCircle, AlertTriangle } from 'lucide-react'
@@ -83,8 +84,8 @@ export function BookingCard({ booking, role }: BookingCardProps) {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className={cn(getStatusBadgeColor(booking.payment_status))}>
-                {booking.payment_status}
+              <Badge variant={paymentStatusBadgeVariant(booking.payment_status)}>
+                {formatPaymentStatusLabel(booking.payment_status)}
               </Badge>
               <span className="text-sm font-medium text-primary group-hover:underline">
                 View

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/utils/formatters";
 import { formatDate, formatTime } from "@/utils/formatters";
+import { formatPaymentStatusLabel } from "@/lib/bookings/display-labels";
 import { ArrowRight, Clock, MapPin, User } from "lucide-react";
 
 const statusLabels: Record<string, string> = {
@@ -23,12 +24,6 @@ const statusVariants: Record<
   completed: "success",
   cancelled: "destructive",
   declined: "destructive",
-};
-
-const paymentLabels: Record<string, string> = {
-  pending: "Payment pending",
-  paid: "Paid",
-  confirmed: "Confirmed",
 };
 
 interface CustomerDashboardBookingItemProps {
@@ -104,7 +99,7 @@ export function CustomerDashboardBookingItem({
             {formatCurrency(total)}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {paymentLabels[booking.payment_status] || booking.payment_status}
+            {formatPaymentStatusLabel(booking.payment_status)}
           </p>
           <ArrowRight className="h-4 w-4 text-muted-foreground ml-auto mt-3 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>

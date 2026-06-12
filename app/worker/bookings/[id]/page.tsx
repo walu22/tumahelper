@@ -3,6 +3,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { BookingTimeline } from "@/components/booking-timeline";
 import { WorkerBookingActions } from "@/components/booking/worker-booking-actions";
+import { BookingNextStepBanner } from "@/components/booking/booking-next-step";
+import { getWorkerBookingNextStep, formatPaymentStatusLabel } from "@/lib/bookings/display-labels";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +42,13 @@ export default async function WorkerBookingDetailPage({
 
   if (error || !booking) notFound();
 
+  const customer = Array.isArray(booking.customer) ? booking.customer[0] : booking.customer;
+  const nextStep = getWorkerBookingNextStep({
+    status: booking.status as BookingStatus,
+    paymentStatus: booking.payment_status || "pending",
+    customerName: customer?.full_name,
+  });
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
@@ -63,7 +72,8 @@ export default async function WorkerBookingDetailPage({
       </div>
 
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 space-y-4">
+          <BookingNextStepBanner step={nextStep} />
           <BookingTimeline currentStatus={booking.status} />
         </CardContent>
       </Card>
@@ -163,7 +173,7 @@ export default async function WorkerBookingDetailPage({
                 <div className="text-sm text-gray-500">
                   Your earnings after platform fee
                   {booking.payment_status === "paid" || booking.payment_status === "confirmed"
-                    ? " · Paid"
+                    ? ` · ${formatPaymentStatusLabel(booking.payment_status)}`
                     : " · Payment pending"}
                 </div>
               </div>

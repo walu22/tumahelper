@@ -5,7 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { HeaderAuth } from "@/components/layout/header-auth";
 import { Footer } from "@/components/layout/footer";
-import { MobileNav } from "@/components/mobile-nav";
+import { MobileNavAuth } from "@/components/layout/mobile-nav-auth";
 import { Toaster } from "sonner";
 
 const sans = Figtree({
@@ -44,7 +44,7 @@ export default function RootLayout({
           {!isAdmin && <HeaderAuth />}
           <main className={isAdmin ? "" : "min-h-screen pb-16 md:pb-0"}>{children}</main>
           {!isAdmin && <Footer />}
-          {!isAdmin && <MobileNav />}
+          {!isAdmin && <MobileNavAuth />}
           <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>

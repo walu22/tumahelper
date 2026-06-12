@@ -13,6 +13,8 @@ import { PaymentInstructions } from '@/components/booking/payment-instructions'
 import { ServiceSummary } from '@/components/services/service-summary'
 import type { ServiceDetails } from '@/lib/services/catalog'
 import { ArrowLeft, MapPin, Calendar, Clock, FileText, User } from 'lucide-react'
+import { BookingNextStepBanner } from '@/components/booking/booking-next-step'
+import { getCustomerBookingNextStep, formatPaymentStatusLabel, paymentStatusBadgeVariant } from '@/lib/bookings/display-labels'
 import type { BookingStatus } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -102,6 +104,12 @@ export default async function CustomerBookingDetailPage({
   }
 
   const canCancel = ['pending', 'accepted'].includes(booking.status)
+  const nextStep = getCustomerBookingNextStep({
+    status: booking.status,
+    paymentStatus: booking.payment_status || 'pending',
+    workerName: booking.worker?.full_name,
+    hasReview: !!booking.customer_rating,
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -176,7 +184,12 @@ export default async function CustomerBookingDetailPage({
                 )}
 
                 <div className="border-t pt-4">
-                  <p className="text-sm font-medium mb-2">Payment Summary</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium">Payment Summary</p>
+                    <Badge variant={paymentStatusBadgeVariant(booking.payment_status || 'pending')}>
+                      {formatPaymentStatusLabel(booking.payment_status || 'pending')}
+                    </Badge>
+                  </div>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Service Fee</span>
@@ -199,7 +212,8 @@ export default async function CustomerBookingDetailPage({
               <CardHeader>
                 <CardTitle className="text-lg">Booking Timeline</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <BookingNextStepBanner step={nextStep} />
                 <BookingTimeline currentStatus={booking.status} />
               </CardContent>
             </Card>
