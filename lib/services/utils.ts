@@ -127,41 +127,65 @@ export function formatAgeGroupsSummary(ageIds: string[]): string {
     .join(", ");
 }
 
-/** Readable scope bullets for the booking summary (no service type label) */
-export function getServiceScopeLines(details: ServiceDetails): string[] {
-  const lines: string[] = [];
+/** Labelled rows for booking summary panels */
+export interface ServiceScopeRow {
+  label: string;
+  value: string;
+}
+
+export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] {
+  const rows: ServiceScopeRow[] = [];
 
   if (details.category === "cleaning") {
-    lines.push(`${details.bedrooms ?? 3} bedrooms · ${details.bathrooms ?? 2} bathrooms`);
+    rows.push({
+      label: "Home",
+      value: `${details.bedrooms ?? 3} bed · ${details.bathrooms ?? 2} bath`,
+    });
   } else {
     const count = details.children ?? 1;
-    lines.push(`${count} ${count === 1 ? "child" : "children"}`);
     const ages = (details.childAgeGroups ?? []).slice(0, count);
     const ageSummary = formatAgeGroupsSummary(ages);
-    if (ageSummary) lines.push(ageSummary);
+    rows.push({
+      label: "Children",
+      value: count === 1 ? "1 child" : `${count} children`,
+    });
+    if (ageSummary) {
+      rows.push({ label: "Ages", value: ageSummary });
+    }
   }
 
-  lines.push(`${details.durationHours} hours`);
+  rows.push({
+    label: "Duration",
+    value: `${details.durationHours} hour${details.durationHours === 1 ? "" : "s"}`,
+  });
 
   if (details.addons.length > 0) {
     const labels = details.addons
       .map((id) => getAddon(details.category, id)?.label ?? id)
       .join(", ");
-    lines.push(`Add-ons: ${labels}`);
+    rows.push({ label: "Extras", value: labels });
   }
 
-  return lines;
+  return rows;
+}
+
+/** Readable scope bullets for the booking summary (no service type label) */
+export function getServiceScopeLines(details: ServiceDetails): string[] {
+  return getServiceScopeRows(details).map((row) => `${row.label}: ${row.value}`);
 }
 
 export function formatServiceScope(details: ServiceDetails): string {
-  return getServiceScopeLines(details).join(" · ");
+  return getServiceScopeRows(details)
+    .map((row) => `${row.label}: ${row.value}`)
+    .join(" · ");
 }
 
 export function formatServiceSummary(details: ServiceDetails): string {
   const type = getServiceType(details.category, details.serviceType);
-  return [type?.label ?? details.serviceType, formatServiceScope(details)]
-    .filter(Boolean)
+  const scope = getServiceScopeRows(details)
+    .map((row) => row.value)
     .join(" · ");
+  return [type?.label ?? details.serviceType, scope].filter(Boolean).join(" · ");
 }
 
 export function buildBookUrl(details: ServiceDetails): string {

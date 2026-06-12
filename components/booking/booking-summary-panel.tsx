@@ -3,7 +3,8 @@
 import { Calendar, Clock, MapPin, User } from "lucide-react";
 import { getServiceType } from "@/lib/services/catalog";
 import type { ServiceDetails } from "@/lib/services/catalog";
-import { getServiceScopeLines, suggestPrice } from "@/lib/services/utils";
+import { getServiceScopeRows, suggestPrice } from "@/lib/services/utils";
+import { ServiceScopeDetails } from "@/components/booking/service-scope-details";
 import { formatBookingTime } from "@/lib/booking/time-slots";
 import { formatCurrency } from "@/lib/utils";
 
@@ -42,7 +43,7 @@ export function BookingSummaryPanel({
 }: BookingSummaryPanelProps) {
   const type = getServiceType(details.category, details.serviceType);
   const price = suggestPrice(details);
-  const scopeLines = getServiceScopeLines(details);
+  const scopeRows = getServiceScopeRows(details);
   const hasWhen = !!(serviceDate && serviceTime);
   const hasWhere = locationAddress.length >= 5;
 
@@ -58,15 +59,7 @@ export function BookingSummaryPanel({
       </div>
 
       <div className="px-5 py-4 space-y-4">
-        {scopeLines.length > 0 && (
-          <ul className="space-y-1.5 text-sm text-muted-foreground">
-            {scopeLines.map((line) => (
-              <li key={line} className="leading-snug">
-                {line}
-              </li>
-            ))}
-          </ul>
-        )}
+        {scopeRows.length > 0 && <ServiceScopeDetails rows={scopeRows} />}
 
         {(hasWhere || hasWhen || workerName) && (
           <div className="space-y-3 pt-1 border-t border-border/80">

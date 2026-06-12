@@ -1,10 +1,7 @@
 import { Check } from "lucide-react";
-import {
-  type ServiceDetails,
-  getAddon,
-  getServiceType,
-} from "@/lib/services/catalog";
-import { formatServiceSummary } from "@/lib/services/utils";
+import { type ServiceDetails, getServiceType } from "@/lib/services/catalog";
+import { getServiceScopeRows } from "@/lib/services/utils";
+import { ServiceScopeDetails } from "@/components/booking/service-scope-details";
 
 export function ServiceSummary({ details }: { details: ServiceDetails }) {
   const type = getServiceType(details.category, details.serviceType);
@@ -13,7 +10,9 @@ export function ServiceSummary({ details }: { details: ServiceDetails }) {
     <div className="rounded-xl border border-border bg-surface p-4 space-y-3">
       <div>
         <p className="text-sm font-semibold">{type?.label ?? "Service"}</p>
-        <p className="text-sm text-muted-foreground mt-0.5">{formatServiceSummary(details)}</p>
+        <div className="mt-2">
+          <ServiceScopeDetails rows={getServiceScopeRows(details)} />
+        </div>
       </div>
 
       {type && (
@@ -30,13 +29,6 @@ export function ServiceSummary({ details }: { details: ServiceDetails }) {
             </li>
           )}
         </ul>
-      )}
-
-      {details.addons.length > 0 && (
-        <p className="text-xs text-muted-foreground">
-          Extras:{" "}
-          {details.addons.map((id) => getAddon(details.category, id)?.label ?? id).join(", ")}
-        </p>
       )}
     </div>
   );

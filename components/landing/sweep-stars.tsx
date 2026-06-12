@@ -99,7 +99,7 @@ export function SweepStarsSection({
               href="/workers"
               className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-3.5 text-sm font-semibold hover:bg-white transition-colors"
             >
-              Browse workers
+              Find workers
             </Link>
           </div>
         </div>
