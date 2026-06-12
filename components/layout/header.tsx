@@ -34,7 +34,7 @@ export function Header({ user }: { user: AppUser | null }) {
               Permanent hire
             </Link>
             <Link href="/workers" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Browse
+              Find workers
             </Link>
           </nav>
 
@@ -89,7 +89,7 @@ export function Header({ user }: { user: AppUser | null }) {
               Permanent hire
             </Link>
             <Link href="/workers" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              Browse
+              Find workers
             </Link>
             <div className="flex gap-2 pt-2">
               <button onClick={toggleTheme} className="flex items-center gap-2 px-3 py-2 text-sm rounded-full hover:bg-surface transition-colors">
