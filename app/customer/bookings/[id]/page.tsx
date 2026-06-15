@@ -13,7 +13,13 @@ import { PaymentInstructions } from '@/components/booking/payment-instructions'
 import { ServiceSummary } from '@/components/services/service-summary'
 import type { ServiceDetails } from '@/lib/services/catalog'
 import { ArrowLeft, MapPin, Calendar, Clock, FileText, User } from 'lucide-react'
+import { BookAgainLink } from '@/components/booking/book-again-link'
 import { BookingNextStepBanner } from '@/components/booking/booking-next-step'
+import {
+  buildBookAgainUrl,
+  canBookAgainWithWorker,
+  serviceDetailsFromBooking,
+} from '@/lib/bookings/book-again'
 import { getCustomerBookingNextStep, formatPaymentStatusLabel, paymentStatusBadgeVariant } from '@/lib/bookings/display-labels'
 import type { BookingStatus } from '@/types'
 
@@ -60,8 +66,14 @@ interface BookingWithRelations {
   cancellation_reason: string | null
   created_at: string
   service_details: ServiceDetails | null
-  worker: { full_name: string | null; profile_photo_url: string | null; phone: string | null }
-  category: { name: string } | null
+  worker: {
+    full_name: string | null
+    profile_photo_url: string | null
+    phone: string | null
+    profile_id?: string | null
+    availability_status?: string | null
+  }
+  category: { name: string; slug: string } | null
   category_id: string | null
 }
 
@@ -86,11 +98,11 @@ export default async function CustomerBookingDetailPage({
     notFound()
   }
 
-  let category: { name: string } | null = null
+  let category: { name: string; slug: string } | null = null
   if (bookingRow.category_id) {
     const { data: categoryRow } = await supabase
       .from('service_categories')
-      .select('name')
+      .select('name, slug')
       .eq('id', bookingRow.category_id)
       .maybeSingle()
     category = categoryRow ?? null
@@ -100,8 +112,25 @@ export default async function CustomerBookingDetailPage({
   const booking: BookingWithRelations = {
     ...bookingRow,
     category,
-    worker: worker ?? { full_name: null, profile_photo_url: null, phone: null },
+    worker: worker ?? {
+      profile_id: null,
+      full_name: null,
+      profile_photo_url: null,
+      phone: null,
+      availability_status: null,
+    },
   }
+
+  const bookAgainHref =
+    worker?.profile_id && canBookAgainWithWorker(booking.status)
+      ? buildBookAgainUrl(
+          worker.profile_id,
+          serviceDetailsFromBooking({
+            service_details: booking.service_details,
+            category: booking.category,
+          })
+        )
+      : null
 
   const canCancel = ['pending', 'accepted'].includes(booking.status)
   const nextStep = getCustomerBookingNextStep({
@@ -246,13 +275,21 @@ export default async function CustomerBookingDetailPage({
                       <User className="h-6 w-6 text-primary" />
                     )}
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <p className="font-medium">{booking.worker?.full_name || 'Unknown Worker'}</p>
                     {booking.worker?.phone && (
                       <p className="text-sm text-muted-foreground">{booking.worker.phone}</p>
                     )}
                   </div>
                 </div>
+                {bookAgainHref && (
+                  <BookAgainLink
+                    href={bookAgainHref}
+                    workerName={booking.worker?.full_name}
+                    className="w-full mt-4"
+                    size="sm"
+                  />
+                )}
               </CardContent>
             </Card>
 
