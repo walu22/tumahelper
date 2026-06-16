@@ -1,5 +1,6 @@
 import { getServerClient } from "@/lib/supabase";
 import { LandingWorkerCard } from "@/components/landing/landing-worker-card";
+import { PUBLIC_WORKER_AVAILABILITY, WORKER_STUB_AREA } from "@/lib/workers/public-listing";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -21,7 +22,8 @@ export default async function WorkersPage({ searchParams }: WorkersPageProps) {
   let query = supabase
     .from("worker_profiles")
     .select("*")
-    .eq("availability_status", "available");
+    .eq("availability_status", PUBLIC_WORKER_AVAILABILITY)
+    .neq("area", WORKER_STUB_AREA);
 
   if (searchParams.category) query = query.eq("category", searchParams.category);
   if (searchParams.city) query = query.eq("city", searchParams.city);

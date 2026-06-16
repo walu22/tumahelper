@@ -46,6 +46,7 @@ async function createWorkerStub(
     category: "nanny",
     verification_level: "none",
     verification_status: "not_submitted",
+    availability_status: "not_available",
   });
 
   if (error) {

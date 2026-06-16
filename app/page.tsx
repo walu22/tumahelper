@@ -6,6 +6,7 @@ import { SweepStarsSection } from "@/components/landing/sweep-stars";
 import { TrustSection } from "@/components/landing/trust-section";
 import { WorkerRecruitment } from "@/components/landing/worker-recruitment";
 import { LandingFaqCta } from "@/components/landing/landing-faq-cta";
+import { PUBLIC_WORKER_AVAILABILITY, WORKER_STUB_AREA } from "@/lib/workers/public-listing";
 import type { PublicWorkerProfile } from "@/types";
 
 export default async function HomePage() {
@@ -18,14 +19,16 @@ export default async function HomePage() {
     const { count } = await supabase
       .from("worker_profiles")
       .select("*", { count: "exact", head: true })
-      .eq("availability_status", "available");
+      .eq("availability_status", PUBLIC_WORKER_AVAILABILITY)
+      .neq("area", WORKER_STUB_AREA);
     availableCount = count;
 
     const { data: featured } = await supabase
       .from("worker_profiles")
       .select("*")
       .eq("is_featured", true)
-      .eq("availability_status", "available")
+      .eq("availability_status", PUBLIC_WORKER_AVAILABILITY)
+      .neq("area", WORKER_STUB_AREA)
       .order("trust_score", { ascending: false })
       .limit(5);
 
@@ -35,7 +38,8 @@ export default async function HomePage() {
       const { data } = await supabase
         .from("worker_profiles")
         .select("*")
-        .eq("availability_status", "available")
+        .eq("availability_status", PUBLIC_WORKER_AVAILABILITY)
+        .neq("area", WORKER_STUB_AREA)
         .order("trust_score", { ascending: false })
         .limit(5);
       featuredWorkers = (data as PublicWorkerProfile[] | null) ?? null;
