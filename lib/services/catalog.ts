@@ -100,6 +100,22 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         priceHintMin: 700,
         priceHintMax: 1200,
       },
+      {
+        id: "airbnb",
+        label: "Airbnb / short-stay turnover",
+        description: "Guest checkout to check-in ready — linen change, restock, and hospitality-grade clean.",
+        included: [
+          "Full clean of all guest areas",
+          "Linen strip, wash & fresh bed-making",
+          "Bathroom deep clean & towel reset",
+          "Kitchen clean, dishes & appliance wipe-down",
+          "Restock toiletries & welcome items (if supplied)",
+          "Rubbish out, floors mopped & property walkthrough",
+        ],
+        defaultHours: 4,
+        priceHintMin: 400,
+        priceHintMax: 650,
+      },
     ],
     addons: [
       { id: "laundry", label: "Laundry", description: "Wash, dry & fold", priceHint: 80 },
@@ -108,6 +124,8 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       { id: "fridge", label: "Inside fridge", description: "Clean shelves & interior", priceHint: 80 },
       { id: "windows", label: "Interior windows", description: "Glass & frames inside", priceHint: 100 },
       { id: "cabinets", label: "Inside cabinets", description: "Kitchen cabinets (emptied first)", priceHint: 100 },
+      { id: "guest_pack", label: "Guest welcome pack", description: "Arrange toiletries, snacks & info card", priceHint: 60 },
+      { id: "key_handover", label: "Key handover / lockbox", description: "Manage key exchange or lockbox reset", priceHint: 40 },
     ],
   },
   nanny: {

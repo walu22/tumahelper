@@ -47,7 +47,8 @@ export async function signIn(params: {
     };
   }
 
-  const supabase = getRouteHandlerClient();
+  const { getServerActionClient } = await import("@/lib/supabase");
+  const supabase = getServerActionClient();
   let sessionUser: { id: string } | null = null;
   let lastError: { message: string } | null = null;
 
@@ -96,7 +97,8 @@ export async function signOut() {
   clearDevSessionCookie();
 
   if (!isDevBypassEnabled()) {
-    const supabase = getRouteHandlerClient();
+    const { getServerActionClient } = await import("@/lib/supabase");
+    const supabase = getServerActionClient();
     await supabase.auth.signOut();
   }
 }

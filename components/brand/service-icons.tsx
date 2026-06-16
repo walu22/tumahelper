@@ -35,9 +35,22 @@ export function NannyIcon({ className }: ServiceIconProps) {
   );
 }
 
+export function AirbnbIcon({ className }: ServiceIconProps) {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
+      <circle cx="32" cy="32" r="30" fill="#FFF0F0" />
+      <path d="M18 44V28l14-10 14 10v16H18Z" fill="#FF5A5F" />
+      <path d="M18 28l14-10 14 10-14-8-14 8Z" fill="#FF787C" />
+      <circle cx="32" cy="32" r="4" fill="white" />
+      <path d="M32 36v8h3v-2.5h2v-2.5h-5Z" fill="white" />
+    </svg>
+  );
+}
+
 const ICON_MAP: Record<ServiceIconKey, ComponentType<ServiceIconProps>> = {
   indoor: IndoorCleaningIcon,
   nanny: NannyIcon,
+  airbnb: AirbnbIcon,
 };
 
 export function ServiceIcon({ name, className }: { name: ServiceIconKey; className?: string }) {

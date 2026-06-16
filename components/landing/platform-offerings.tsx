@@ -6,6 +6,7 @@ const cardStyles = {
   green: "sweep-card-green border-primary/15",
   pink: "sweep-card-pink border-sweep-pink/20",
   teal: "sweep-card-teal border-sweep-teal/25",
+  blue: "sweep-card-blue border-blue-500/20",
 } as const;
 
 export function PlatformOfferings() {
@@ -25,7 +26,7 @@ export function PlatformOfferings() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-5 mb-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
           {PLATFORM_OFFERINGS.map((item) => (
             <Link
               key={item.title}

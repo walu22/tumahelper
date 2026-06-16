@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import type { User } from "@/types";
 import {
   DEV_SESSION_COOKIE,
@@ -89,10 +90,24 @@ function readAccessToken(raw: string | undefined): string | null {
 
   try {
     const decoded = raw.startsWith("%") ? decodeURIComponent(raw) : raw;
-    const parsed = JSON.parse(decoded);
+    let parsed;
+    
+    // Attempt standard JSON parse
+    try {
+      parsed = JSON.parse(decoded);
+    } catch {
+      // If that fails, it's likely base64url encoded (new Supabase default)
+      try {
+        const decodedBase64 = Buffer.from(decoded, "base64url").toString("utf8");
+        parsed = JSON.parse(decodedBase64);
+      } catch {
+        return null; // Both parsing attempts failed
+      }
+    }
 
-    if (Array.isArray(parsed) && typeof parsed[0] === "string") {
-      return parsed[0];
+    if (Array.isArray(parsed)) {
+      if (typeof parsed[0] === "string") return parsed[0];
+      if (parsed[0] && typeof parsed[0].access_token === "string") return parsed[0].access_token;
     }
 
     if (parsed && typeof parsed.access_token === "string") {
@@ -133,7 +148,8 @@ function readDevUserFromCookieStore(
 }
 
 export async function resolveUserFromRequest(
-  request: NextRequest
+  request: NextRequest,
+  response?: NextResponse
 ): Promise<User | null> {
   const devUser = readDevUserFromCookieStore(
     (name) => request.cookies.get(name)?.value
@@ -144,14 +160,24 @@ export async function resolveUserFromRequest(
     return null;
   }
 
-  const token = readSupabaseTokenFromCookieStore(
-    (name) => request.cookies.get(name)?.value
-  );
+  let token: string | null = null;
+  
+  if (response) {
+    const supabase = createMiddlewareClient({ req: request, res: response });
+    const { data: { session } } = await supabase.auth.getSession();
+    token = session?.access_token || null;
+  } else {
+    token = readSupabaseTokenFromCookieStore(
+      (name) => request.cookies.get(name)?.value
+    );
+  }
 
   if (!token) return null;
 
   return resolveUserFromAccessToken(token);
 }
+
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export async function resolveUserFromCookies(): Promise<User | null> {
   const devUser = readDevUserFromCookieStore((name) => cookies().get(name)?.value);
@@ -161,13 +187,12 @@ export async function resolveUserFromCookies(): Promise<User | null> {
     return null;
   }
 
-  const token = readSupabaseTokenFromCookieStore(
-    (name) => cookies().get(name)?.value
-  );
+  const supabase = createServerComponentClient({ cookies });
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session?.access_token) return null;
 
-  if (!token) return null;
-
-  return resolveUserFromAccessToken(token);
+  return resolveUserFromAccessToken(session.access_token);
 }
 
 async function resolveUserFromAccessToken(token: string): Promise<User | null> {

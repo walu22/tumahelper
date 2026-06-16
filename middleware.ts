@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/onboarding/")) {
     const onboardingRole = pathname.split("/")[2];
-    const user = await resolveUserFromRequest(request);
+    const user = await resolveUserFromRequest(request, response);
 
     if (!user) {
       const url = new URL("/login", request.url);
@@ -41,13 +41,18 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  // Allow /customer/book to be accessed without login so users can browse
+  // services from the landing page. Auth is enforced at booking submission.
+  const PUBLIC_PATHS = ["/customer/book"];
+  const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+
   const isProtected = PROTECTED_PREFIXES.some((path) =>
     pathname.startsWith(path)
   );
 
-  if (!isProtected) return response;
+  if (!isProtected || isPublicPath) return response;
 
-  const user = await resolveUserFromRequest(request);
+  const user = await resolveUserFromRequest(request, response);
 
   if (!user) {
     const url = new URL("/login", request.url);

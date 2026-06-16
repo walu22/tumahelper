@@ -1,4 +1,4 @@
-export type ServiceIconKey = "indoor" | "nanny";
+export type ServiceIconKey = "indoor" | "nanny" | "airbnb";
 
 export const LUSAKA_AREAS = [
   "Kabulonga",
@@ -15,6 +15,7 @@ export const LUSAKA_AREAS = [
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
   { href: "/customer/book?category=nanny&type=babysitting", label: "Nannies", icon: "nanny" },
   { href: "/customer/book?category=cleaning&type=standard", label: "Cleaning", icon: "indoor" },
+  { href: "/customer/book?category=cleaning&type=airbnb", label: "Airbnb", icon: "airbnb" },
 ];
 
 /** Deep links that skip the service picker and open booking details */
@@ -37,6 +38,13 @@ export const PLATFORM_OFFERINGS = [
       "One-off deep cleans or regular visits. Book a verified cleaner across Lusaka.",
     href: "/customer/book?category=cleaning",
     variant: "green" as const,
+  },
+  {
+    title: "Airbnb turnover",
+    description:
+      "Hospitality-grade turnover cleaning, linen changes, and restocking between guest stays.",
+    href: "/customer/book?category=cleaning&type=airbnb",
+    variant: "blue" as const,
   },
   {
     title: "Verified profiles",

@@ -12,7 +12,7 @@ const FORWARD_PARAMS = [
   "addons",
 ] as const;
 
-/** Legacy /book URL. Always use /customer/book */
+/** /book URL forwards to /customer/book (now public) */
 export default function BookRedirect({
   searchParams,
 }: {

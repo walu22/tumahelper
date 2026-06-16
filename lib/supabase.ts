@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { createRouteHandlerClient, createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createRouteHandlerClient, createServerComponentClient, createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -23,6 +23,11 @@ export const getSupabaseRouteHandler = getRouteHandlerClient;
 export function getRouteHandlerClient() {
   const cookieStore = cookies();
   return createRouteHandlerClient({ cookies: () => cookieStore });
+}
+
+export function getServerActionClient() {
+  const cookieStore = cookies();
+  return createServerActionClient({ cookies: () => cookieStore });
 }
 
 export function getServerComponentClient() {

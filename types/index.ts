@@ -115,6 +115,8 @@ export interface PublicWorkerProfile {
   skills: string[];
   employment_types: EmploymentType[];
   availability_status: AvailabilityStatus;
+  expected_salary_min?: number | null;
+  expected_salary_max?: number | null;
   is_featured?: boolean;
 }
 
