@@ -9,7 +9,11 @@ import { LogoMark } from "@/components/brand/logo";
 import { UserRole } from "@/types";
 import { registerAction } from "./actions";
 
-const roleDescriptions: { role: UserRole; title: string; description: string }[] = [
+const roleDescriptions: {
+  role: Exclude<UserRole, "admin">;
+  title: string;
+  description: string;
+}[] = [
   {
     role: "customer",
     title: "I need help at home",
@@ -18,7 +22,7 @@ const roleDescriptions: { role: UserRole; title: string; description: string }[]
   {
     role: "worker",
     title: "I want to work",
-    description: "Offer your services and get hired",
+    description: "Apply to offer nanny or cleaning services",
   },
   {
     role: "employer",
@@ -27,6 +31,30 @@ const roleDescriptions: { role: UserRole; title: string; description: string }[]
   },
 ];
 
+const roleSignupCopy: Record<
+  Exclude<UserRole, "admin">,
+  { title: string; subtitle: string; submitLabel: string; roleLabel: string }
+> = {
+  customer: {
+    title: "Create your account",
+    subtitle: "Book verified nannies and cleaners in Lusaka.",
+    submitLabel: "Create account",
+    roleLabel: "Customer",
+  },
+  worker: {
+    title: "Apply as a worker",
+    subtitle: "Create your account, then complete your profile and verification.",
+    submitLabel: "Continue to profile",
+    roleLabel: "Worker",
+  },
+  employer: {
+    title: "Create your account",
+    subtitle: "Post jobs and find long-term domestic staff.",
+    submitLabel: "Create account",
+    roleLabel: "Employer",
+  },
+};
+
 export function RegisterForm() {
   const searchParams = useSearchParams();
   const initialRole = searchParams.get("role") as UserRole | null;
@@ -34,15 +62,15 @@ export function RegisterForm() {
   const prefilledEmail = searchParams.get("email") || "";
   const prefilledName = searchParams.get("name") || "";
 
-  const [role, setRole] = useState<UserRole | null>(
+  const [role, setRole] = useState<Exclude<UserRole, "admin"> | null>(
     initialRole && ["customer", "worker", "employer"].includes(initialRole)
-      ? initialRole
+      ? (initialRole as Exclude<UserRole, "admin">)
       : null
   );
 
   if (!role) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
@@ -83,15 +111,19 @@ export function RegisterForm() {
     );
   }
 
+  const signupCopy = roleSignupCopy[role];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
+    <div className="min-h-screen flex items-center justify-center bg-surface px-4 py-12">
+      <div className="w-full max-w-md bg-white rounded-3xl border border-border shadow-sm p-8">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <LogoMark size={48} />
           </div>
-          <h1 className="text-2xl font-bold">Create your account</h1>
-          <p className="text-gray-500 mt-1 text-sm capitalize">Signing up as {role}</p>
+          <h1 className="font-display text-2xl font-bold">{signupCopy.title}</h1>
+          <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+            {signupCopy.subtitle}
+          </p>
         </div>
 
         {error && (
@@ -166,9 +198,9 @@ export function RegisterForm() {
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg text-sm">
+          <div className="flex items-center justify-between rounded-xl border border-border bg-surface p-3 text-sm">
             <span>
-              Role: <span className="font-medium capitalize">{role}</span>
+              Role: <span className="font-medium">{signupCopy.roleLabel}</span>
             </span>
             <button
               type="button"
@@ -179,8 +211,8 @@ export function RegisterForm() {
             </button>
           </div>
 
-          <Button type="submit" className="w-full">
-            Create account
+          <Button type="submit" className="w-full rounded-full">
+            {signupCopy.submitLabel}
           </Button>
         </form>
 
