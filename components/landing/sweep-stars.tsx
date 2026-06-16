@@ -1,69 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Star, ArrowRight, User, ShieldCheck } from "lucide-react";
+import { ArrowRight, Star, User, ShieldCheck } from "lucide-react";
+import { LandingWorkerCard } from "@/components/landing/landing-worker-card";
 import type { PublicWorkerProfile } from "@/types";
-
-function categoryLabel(category: PublicWorkerProfile["category"]) {
-  return category === "nanny" ? "Nanny" : "Cleaning";
-}
-
-function WorkerListRow({ worker }: { worker: PublicWorkerProfile }) {
-  return (
-    <Link
-      href={`/workers/${worker.id}`}
-      className="group flex items-center gap-4 rounded-2xl border border-border bg-white px-4 py-3.5 hover:border-primary/30 hover:bg-primary/[0.02] transition-colors"
-    >
-      <div className="relative h-11 w-11 shrink-0 rounded-full bg-muted overflow-hidden">
-        {worker.profile_photo_url ? (
-          <Image
-            src={worker.profile_photo_url}
-            alt={worker.full_name}
-            fill
-            className="object-cover"
-            sizes="44px"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-muted-foreground">
-            {worker.full_name.charAt(0)}
-          </div>
-        )}
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <p className="font-semibold truncate group-hover:text-primary transition-colors">
-            {worker.full_name}
-          </p>
-          <span className="text-xs font-medium text-muted-foreground">
-            {worker.area}, Lusaka
-          </span>
-        </div>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          {categoryLabel(worker.category)}
-          {worker.experience_years > 0 && ` · ${worker.experience_years} yrs exp`}
-          {worker.trust_score > 0 && ` · Trust ${worker.trust_score}`}
-        </p>
-      </div>
-
-      <div className="shrink-0 text-right">
-        {worker.average_rating > 0 ? (
-          <span className="inline-flex items-center gap-1 text-sm font-semibold">
-            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-            {worker.average_rating.toFixed(1)}
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Verified
-          </span>
-        )}
-        <p className="text-xs text-emerald-600 font-medium mt-0.5 capitalize">
-          {worker.availability_status.replace("_", " ")}
-        </p>
-      </div>
-    </Link>
-  );
-}
 
 export function SweepStarsSection({
   workers,
@@ -109,19 +47,19 @@ export function SweepStarsSection({
 
   return (
     <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-surface">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-8 md:mb-10">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-balance">
             Verified helpers in Lusaka
           </h2>
-          <p className="text-muted-foreground mt-4 leading-relaxed">
+          <p className="text-muted-foreground mt-4 leading-relaxed max-w-2xl mx-auto">
             Book by service and choose your worker in the next step, or browse profiles
             first if you prefer.
           </p>
         </div>
 
         {count > 0 && (
-          <div className="flex flex-wrap items-center justify-center gap-6 mb-8 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-6 mb-8 md:mb-10 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-2">
               <User className="h-4 w-4 text-primary" />
               <strong className="text-foreground font-semibold">{count}</strong> available now
@@ -139,10 +77,10 @@ export function SweepStarsSection({
           </div>
         )}
 
-        <ul className="space-y-2 mb-8">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8 md:mb-10">
           {listed.map((worker) => (
-            <li key={worker.id}>
-              <WorkerListRow worker={worker} />
+            <li key={worker.id} className="min-h-[180px]">
+              <LandingWorkerCard worker={worker} featured={!!worker.is_featured} />
             </li>
           ))}
         </ul>
@@ -157,9 +95,9 @@ export function SweepStarsSection({
           </Link>
           <Link
             href="/workers"
-            className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-primary hover:underline"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-8 py-3.5 text-sm font-semibold hover:border-primary/30 transition-colors w-full sm:w-auto"
           >
-            View all workers
+            Find workers
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
