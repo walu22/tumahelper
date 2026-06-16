@@ -1,10 +1,18 @@
 import { z } from "zod";
 
+export function normalizeZambianPhone(input: string): string {
+  const cleaned = input.trim().replace(/[\s-]/g, "");
+  if (cleaned.startsWith("+260")) return cleaned;
+  if (cleaned.startsWith("260")) return `+${cleaned}`;
+  if (cleaned.startsWith("0")) return `+260${cleaned.slice(1)}`;
+  return cleaned;
+}
+
 export const phoneSchema = z
   .string()
   .regex(
     /^\+260(9[5-7]\d{7}|9[0-4]\d{7})$/,
-    "Invalid Zambian phone number. Format: +26097XXXXXXX"
+    "Invalid Zambian phone number. Use +26097XXXXXXX or 097XXXXXXX"
   );
 
 export const otpCodeSchema = z
