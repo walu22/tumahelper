@@ -494,6 +494,7 @@ export function BookingWizard() {
                       onAddressChange={setLocationAddress}
                       onDescriptionChange={setDescription}
                       category={serviceDetails.category}
+                      serviceType={serviceDetails.serviceType}
                     />
 
                     {!canProceedDetails && (
@@ -670,6 +671,7 @@ export function BookingWizard() {
                         onAddressChange={setLocationAddress}
                         onDescriptionChange={setDescription}
                         category={serviceDetails.category}
+                        serviceType={serviceDetails.serviceType}
                         compact
                       />
                     )}

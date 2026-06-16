@@ -118,7 +118,9 @@ export function ServiceConfigPanel({
       {category === "cleaning" ? (
         <div className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">Home size</p>
+            <p className="text-sm font-medium mb-2">
+              {value.serviceType === "airbnb" ? "Property size" : "Home size"}
+            </p>
             <div className="grid grid-cols-3 gap-2">
               {HOME_SIZE_PRESETS.map((preset) => {
                 const active =
@@ -262,7 +264,7 @@ export function ServiceConfigPanel({
         </div>
         {showHourSuggestion && (
           <p className="text-xs text-muted-foreground mb-2">
-            Based on your home size and extras, we recommend {recommendedHours} hours.
+            Based on your {value.serviceType === "airbnb" ? "property" : "home"} size and extras, we recommend {recommendedHours} hours.
           </p>
         )}
         <div className="flex flex-wrap gap-2">
@@ -288,7 +290,9 @@ export function ServiceConfigPanel({
         <div>
           <p className="text-sm font-medium mb-2">Add extras (optional)</p>
           <div className="grid sm:grid-cols-2 gap-2">
-            {entry.addons.map((addon) => (
+            {entry.addons
+              .filter((addon) => !addon.allowedTypes || addon.allowedTypes.includes(value.serviceType))
+              .map((addon) => (
               <button
                 key={addon.id}
                 type="button"

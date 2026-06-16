@@ -18,6 +18,7 @@ interface BookingScheduleFieldsProps {
   minDate?: string;
   compact?: boolean;
   category?: ServiceCategoryKey;
+  serviceType?: string;
 }
 
 export function BookingScheduleFields({
@@ -32,6 +33,7 @@ export function BookingScheduleFields({
   minDate,
   compact = false,
   category,
+  serviceType,
 }: BookingScheduleFieldsProps) {
   const today = minDate ?? new Date().toISOString().split("T")[0];
   const startTimes = getStartTimeOptions(category);
@@ -108,11 +110,11 @@ export function BookingScheduleFields({
       {!compact && (
         <div>
           <label htmlFor="service-notes" className="text-sm font-medium mb-1.5 block">
-            Special instructions (optional)
+            {serviceType === 'airbnb' ? "Turnover instructions & access" : "Special instructions (optional)"}
           </label>
           <Textarea
             id="service-notes"
-            placeholder="Gate code, access instructions, pets, parking..."
+            placeholder={serviceType === 'airbnb' ? "Check-out time, next check-in time, lockbox code, or specific staging instructions..." : "Gate code, access instructions, pets, parking..."}
             value={description}
             onChange={(e) => onDescriptionChange(e.target.value)}
             rows={3}

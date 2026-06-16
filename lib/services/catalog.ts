@@ -15,6 +15,7 @@ export interface ServiceAddonOption {
   label: string;
   description: string;
   priceHint: number;
+  allowedTypes?: string[];
 }
 
 export interface ServiceCatalogEntry {
@@ -120,12 +121,12 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
     addons: [
       { id: "laundry", label: "Laundry", description: "Wash, dry & fold", priceHint: 80 },
       { id: "ironing", label: "Ironing", description: "Press clothes & linen", priceHint: 80 },
-      { id: "oven", label: "Inside oven", description: "Degrease & scrub oven interior", priceHint: 100 },
-      { id: "fridge", label: "Inside fridge", description: "Clean shelves & interior", priceHint: 80 },
-      { id: "windows", label: "Interior windows", description: "Glass & frames inside", priceHint: 100 },
-      { id: "cabinets", label: "Inside cabinets", description: "Kitchen cabinets (emptied first)", priceHint: 100 },
-      { id: "guest_pack", label: "Guest welcome pack", description: "Arrange toiletries, snacks & info card", priceHint: 60 },
-      { id: "key_handover", label: "Key handover / lockbox", description: "Manage key exchange or lockbox reset", priceHint: 40 },
+      { id: "oven", label: "Inside oven", description: "Degrease & scrub oven interior", priceHint: 100, allowedTypes: ['standard', 'deep', 'move'] },
+      { id: "fridge", label: "Inside fridge", description: "Clean shelves & interior", priceHint: 80, allowedTypes: ['standard', 'deep', 'move'] },
+      { id: "windows", label: "Interior windows", description: "Glass & frames inside", priceHint: 100, allowedTypes: ['standard', 'deep', 'move'] },
+      { id: "cabinets", label: "Inside cabinets", description: "Kitchen cabinets (emptied first)", priceHint: 100, allowedTypes: ['standard', 'deep', 'move'] },
+      { id: "guest_pack", label: "Guest welcome pack", description: "Arrange toiletries, snacks & info card", priceHint: 60, allowedTypes: ['airbnb'] },
+      { id: "key_handover", label: "Key handover / lockbox", description: "Manage key exchange or lockbox reset", priceHint: 40, allowedTypes: ['airbnb'] },
     ],
   },
   nanny: {

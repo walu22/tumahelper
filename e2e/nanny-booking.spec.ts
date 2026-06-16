@@ -54,6 +54,7 @@ test.describe("Nanny booking end-to-end", () => {
     await page.goto("/customer/book?category=nanny&type=babysitting");
     await expect(page.getByRole("heading", { name: "Book a service" })).toBeVisible();
     await expect(page.locator("#service-date")).toBeVisible({ timeout: 15_000 });
+    await page.waitForTimeout(1000);
 
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("08:00");
@@ -95,6 +96,7 @@ test.describe("Nanny booking end-to-end", () => {
     await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book?category=nanny&type=babysitting");
     await expect(page.locator("#service-date")).toBeVisible({ timeout: 15_000 });
+    await page.waitForTimeout(1000);
 
     const continueBtn = page.getByRole("button", { name: "Choose worker" });
     await expect(continueBtn).toBeDisabled();
@@ -112,6 +114,7 @@ test.describe("Nanny booking end-to-end", () => {
     await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book?category=nanny&type=babysitting");
     await expect(page.locator("#child-age")).toBeVisible({ timeout: 15_000 });
+    await page.waitForTimeout(1000);
     await expect(page.locator("#child-age")).toHaveCount(1);
     await expect(page.getByText("Child's age range")).toBeVisible();
     await expect(page.getByText("Child 1")).toHaveCount(0);

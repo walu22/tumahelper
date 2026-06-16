@@ -18,6 +18,8 @@ const ADDON_HOUR_INCREMENT: Record<string, number> = {
   fridge: 0.5,
   windows: 1,
   cabinets: 1,
+  guest_pack: 0.5,
+  key_handover: 0.25,
   meal_prep: 0.5,
   homework: 0.5,
   light_tidying: 0.5,
@@ -32,6 +34,8 @@ export const FUNNEL_ALIASES: Record<
   "indoor-cleaning": { category: "cleaning", type: "standard" },
   "deep-clean": { category: "cleaning", type: "deep" },
   "move-clean": { category: "cleaning", type: "move" },
+  "airbnb-turnover": { category: "cleaning", type: "airbnb" },
+  "airbnb": { category: "cleaning", type: "airbnb" },
   babysitting: { category: "nanny", type: "babysitting" },
   "after-school": { category: "nanny", type: "after_school" },
 };
@@ -138,7 +142,7 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
 
   if (details.category === "cleaning") {
     rows.push({
-      label: "Home",
+      label: details.serviceType === "airbnb" ? "Property" : "Home",
       value: `${details.bedrooms ?? 3} bed · ${details.bathrooms ?? 2} bath`,
     });
   } else {

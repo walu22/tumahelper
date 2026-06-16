@@ -43,12 +43,12 @@ INSERT INTO worker_profiles (
   'b0000000-0000-0000-0000-000000000007',
   'a0000000-0000-0000-0000-000000000007',
   'Peter Zimba', '1990-08-25', 'male', 'Lusaka', 'Chelstone',
-  'Reliable house cleaner with a keen eye for detail. Experienced in deep cleaning, carpet care, and organization. I bring my own supplies.',
+  'I do thorough home cleaning and maintenance. Based in Chelstone, I specialize in carpet cleaning, kitchen deep cleans, and general organization. I always make sure the work is done right.',
   6, 150000, 300000, 'available',
   '["full_time", "part_time", "contract"]',
   '["English", "Bemba", "Nyanja", "Lozi"]',
   '["deep_cleaning", "carpet_cleaning", "laundry", "ironing", "organization"]',
-  'house_cleaner', 'deep_cleaning', 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop',
+  'house_cleaner', 'deep_cleaning', '/helpers/peter_zimba.png',
   82, 'gold', 'approved', 15, 10, 4.7, TRUE, NOW()
 ),
 (
@@ -67,12 +67,12 @@ INSERT INTO worker_profiles (
   'b0000000-0000-0000-0000-000000000009',
   'a0000000-0000-0000-0000-000000000009',
   'Ruth Mwila', '1987-02-14', 'female', 'Lusaka', 'Ibex Hill',
-  'Professional nanny with 8 years of experience. Specialise in newborn and infant care. Sleep training, baby-led weaning, and early milestones.',
+  'I''ve been a professional live-in and full-time nanny for 8 years. I''m experienced in baby care, sleep schedules, and preparing nutritious meals. I''m very reliable and focus on child development.',
   8, 350000, 500000, 'available',
   '["live_in", "full_time"]',
   '["English", "Bemba", "Tonga"]',
   '["newborn_care", "sleep_training", "baby_weaning", "milestone_tracking", "cpr_certified"]',
-  'nanny', 'live_in_nanny', 'https://images.unsplash.com/photo-1590086782957-93c06ef21604?w=400&h=400&fit=crop',
+  'nanny', 'live_in_nanny', '/helpers/ruth.png',
   92, 'platinum', 'approved', 22, 18, 4.9, TRUE, NOW()
 ),
 (

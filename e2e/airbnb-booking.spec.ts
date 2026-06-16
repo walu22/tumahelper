@@ -7,9 +7,9 @@ import {
   tomorrowIsoDate,
 } from "./helpers/mocks";
 
-const MOCK_BOOKING_ID = "c0000000-0000-0000-0000-000000000002";
+const MOCK_BOOKING_ID = "c0000000-0000-0000-0000-000000000003";
 
-test.describe("Cleaning booking end-to-end", () => {
+test.describe("Airbnb turnover booking end-to-end", () => {
   test.beforeEach(async ({ page }) => {
     await mockServiceCategories(page);
 
@@ -22,7 +22,7 @@ test.describe("Cleaning booking end-to-end", () => {
     });
   });
 
-  test("customer can book standard home clean", async ({ page, baseURL }) => {
+  test("customer can book Airbnb turnover clean", async ({ page, baseURL }) => {
     test.setTimeout(60_000);
 
     let capturedBookingBody: Record<string, unknown> | null = null;
@@ -40,7 +40,7 @@ test.describe("Cleaning booking end-to-end", () => {
           success: true,
           data: {
             id: MOCK_BOOKING_ID,
-            booking_code: "TH-CLN001",
+            booking_code: "TH-ABNB001",
             status: "pending",
           },
         }),
@@ -48,15 +48,25 @@ test.describe("Cleaning booking end-to-end", () => {
     });
 
     await loginAsCustomer(page, baseURL!);
-    await page.goto("/customer/book?category=cleaning&type=standard");
+    // Open via the airbnb-turnover alias
+    await page.goto("/customer/book?funnel=airbnb-turnover");
     await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
       timeout: 15_000,
     });
     await page.waitForTimeout(1000);
 
+    // Verify dynamic labels ("Property size" instead of "Home size", "Property" in summary)
+    await expect(page.getByText("Property size")).toBeVisible();
+    await expect(page.getByText("Property", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("3 bed · 2 bath").first()).toBeVisible();
+
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("09:00");
-    await page.locator("#service-address").fill("Plot 8, Woodlands, Lusaka");
+    await page.locator("#service-address").fill("Plot 10, Roma, Lusaka");
+
+    // Add Airbnb extras
+    await page.getByRole("button", { name: "Guest welcome pack" }).click();
+    await page.getByRole("button", { name: "Key handover" }).click();
 
     await page.getByRole("button", { name: "Choose worker" }).click();
     await expect(page.getByText("Grace Phiri")).toBeVisible();
@@ -78,26 +88,12 @@ test.describe("Cleaning booking end-to-end", () => {
       categoryId: MOCK_CATEGORIES[1].id,
       serviceDate: tomorrowIsoDate(),
       serviceTime: "09:00",
-      locationAddress: "Plot 8, Woodlands, Lusaka",
+      locationAddress: "Plot 10, Roma, Lusaka",
       serviceDetails: {
         category: "cleaning",
-        serviceType: "standard",
+        serviceType: "airbnb",
+        addons: ["guest_pack", "key_handover"],
       },
     });
-  });
-
-  test("cleaning details require date, time, and address", async ({ page, baseURL }) => {
-    await loginAsCustomer(page, baseURL!);
-    await page.goto("/customer/book?category=cleaning&type=standard");
-    await expect(page.locator("#service-date")).toBeVisible({ timeout: 15_000 });
-    await page.waitForTimeout(1000);
-
-    const continueBtn = page.getByRole("button", { name: "Choose worker" });
-    await expect(continueBtn).toBeDisabled();
-
-    await page.locator("#service-date").fill(tomorrowIsoDate());
-    await page.locator("#service-start-time").selectOption("10:00");
-    await page.locator("#service-address").fill("Meanwood, Lusaka");
-    await expect(continueBtn).toBeEnabled();
   });
 });
