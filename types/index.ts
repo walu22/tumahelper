@@ -115,6 +115,7 @@ export interface PublicWorkerProfile {
   skills: string[];
   employment_types: EmploymentType[];
   availability_status: AvailabilityStatus;
+  is_featured?: boolean;
 }
 
 export interface ServiceCategory {
