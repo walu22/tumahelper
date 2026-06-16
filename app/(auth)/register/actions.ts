@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { AuthError } from "@/lib/auth/login";
+import { isNextRedirectError } from "@/lib/auth/redirect-error";
 import { signUp } from "@/lib/auth/register";
 import type { UserRole } from "@/types";
 
@@ -16,17 +17,24 @@ export async function registerAction(formData: FormData) {
     redirect("/register?error=Invalid+role");
   }
 
+  let result;
   try {
-    const result = await signUp({
+    result = await signUp({
       email,
       password,
       role: role as "customer" | "worker" | "employer",
       fullName,
       phone,
     });
-    redirect(result.redirect);
   } catch (error) {
-    const message = error instanceof AuthError ? error.message : "Registration failed";
+    if (isNextRedirectError(error)) throw error;
+
+    const message =
+      error instanceof AuthError
+        ? error.message
+        : error instanceof Error
+          ? error.message
+          : "Registration failed";
     const params = new URLSearchParams({
       error: message,
       role,
@@ -35,4 +43,6 @@ export async function registerAction(formData: FormData) {
     });
     redirect(`/register?${params.toString()}`);
   }
+
+  redirect(result.redirect);
 }

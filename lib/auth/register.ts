@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
-import { phoneSchema } from "@/lib/validations";
+import { phoneSchema, normalizeZambianPhone } from "@/lib/validations";
 import { isDevBypassEnabled } from "./config";
 import { AuthError } from "./login";
 import { setDevSessionCookie } from "./session";
@@ -98,9 +98,9 @@ export async function signUp(params: SignUpParams): Promise<SignUpResult> {
 
   let phone: string;
   try {
-    phone = phoneSchema.parse(params.phone.trim());
+    phone = phoneSchema.parse(normalizeZambianPhone(params.phone));
   } catch {
-    throw new AuthError("Invalid phone number. Use format +26097XXXXXXX");
+    throw new AuthError("Invalid phone number. Use +26097XXXXXXX or 097XXXXXXX");
   }
 
   const admin = getAdminClient();
@@ -148,9 +148,7 @@ export async function signUp(params: SignUpParams): Promise<SignUpResult> {
     email,
     password,
     email_confirm: true,
-    phone,
-    phone_confirm: true,
-    user_metadata: { role: params.role, full_name: fullName },
+    user_metadata: { role: params.role, full_name: fullName, phone },
   });
 
   if (authError || !authData.user) {
