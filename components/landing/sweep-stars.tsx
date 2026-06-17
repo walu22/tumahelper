@@ -10,7 +10,7 @@ export function SweepStarsSection({
   workers: PublicWorkerProfile[] | null;
   availableCount?: number | null;
 }) {
-  const listed = workers?.slice(0, 5) ?? [];
+  const listed = workers?.slice(0, 6) ?? [];
   const count = availableCount ?? listed.length;
 
   if (listed.length === 0) {

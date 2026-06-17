@@ -30,7 +30,7 @@ export default async function HomePage() {
       .eq("availability_status", PUBLIC_WORKER_AVAILABILITY)
       .neq("area", WORKER_STUB_AREA)
       .order("trust_score", { ascending: false })
-      .limit(5);
+      .limit(6);
 
     if (featured?.length) {
       featuredWorkers = featured as PublicWorkerProfile[];
@@ -41,7 +41,7 @@ export default async function HomePage() {
         .eq("availability_status", PUBLIC_WORKER_AVAILABILITY)
         .neq("area", WORKER_STUB_AREA)
         .order("trust_score", { ascending: false })
-        .limit(5);
+        .limit(6);
       featuredWorkers = (data as PublicWorkerProfile[] | null) ?? null;
     }
   } catch {}
