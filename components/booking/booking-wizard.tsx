@@ -497,15 +497,9 @@ export function BookingWizard() {
                 ) : (
                   <>
                     <div>
-                      <h2 className="text-xl font-semibold">
-                        {serviceDetails.serviceType === 'airbnb'
-                          ? 'Between-guest booking details'
-                          : 'Booking details'}
-                      </h2>
+                      <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {serviceDetails.serviceType === 'airbnb'
-                          ? 'Set your listing, check-out to check-in window, then choose a verified cleaner.'
-                          : 'Set your service, then when and where.'}
+                        Set your service, then when and where.
                       </p>
                     </div>
 

@@ -52,7 +52,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
   cleaning: {
     key: "cleaning",
     title: "House cleaning",
-    tagline: "Standard, deep, or move-in/out cleans for Lusaka homes",
+    tagline: "Standard, deep, move-in/out, and between-guest cleans for Lusaka homes",
     bookParam: "cleaning",
     scopeLabel: "home",
     types: [
@@ -105,14 +105,13 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         id: "airbnb",
         label: "Between-guest clean",
         description:
-          "For Airbnb and short-stay rentals — after one guest leaves, before the next arrives.",
+          "Cleaning between guest stays — for Airbnb and short-stay properties in Lusaka.",
         included: [
-          "Full clean of all guest areas",
-          "Linen strip, wash & fresh bed-making",
-          "Bathroom deep clean & towel reset",
-          "Kitchen clean, dishes & appliance wipe-down",
-          "Restock toiletries & welcome items (if supplied)",
-          "Rubbish out, floors mopped & property walkthrough",
+          "All bedrooms & living areas",
+          "Fresh bed-making & linen change (if supplied)",
+          "Bathroom clean & towel reset",
+          "Kitchen surfaces, dishes & appliance wipe-down",
+          "Sweep, mop, vacuum & bins emptied",
         ],
         defaultHours: 4,
         priceHintMin: 400,
@@ -122,12 +121,10 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
     addons: [
       { id: "laundry", label: "Laundry", description: "Wash, dry & fold", priceHint: 80 },
       { id: "ironing", label: "Ironing", description: "Press clothes & linen", priceHint: 80 },
-      { id: "oven", label: "Inside oven", description: "Degrease & scrub oven interior", priceHint: 100, allowedTypes: ['standard', 'deep', 'move'] },
-      { id: "fridge", label: "Inside fridge", description: "Clean shelves & interior", priceHint: 80, allowedTypes: ['standard', 'deep', 'move'] },
-      { id: "windows", label: "Interior windows", description: "Glass & frames inside", priceHint: 100, allowedTypes: ['standard', 'deep', 'move'] },
-      { id: "cabinets", label: "Inside cabinets", description: "Kitchen cabinets (emptied first)", priceHint: 100, allowedTypes: ['standard', 'deep', 'move'] },
-      { id: "guest_pack", label: "Guest welcome pack", description: "Arrange toiletries, snacks & info card", priceHint: 60, allowedTypes: ['airbnb'] },
-      { id: "key_handover", label: "Key handover / lockbox", description: "Manage key exchange or lockbox reset", priceHint: 40, allowedTypes: ['airbnb'] },
+      { id: "oven", label: "Inside oven", description: "Degrease & scrub oven interior", priceHint: 100, allowedTypes: ['standard', 'deep', 'move', 'airbnb'] },
+      { id: "fridge", label: "Inside fridge", description: "Clean shelves & interior", priceHint: 80, allowedTypes: ['standard', 'deep', 'move', 'airbnb'] },
+      { id: "windows", label: "Interior windows", description: "Glass & frames inside", priceHint: 100, allowedTypes: ['standard', 'deep', 'move', 'airbnb'] },
+      { id: "cabinets", label: "Inside cabinets", description: "Kitchen cabinets (emptied first)", priceHint: 100, allowedTypes: ['standard', 'deep', 'move', 'airbnb'] },
     ],
   },
   nanny: {

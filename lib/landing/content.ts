@@ -15,7 +15,7 @@ export const LUSAKA_AREAS = [
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
   { href: "/customer/book?category=nanny&type=babysitting", label: "Nannies", icon: "nanny" },
   { href: "/customer/book?category=cleaning&type=standard", label: "Cleaning", icon: "indoor" },
-  { href: "/customer/book?category=cleaning&type=airbnb", label: "Between-guest", icon: "airbnb" },
+  { href: "/customer/book?category=cleaning&type=airbnb", label: "Airbnb clean", icon: "airbnb" },
 ];
 
 /** Deep links that skip the service picker and open booking details */
@@ -35,16 +35,9 @@ export const PLATFORM_OFFERINGS = [
   {
     title: "House cleaning",
     description:
-      "One-off deep cleans or regular visits. Book a verified cleaner across Lusaka.",
+      "Standard, deep, or between-guest cleans — including Airbnb and short-stay properties across Lusaka.",
     href: "/customer/book?category=cleaning",
     variant: "green" as const,
-  },
-  {
-    title: "Between-guest clean",
-    description:
-      "Cleaning between guest stays — linen changes, bathroom reset, and your listing ready for the next check-in.",
-    href: "/customer/book?category=cleaning&type=airbnb",
-    variant: "blue" as const,
   },
   {
     title: "Verified profiles",
@@ -99,7 +92,7 @@ export const FAQ_ITEMS = [
     a: "We serve households across Lusaka, including Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, Chelstone, and surrounding areas.",
   },
   {
-    q: "Do you clean Airbnb or short-stay properties?",
-    a: "Yes. Book a between-guest clean after check-out and before the next check-in. We handle linens, bathroom reset, kitchen tidy, and getting the property guest-ready. Ideal for Airbnb hosts and holiday lets in Lusaka.",
+    q: "Do you clean Airbnb properties?",
+    a: "Yes. Between-guest cleaning is one of our house cleaning options — book a verified cleaner after check-out and before the next guest arrives.",
   },
 ];

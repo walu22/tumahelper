@@ -144,7 +144,7 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
 
   if (details.category === "cleaning") {
     rows.push({
-      label: details.serviceType === "airbnb" ? "Listing" : "Home",
+      label: "Home",
       value: `${details.bedrooms ?? 3} bed · ${details.bathrooms ?? 2} bath`,
     });
   } else {

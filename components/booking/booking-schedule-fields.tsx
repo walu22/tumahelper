@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock, KeyRound, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getStartTimeOptions } from "@/lib/booking/time-slots";
@@ -86,20 +86,12 @@ export function BookingScheduleFields({
       <div className="border-b border-border bg-surface/80 px-5 py-4 sm:px-6">
         <div className="flex items-start gap-3">
           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            {isBetweenGuest ? (
-              <KeyRound className="h-5 w-5 text-primary" />
-            ) : (
-              <Calendar className="h-5 w-5 text-primary" />
-            )}
+            <Calendar className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">
-              {isBetweenGuest ? "Check-out to check-in & property" : "When & where"}
-            </h3>
+            <h3 className="font-semibold text-foreground">When & where</h3>
             <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">
-              {isBetweenGuest
-                ? "When guests leave, when the next ones arrive, and where the listing is in Lusaka."
-                : "Choose when the visit should happen and where in Lusaka."}
+              Choose when the clean should happen and where in Lusaka.
             </p>
           </div>
         </div>
@@ -109,13 +101,13 @@ export function BookingScheduleFields({
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             <Clock className="h-3.5 w-3.5" />
-            {isBetweenGuest ? "Between-guest schedule" : "Schedule"}
+            Schedule
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <FieldLabel htmlFor="service-date" required>
-                {isBetweenGuest ? "Clean date" : "Date"}
+                Date
               </FieldLabel>
               <Input
                 id="service-date"
@@ -130,7 +122,7 @@ export function BookingScheduleFields({
 
             <div>
               <FieldLabel htmlFor="service-start-time" required>
-                {isBetweenGuest ? "Cleaner arrival time" : "Start time"}
+                Start time
               </FieldLabel>
               <select
                 id="service-start-time"
@@ -150,29 +142,32 @@ export function BookingScheduleFields({
           </div>
 
           {isBetweenGuest && !compact && (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <FieldLabel htmlFor="guest-checkout-time">Guest check-out time</FieldLabel>
-                <Input
-                  id="guest-checkout-time"
-                  type="time"
-                  value={guestCheckoutTime}
-                  onChange={(e) => onGuestCheckoutTimeChange?.(e.target.value)}
-                  className={fieldClass}
-                />
-                <p className="text-xs text-muted-foreground mt-1.5">When the current guest leaves</p>
-              </div>
-              <div>
-                <FieldLabel htmlFor="next-check-in">Next check-in</FieldLabel>
-                <Input
-                  id="next-check-in"
-                  type="text"
-                  value={nextCheckIn}
-                  onChange={(e) => onNextCheckInChange?.(e.target.value)}
-                  placeholder="e.g. Same day 2:00 PM or tomorrow 3 PM"
-                  className={fieldClass}
-                />
-                <p className="text-xs text-muted-foreground mt-1.5">When the next guest arrives</p>
+            <div className="rounded-xl border border-border bg-surface/60 p-4 space-y-4">
+              <p className="text-xs font-medium text-muted-foreground">
+                Optional — helps the cleaner plan between guest stays
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <FieldLabel htmlFor="guest-checkout-time">Guest check-out time</FieldLabel>
+                  <Input
+                    id="guest-checkout-time"
+                    type="time"
+                    value={guestCheckoutTime}
+                    onChange={(e) => onGuestCheckoutTimeChange?.(e.target.value)}
+                    className={fieldClass}
+                  />
+                </div>
+                <div>
+                  <FieldLabel htmlFor="next-check-in">Next check-in</FieldLabel>
+                  <Input
+                    id="next-check-in"
+                    type="text"
+                    value={nextCheckIn}
+                    onChange={(e) => onNextCheckInChange?.(e.target.value)}
+                    placeholder="e.g. Same day 2:00 PM"
+                    className={fieldClass}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -181,20 +176,16 @@ export function BookingScheduleFields({
         <section className="space-y-4 pt-2 border-t border-border">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
-            {isBetweenGuest ? "Listing location" : "Location"}
+            Location
           </div>
 
           <div>
             <FieldLabel htmlFor="service-address" required>
-              {isBetweenGuest ? "Property address in Lusaka" : "Address in Lusaka"}
+              Address in Lusaka
             </FieldLabel>
             <Input
               id="service-address"
-              placeholder={
-                isBetweenGuest
-                  ? "e.g. Apartment 4, Roma Park, Roma"
-                  : "e.g. Plot 12, Kabulonga"
-              }
+              placeholder="e.g. Plot 12, Kabulonga"
               value={locationAddress}
               onChange={(e) => onAddressChange(e.target.value)}
               required
@@ -223,14 +214,12 @@ export function BookingScheduleFields({
 
         {!compact && (
           <section className="space-y-3 pt-2 border-t border-border">
-            <FieldLabel htmlFor="service-notes">
-              {isBetweenGuest ? "Access & staging notes" : "Special instructions (optional)"}
-            </FieldLabel>
+            <FieldLabel htmlFor="service-notes">Special instructions (optional)</FieldLabel>
             <Textarea
               id="service-notes"
               placeholder={
                 isBetweenGuest
-                  ? "Lockbox code, caretaker contact, linen cupboard location, restock items..."
+                  ? "Gate code, lockbox, access instructions, linen location..."
                   : "Gate code, access instructions, pets, parking..."
               }
               value={description}

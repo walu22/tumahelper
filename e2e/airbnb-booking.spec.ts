@@ -49,21 +49,17 @@ test.describe("Between-guest clean booking end-to-end", () => {
 
     await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book?funnel=between-guest-clean");
-    await expect(page.getByRole("heading", { level: 2, name: "Between-guest booking details" })).toBeVisible({
+    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
       timeout: 15_000,
     });
     await page.waitForTimeout(1000);
 
-    await expect(page.getByText("Listing size")).toBeVisible();
-    await expect(page.getByText("Check-out to check-in & property")).toBeVisible();
+    await expect(page.getByText("Between-guest clean")).toBeVisible();
+    await expect(page.getByText("When & where")).toBeVisible();
 
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("09:00");
     await page.locator("#service-address").fill("Plot 10, Roma, Lusaka");
-
-    // Add Airbnb extras
-    await page.getByRole("button", { name: "Guest welcome pack" }).click();
-    await page.getByRole("button", { name: "Key handover" }).click();
 
     await page.getByRole("button", { name: "Choose worker" }).click();
     await expect(page.getByText("Grace Phiri")).toBeVisible();
@@ -89,7 +85,6 @@ test.describe("Between-guest clean booking end-to-end", () => {
       serviceDetails: {
         category: "cleaning",
         serviceType: "airbnb",
-        addons: ["guest_pack", "key_handover"],
       },
     });
   });
