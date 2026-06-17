@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { PLATFORM_OFFERINGS, PERMANENT_PLACEMENT_ROLES } from "@/lib/landing/content";
+import {
+  PLATFORM_OFFERINGS,
+  PLATFORM_OFFERINGS_INTRO,
+  PERMANENT_PLACEMENT_ROLES,
+} from "@/lib/landing/content";
 
 const cardStyles = {
   green: "sweep-card-green border-primary/15",
@@ -15,14 +19,13 @@ export function PlatformOfferings() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
-            What we do
+            {PLATFORM_OFFERINGS_INTRO.eyebrow}
           </p>
           <h2 className="font-display text-3xl md:text-[2.75rem] font-bold text-balance leading-tight">
-            Nannies and house cleaners, verified for Lusaka homes.
+            {PLATFORM_OFFERINGS_INTRO.headline}
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            Book for a single visit or set up regular help, then hire permanently
-            when you find the right person.
+            {PLATFORM_OFFERINGS_INTRO.subtitle}
           </p>
         </div>
 

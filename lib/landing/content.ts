@@ -25,6 +25,24 @@ export const AIRBNB_CLEAN_BOOK_HREF = "/customer/book/airbnb";
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
 export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
+export const PRIMARY_NAV_LINKS = [
+  { href: "/customer/book?category=nanny", label: "Nannies" },
+  { href: "/customer/book?category=cleaning", label: "Cleaning" },
+  { href: AIRBNB_CLEAN_BOOK_HREF, label: "Airbnb clean" },
+  { href: "/hire", label: "Permanent hire" },
+  { href: "/workers", label: "Find workers" },
+] as const;
+
+export const FOOTER_TAGLINE =
+  "Connecting Lusaka families with trusted, verified nannies and house cleaners — including between-guest cleans for Airbnb and short-stay properties.";
+
+export const PLATFORM_OFFERINGS_INTRO = {
+  eyebrow: "What we do",
+  headline: "Nannies and house cleaners, verified for Lusaka homes.",
+  subtitle:
+    "Book for a single visit or set up regular help — including between-guest cleans for Airbnb and short-stay properties — then hire permanently when you find the right person.",
+};
+
 export const PLATFORM_OFFERINGS = [
   {
     title: "Nannies & childcare",
