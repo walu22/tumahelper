@@ -54,9 +54,16 @@ export const PLATFORM_OFFERINGS = [
   {
     title: "House cleaning",
     description:
-      "Standard, deep, or between-guest cleans — including Airbnb and short-stay properties across Lusaka.",
+      "Standard, deep, or move-out cleans for homes across Lusaka. Book once or set up regular visits.",
     href: "/customer/book?category=cleaning",
     variant: "green" as const,
+  },
+  {
+    title: "Airbnb cleaning",
+    description:
+      "Between-guest cleans for Airbnb and short-stay properties. Book after check-out, ready before the next guest arrives.",
+    href: AIRBNB_CLEAN_BOOK_HREF,
+    variant: "blue" as const,
   },
   {
     title: "Verified profiles",
