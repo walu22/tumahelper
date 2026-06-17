@@ -9,6 +9,7 @@ import { useTheme } from '@/components/theme-provider'
 import type { User as AppUser } from '@/types'
 import { ROLE_REDIRECTS } from '@/lib/auth/config'
 import { logoutAction } from '@/app/(auth)/login/actions'
+import { PRIMARY_NAV_LINKS } from '@/lib/landing/content'
 
 export function Header({ user }: { user: AppUser | null }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -24,18 +25,15 @@ export function Header({ user }: { user: AppUser | null }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/customer/book?category=nanny" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Nannies
-            </Link>
-            <Link href="/customer/book?category=cleaning" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Cleaning
-            </Link>
-            <Link href="/hire" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Permanent hire
-            </Link>
-            <Link href="/workers" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Find workers
-            </Link>
+            {PRIMARY_NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
@@ -79,18 +77,16 @@ export function Header({ user }: { user: AppUser | null }) {
 
         {isOpen && (
           <div className="md:hidden border-t py-4 space-y-3">
-            <Link href="/customer/book?category=nanny" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              Nannies
-            </Link>
-            <Link href="/customer/book?category=cleaning" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              Cleaning
-            </Link>
-            <Link href="/hire" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              Permanent hire
-            </Link>
-            <Link href="/workers" className="block text-sm font-medium py-2" onClick={() => setIsOpen(false)}>
-              Find workers
-            </Link>
+            {PRIMARY_NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block text-sm font-medium py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
             <div className="flex gap-2 pt-2">
               <button onClick={toggleTheme} className="flex items-center gap-2 px-3 py-2 text-sm rounded-full hover:bg-surface transition-colors">
                 {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

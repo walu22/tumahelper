@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
+import { AIRBNB_CLEAN_BOOK_HREF, FOOTER_TAGLINE } from "@/lib/landing/content";
 
 export function Footer() {
   return (
@@ -11,7 +12,7 @@ export function Footer() {
               <Logo size="sm" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Connecting Lusaka families with trusted, verified nannies and house cleaners.
+              {FOOTER_TAGLINE}
             </p>
           </div>
 
@@ -22,6 +23,7 @@ export function Footer() {
               <li><Link href="/workers" className="hover:text-primary transition-colors">Find a Worker</Link></li>
               <li><Link href="/nannies" className="hover:text-primary transition-colors">Nannies</Link></li>
               <li><Link href="/house-cleaners" className="hover:text-primary transition-colors">House Cleaners</Link></li>
+              <li><Link href={AIRBNB_CLEAN_BOOK_HREF} className="hover:text-primary transition-colors">Airbnb cleaning</Link></li>
             </ul>
           </div>
 
