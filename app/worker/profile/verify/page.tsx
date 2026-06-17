@@ -46,16 +46,16 @@ export default function WorkerVerifyPage() {
             </Button>
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border">
-            <Shield className="h-5 w-5 text-gray-400" />
+          <div className="flex items-center gap-3 p-4 bg-surface rounded-lg border">
+            <Shield className="h-5 w-5 text-muted-foreground" />
             <div className="flex-1">
               <p className="font-medium text-sm">Reference Check</p>
               <p className="text-xs text-muted-foreground">Add 2 references for admin to call</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border">
-            <Shield className="h-5 w-5 text-gray-400" />
+          <div className="flex items-center gap-3 p-4 bg-surface rounded-lg border">
+            <Shield className="h-5 w-5 text-muted-foreground" />
             <div className="flex-1">
               <p className="font-medium text-sm">Police Clearance</p>
               <p className="text-xs text-muted-foreground">Upload police clearance certificate</p>

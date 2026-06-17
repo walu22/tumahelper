@@ -30,7 +30,7 @@ export function BookingTimeline({ currentStatus }: BookingTimelineProps) {
 
   return (
     <div className="relative">
-      <div className="absolute left-2.5 top-0 bottom-0 w-0.5 bg-gray-200" />
+      <div className="absolute left-2.5 top-0 bottom-0 w-0.5 bg-muted" />
       <div className="space-y-4">
         {steps.map((step, index) => {
           const isCompleted = index <= currentIndex;
@@ -40,7 +40,7 @@ export function BookingTimeline({ currentStatus }: BookingTimelineProps) {
             <div
               key={step.status}
               className={`relative flex items-center gap-3 ${
-                isCompleted ? "text-gray-900" : "text-gray-400"
+                isCompleted ? "text-foreground" : "text-muted-foreground"
               }`}
             >
               <div
@@ -49,7 +49,7 @@ export function BookingTimeline({ currentStatus }: BookingTimelineProps) {
                     ? isCurrent
                       ? "bg-primary text-white"
                       : "bg-green-500 text-white"
-                    : "bg-gray-200"
+                    : "bg-muted"
                 }`}
               >
                 {step.icon}

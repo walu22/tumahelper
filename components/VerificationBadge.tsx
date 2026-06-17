@@ -9,9 +9,9 @@ interface VerificationBadgeProps {
 }
 
 const levelConfig = {
-  none: { color: "text-gray-400", bg: "bg-gray-100", label: "Unverified" },
+  none: { color: "text-muted-foreground", bg: "bg-muted", label: "Unverified" },
   bronze: { color: "text-amber-700", bg: "bg-amber-100", label: "Bronze" },
-  silver: { color: "text-gray-600", bg: "bg-gray-200", label: "Silver" },
+  silver: { color: "text-muted-foreground", bg: "bg-muted", label: "Silver" },
   gold: { color: "text-yellow-700", bg: "bg-yellow-100", label: "Gold" },
   platinum: { color: "text-slate-700", bg: "bg-slate-200", label: "Platinum" },
 };

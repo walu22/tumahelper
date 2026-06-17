@@ -38,7 +38,7 @@ export function BookingTimeline({ status }: BookingTimelineProps) {
                     ? 'bg-primary text-white'
                     : isCurrent
                     ? 'bg-primary/20 text-primary'
-                    : 'bg-gray-100 text-gray-400'
+                    : 'bg-muted text-muted-foreground'
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -47,7 +47,7 @@ export function BookingTimeline({ status }: BookingTimelineProps) {
                 <div
                   className={cn(
                     'w-0.5 h-8 -mb-1',
-                    isCompleted ? 'bg-primary' : 'bg-gray-200'
+                    isCompleted ? 'bg-primary' : 'bg-muted'
                   )}
                 />
               )}

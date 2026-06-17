@@ -47,11 +47,11 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
       {/* Profile Header */}
       <div className="bg-card rounded-lg shadow-md p-8 mb-6">
         <div className="flex flex-col md:flex-row items-start gap-6">
-          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-muted overflow-hidden flex-shrink-0">
             {worker.profile_photo_url ? (
               <img src={worker.profile_photo_url} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-4xl">
                 {worker.user?.full_name?.charAt(0) || "?"}
               </div>
             )}
@@ -60,7 +60,7 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-3xl font-bold">{worker.user?.full_name}</h1>
-                <div className="flex items-center gap-2 mt-1 text-gray-500">
+                <div className="flex items-center gap-2 mt-1 text-muted-foreground">
                   <MapPin className="w-4 h-4" />
                   <span>{worker.area}, {worker.city}</span>
                 </div>
@@ -79,20 +79,20 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
               <div className="flex items-center gap-1">
                 <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                 <span className="font-medium text-lg">{(worker.average_rating || 0).toFixed(1)}</span>
-                <span className="text-gray-400">({worker.total_reviews} reviews)</span>
+                <span className="text-muted-foreground">({worker.total_reviews} reviews)</span>
               </div>
-              <div className="flex items-center gap-1 text-gray-500">
+              <div className="flex items-center gap-1 text-muted-foreground">
                 <Briefcase className="w-4 h-4" />
                 <span>{completedBookings?.length || 0} jobs completed</span>
               </div>
-              <div className="flex items-center gap-1 text-gray-500">
+              <div className="flex items-center gap-1 text-muted-foreground">
                 <Calendar className="w-4 h-4" />
                 <span>Member since {memberSince}</span>
               </div>
             </div>
 
             {worker.bio && (
-              <p className="mt-4 text-gray-700">{worker.bio}</p>
+              <p className="mt-4 text-foreground">{worker.bio}</p>
             )}
           </div>
         </div>
@@ -104,10 +104,10 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
           <h2 className="font-semibold text-lg mb-4">Skills</h2>
           <div className="flex flex-wrap gap-2">
             {worker.skills?.map((skill: string) => (
-              <span key={skill} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+              <span key={skill} className="bg-muted text-foreground px-3 py-1 rounded-full text-sm">
                 {skill.replace("_", " ")}
               </span>
-            )) || <span className="text-gray-400">No skills listed</span>}
+            )) || <span className="text-muted-foreground">No skills listed</span>}
           </div>
         </div>
 
@@ -119,14 +119,14 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
                 <Languages className="w-3 h-3" />
                 {lang}
               </span>
-            )) || <span className="text-gray-400">No languages listed</span>}
+            )) || <span className="text-muted-foreground">No languages listed</span>}
           </div>
         </div>
 
         <div className="bg-card rounded-lg shadow-md p-6">
           <h2 className="font-semibold text-lg mb-4">Experience</h2>
-          <p className="text-gray-700">{worker.experience_years} years of experience</p>
-          <p className="text-sm text-gray-500 capitalize mt-1">{worker.category.replace("_", " ")}</p>
+          <p className="text-foreground">{worker.experience_years} years of experience</p>
+          <p className="text-sm text-muted-foreground capitalize mt-1">{worker.category.replace("_", " ")}</p>
         </div>
 
         <div className="bg-card rounded-lg shadow-md p-6">
@@ -136,7 +136,7 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
               <span key={type} className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm capitalize">
                 {type.replace("_", " ")}
               </span>
-            )) || <span className="text-gray-400">Not specified</span>}
+            )) || <span className="text-muted-foreground">Not specified</span>}
           </div>
         </div>
       </div>
@@ -150,15 +150,15 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
               <div key={review.id} className="border-b last:border-0 pb-4 last:pb-0">
                 <div className="flex items-center justify-between">
                   <div className="font-medium">{review.reviewer?.full_name || "Anonymous"}</div>
-                  <div className="text-sm text-gray-500">{formatDate(review.created_at)}</div>
+                  <div className="text-sm text-muted-foreground">{formatDate(review.created_at)}</div>
                 </div>
                 <StarRating value={review.overall_rating} readOnly size="sm" />
-                {review.comment && <p className="text-gray-600 mt-1 text-sm">{review.comment}</p>}
+                {review.comment && <p className="text-muted-foreground mt-1 text-sm">{review.comment}</p>}
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-400 text-center py-4">No reviews yet</p>
+          <p className="text-muted-foreground text-center py-4">No reviews yet</p>
         )}
       </div>
     </div>

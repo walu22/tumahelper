@@ -17,7 +17,7 @@ export function TrustScoreBadge({ score, isProvisional = false, size = "md" }: T
   };
 
   const getColor = () => {
-    if (isProvisional) return "bg-gray-100 text-gray-600 border-gray-300";
+    if (isProvisional) return "bg-muted text-muted-foreground border-border";
     if (score >= 90) return "bg-green-100 text-green-800 border-green-300";
     if (score >= 75) return "bg-emerald-100 text-emerald-800 border-emerald-300";
     if (score >= 60) return "bg-yellow-100 text-yellow-800 border-yellow-300";
@@ -45,7 +45,7 @@ export function TrustScoreBadge({ score, isProvisional = false, size = "md" }: T
             fill="none"
             stroke="currentColor"
             strokeWidth="3"
-            className="text-gray-200"
+            className="text-muted"
           />
           <circle
             cx="20"
@@ -57,7 +57,7 @@ export function TrustScoreBadge({ score, isProvisional = false, size = "md" }: T
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            className={isProvisional ? "text-gray-400" : score >= 75 ? "text-green-500" : score >= 60 ? "text-yellow-500" : "text-red-500"}
+            className={isProvisional ? "text-muted-foreground" : score >= 75 ? "text-green-500" : score >= 60 ? "text-yellow-500" : "text-red-500"}
           />
         </svg>
         <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">

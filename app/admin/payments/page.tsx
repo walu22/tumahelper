@@ -57,7 +57,7 @@ export default function AdminPaymentsPage() {
               </thead>
               <tbody>
                 {payments.map((payment: any) => (
-                  <tr key={payment.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={payment.id} className="border-b hover:bg-surface hover:bg-muted">
                     <td className="py-3 px-2 font-mono text-xs">{payment.payment_code}</td>
                     <td className="py-3 px-2 capitalize">{payment.payment_type.replace('_', ' ')}</td>
                     <td className="py-3 px-2">ZMW {(payment.amount / 100).toFixed(2)}</td>

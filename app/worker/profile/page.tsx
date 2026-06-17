@@ -376,9 +376,9 @@ export default function WorkerProfilePage() {
                   </div>
                   <Badge variant="warning">Pending</Badge>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-surface rounded-lg">
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-gray-600" />
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">References</span>
                   </div>
                   <Badge variant="outline">Not Started</Badge>

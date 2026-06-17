@@ -77,7 +77,7 @@ export function RegisterForm() {
               <LogoMark size={48} />
             </div>
             <h1 className="text-2xl font-bold">Create your account</h1>
-            <p className="text-gray-500 mt-1">How will you use TumaHelper?</p>
+            <p className="text-muted-foreground mt-1">How will you use TumaHelper?</p>
           </div>
 
           {error && (
@@ -92,10 +92,10 @@ export function RegisterForm() {
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-left bg-card"
+                className="w-full p-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-left bg-card"
               >
                 <div className="font-semibold text-lg">{title}</div>
-                <div className="text-sm text-gray-500">{description}</div>
+                <div className="text-sm text-muted-foreground">{description}</div>
               </button>
             ))}
           </div>

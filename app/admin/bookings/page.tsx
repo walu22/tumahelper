@@ -41,7 +41,7 @@ export default async function AdminBookingsPage() {
               </thead>
               <tbody>
                 {bookings.map((booking: any) => (
-                  <tr key={booking.id} className="border-b hover:bg-gray-50">
+                  <tr key={booking.id} className="border-b hover:bg-surface">
                     <td className="py-3 px-2 font-mono text-xs">{booking.booking_code}</td>
                     <td className="py-3 px-2">{new Date(booking.service_date).toLocaleDateString()}</td>
                     <td className="py-3 px-2">ZMW {(booking.amount / 100).toFixed(2)}</td>

@@ -35,7 +35,7 @@ export function StarRating({ value, onChange, readOnly = false, size = "md" }: S
             className={`${sizeClasses[size]} ${
               star <= (hoverValue || value)
                 ? "text-yellow-400 fill-yellow-400"
-                : "text-gray-300"
+                : "text-muted-foreground/50"
             }`}
           />
         </button>

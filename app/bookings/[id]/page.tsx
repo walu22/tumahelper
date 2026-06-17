@@ -49,32 +49,32 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
 
         <div className="mt-6 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
+            <div className="w-16 h-16 rounded-full bg-muted overflow-hidden">
               {booking.worker?.profile_photo_url ? (
                 <img src={booking.worker.profile_photo_url} alt="" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl">
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-2xl">
                   {booking.worker?.full_name?.charAt(0)}
                 </div>
               )}
             </div>
             <div>
               <div className="font-semibold text-lg">{booking.worker?.full_name}</div>
-              <div className="text-sm text-gray-500">{isCustomer ? "Your worker" : "Customer"}</div>
+              <div className="text-sm text-muted-foreground">{isCustomer ? "Your worker" : "Customer"}</div>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <div className="text-gray-500">Date</div>
+              <div className="text-muted-foreground">Date</div>
               <div className="font-medium">{formatDate(booking.service_date)}</div>
             </div>
             <div>
-              <div className="text-gray-500">Time</div>
+              <div className="text-muted-foreground">Time</div>
               <div className="font-medium">{booking.service_time}</div>
             </div>
             <div className="col-span-2">
-              <div className="text-gray-500 flex items-center gap-1">
+              <div className="text-muted-foreground flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
                 Location
               </div>
@@ -82,7 +82,7 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
             </div>
             {booking.description && (
               <div className="col-span-2">
-                <div className="text-gray-500">Notes</div>
+                <div className="text-muted-foreground">Notes</div>
                 <div>{booking.description}</div>
               </div>
             )}
@@ -91,11 +91,11 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
           <div className="border-t pt-4">
             <div className="flex justify-between items-center">
               <div>
-                <div className="text-gray-500">Amount</div>
+                <div className="text-muted-foreground">Amount</div>
                 <div className="text-2xl font-bold">{formatCurrency(booking.amount)}</div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-gray-500">Platform Fee</div>
+                <div className="text-sm text-muted-foreground">Platform Fee</div>
                 <div className="font-medium">{formatCurrency(booking.platform_fee || 0)}</div>
               </div>
             </div>
@@ -103,7 +103,7 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
 
           {isCustomer && booking.status === "completed" && !booking.customer_rating && (
             <div className="border-t pt-4">
-              <div className="text-sm text-gray-500 mb-2">Rate this worker</div>
+              <div className="text-sm text-muted-foreground mb-2">Rate this worker</div>
               <StarRating value={0} size="lg" />
             </div>
           )}

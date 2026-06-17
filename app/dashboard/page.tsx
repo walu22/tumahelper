@@ -59,26 +59,26 @@ export default async function CustomerDashboardPage() {
                 <div className="bg-card rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
+                      <div className="w-12 h-12 rounded-full bg-muted overflow-hidden">
                         {booking.worker?.profile_photo_url ? (
                           <img src={booking.worker.profile_photo_url} alt="" className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                             {booking.worker?.full_name?.charAt(0)}
                           </div>
                         )}
                       </div>
                       <div>
                         <div className="font-semibold">{booking.worker?.full_name}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-muted-foreground">
                           {formatDate(booking.service_date)} at {booking.service_time}
                         </div>
-                        <div className="text-sm text-gray-500">{booking.location_address}</div>
+                        <div className="text-sm text-muted-foreground">{booking.location_address}</div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-medium capitalize">{booking.status}</div>
-                      <div className="text-sm text-gray-500">{formatCurrency(booking.amount)}</div>
+                      <div className="text-sm text-muted-foreground">{formatCurrency(booking.amount)}</div>
                     </div>
                   </div>
                 </div>
@@ -86,8 +86,8 @@ export default async function CustomerDashboardPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-gray-50 rounded-lg p-8 text-center">
-            <p className="text-gray-500 mb-4">No upcoming bookings</p>
+          <div className="bg-surface rounded-lg p-8 text-center">
+            <p className="text-muted-foreground mb-4">No upcoming bookings</p>
             <Link href="/customer/book">
               <Button variant="outline">Book your first worker</Button>
             </Link>
@@ -105,7 +105,7 @@ export default async function CustomerDashboardPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium">{booking.worker?.full_name}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-muted-foreground">
                         {formatDate(booking.service_date)}
                       </div>
                     </div>
@@ -131,7 +131,7 @@ export default async function CustomerDashboardPage() {
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-center py-8">No past bookings yet</p>
+          <p className="text-muted-foreground text-center py-8">No past bookings yet</p>
         )}
       </div>
     </div>

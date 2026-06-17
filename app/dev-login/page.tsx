@@ -33,7 +33,7 @@ export default function DevLoginPage({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface px-4">
       <div className="bg-card p-8 rounded-xl shadow-md max-w-sm w-full">
         <h1 className="text-xl font-bold mb-2">Dev Login</h1>
         <p className="text-sm text-muted-foreground mb-6">
@@ -52,7 +52,7 @@ export default function DevLoginPage({
               <input type="hidden" name="phone" value={account.phone} />
               <button
                 type="submit"
-                className="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full text-left p-3 border rounded-lg hover:bg-surface transition-colors"
               >
                 <span className="font-medium capitalize">{account.role}</span>
                 <span className="block text-xs text-muted-foreground mt-0.5">{account.email}</span>

@@ -38,7 +38,7 @@ export default async function AdminAuditPage() {
               </thead>
               <tbody>
                 {logs.map((log: any) => (
-                  <tr key={log.id} className="border-b hover:bg-gray-50">
+                  <tr key={log.id} className="border-b hover:bg-surface">
                     <td className="py-3 px-2">{log.action.replace(/_/g, ' ')}</td>
                     <td className="py-3 px-2 text-muted-foreground">
                       {log.entity_type}:{log.entity_id.slice(0, 8)}...

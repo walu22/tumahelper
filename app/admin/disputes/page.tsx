@@ -57,7 +57,7 @@ export default function AdminDisputesPage() {
               </thead>
               <tbody>
                 {disputes.map((dispute: any) => (
-                  <tr key={dispute.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={dispute.id} className="border-b hover:bg-surface hover:bg-muted">
                     <td className="py-3 px-2 capitalize">{dispute.dispute_type.replace(/_/g, ' ')}</td>
                     <td className="py-3 px-2 text-muted-foreground max-w-xs truncate">{dispute.description}</td>
                     <td className="py-3 px-2">

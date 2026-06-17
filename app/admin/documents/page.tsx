@@ -58,7 +58,7 @@ export default function AdminDocumentsPage() {
               </thead>
               <tbody>
                 {documents.map((doc: any) => (
-                  <tr key={doc.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={doc.id} className="border-b hover:bg-surface hover:bg-muted">
                     <td className="py-3 px-2 font-medium">{doc.worker?.full_name || 'Unknown'}</td>
                     <td className="py-3 px-2 capitalize text-muted-foreground">{doc.document_type.replace(/_/g, ' ')}</td>
                     <td className="py-3 px-2 text-muted-foreground">{new Date(doc.created_at).toLocaleDateString()}</td>

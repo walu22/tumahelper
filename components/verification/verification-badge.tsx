@@ -10,9 +10,9 @@ interface VerificationBadgeProps {
 }
 
 const verificationConfig = {
-  none: { icon: Circle, color: '#9E9E9E', label: 'New', bg: 'bg-gray-100' },
+  none: { icon: Circle, color: '#9E9E9E', label: 'New', bg: 'bg-muted' },
   bronze: { icon: Shield, color: '#CD7F32', label: 'Phone Verified', bg: 'bg-amber-50' },
-  silver: { icon: ShieldCheck, color: '#C0C0C0', label: 'ID Verified', bg: 'bg-gray-50' },
+  silver: { icon: ShieldCheck, color: '#C0C0C0', label: 'ID Verified', bg: 'bg-surface' },
   gold: { icon: Award, color: '#FFD700', label: 'Reference Checked', bg: 'bg-yellow-50' },
   platinum: { icon: Sparkles, color: '#E5E4E2', label: 'Police Cleared', bg: 'bg-blue-50' },
 }

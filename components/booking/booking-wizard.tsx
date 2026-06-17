@@ -482,7 +482,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                         ? 'bg-primary text-white'
                         : s.num < step
                           ? 'bg-primary/20 text-primary'
-                          : 'bg-gray-100 text-muted-foreground'
+                          : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     {i + 1}
@@ -492,7 +492,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                   >
                     {s.label}
                   </span>
-                  {i < PROGRESS_STEPS.length - 1 && <div className="h-0.5 w-6 bg-gray-200" />}
+                  {i < PROGRESS_STEPS.length - 1 && <div className="h-0.5 w-6 bg-muted" />}
                 </div>
               ))}
             </div>
@@ -638,7 +638,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
+                          <div className="w-12 h-12 rounded-full bg-muted flex-shrink-0 overflow-hidden">
                             {worker.profile_photo_url ? (
                               <img
                                 src={worker.profile_photo_url}
@@ -646,7 +646,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-gray-400 font-medium">
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground font-medium">
                                 {worker.full_name.charAt(0)}
                               </div>
                             )}

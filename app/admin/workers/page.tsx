@@ -44,7 +44,7 @@ export default async function AdminWorkersPage() {
               </thead>
               <tbody>
                 {workers.map((worker: any) => (
-                  <tr key={worker.id} className="border-b hover:bg-gray-50">
+                  <tr key={worker.id} className="border-b hover:bg-surface">
                     <td className="py-3 px-2 font-medium">{worker.full_name}</td>
                     <td className="py-3 px-2 capitalize">{worker.category.replace('_', ' ')}</td>
                     <td className="py-3 px-2 text-muted-foreground">{worker.area}, {worker.city}</td>

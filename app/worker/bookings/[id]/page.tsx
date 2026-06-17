@@ -54,7 +54,7 @@ export default async function WorkerBookingDetailPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Job #{booking.booking_code}</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             Requested on {formatDate(booking.created_at)}
           </p>
         </div>
@@ -123,35 +123,35 @@ export default async function WorkerBookingDetailPage({
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+              <Calendar className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <div className="text-sm text-gray-500">Date</div>
+                <div className="text-sm text-muted-foreground">Date</div>
                 <div className="font-medium">{formatDate(booking.service_date)}</div>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
+              <Clock className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <div className="text-sm text-gray-500">Time</div>
+                <div className="text-sm text-muted-foreground">Time</div>
                 <div className="font-medium">{booking.service_time}</div>
               </div>
             </div>
           </div>
           
           <div className="flex items-start gap-3">
-            <MapPin className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+            <MapPin className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm text-gray-500">Location</div>
+              <div className="text-sm text-muted-foreground">Location</div>
               <div className="font-medium">{booking.location_address}</div>
             </div>
           </div>
 
           {booking.description && (
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
               <div>
-                <div className="text-sm text-gray-500">Customer Notes</div>
-                <div className="text-gray-700 bg-gray-50 p-3 rounded-lg mt-1">
+                <div className="text-sm text-muted-foreground">Customer Notes</div>
+                <div className="text-foreground bg-surface p-3 rounded-lg mt-1">
                   {booking.description}
                 </div>
               </div>
@@ -167,10 +167,10 @@ export default async function WorkerBookingDetailPage({
         <CardContent>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <CreditCard className="w-5 h-5 text-gray-400" />
+              <CreditCard className="w-5 h-5 text-muted-foreground" />
               <div>
                 <div className="font-medium text-lg">{formatCurrency(booking.worker_earnings)}</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-muted-foreground">
                   Your earnings after platform fee
                   {booking.payment_status === "paid" || booking.payment_status === "confirmed"
                     ? ` · ${formatPaymentStatusLabel(booking.payment_status)}`

@@ -9,7 +9,7 @@ export default function LoginPage({
   searchParams: { error?: string; email?: string; redirect?: string };
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-surface px-4 py-12">
       <div className="w-full max-w-md">
         <div className="bg-card rounded-xl shadow-md p-8">
           <div className="text-center mb-8">
@@ -44,7 +44,7 @@ export default function LoginPage({
                 autoComplete="username"
                 defaultValue={searchParams.email || ""}
                 placeholder="you@example.com"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="w-full border border-border bg-background rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 required
               />
             </div>
@@ -59,7 +59,7 @@ export default function LoginPage({
                 type="password"
                 autoComplete="current-password"
                 placeholder="Enter your password"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                className="w-full border border-border bg-background rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 required
               />
             </div>
