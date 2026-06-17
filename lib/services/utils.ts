@@ -18,8 +18,6 @@ const ADDON_HOUR_INCREMENT: Record<string, number> = {
   fridge: 0.5,
   windows: 1,
   cabinets: 1,
-  guest_pack: 0.5,
-  key_handover: 0.25,
   meal_prep: 0.5,
   homework: 0.5,
   light_tidying: 0.5,
