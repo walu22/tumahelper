@@ -103,8 +103,9 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       },
       {
         id: "airbnb",
-        label: "Airbnb / short-stay turnover",
-        description: "Guest checkout to check-in ready — linen change, restock, and hospitality-grade clean.",
+        label: "Airbnb & short-stay turnover",
+        description:
+          "Between guest stays — linen change, bathroom reset, and your property ready for the next check-in.",
         included: [
           "Full clean of all guest areas",
           "Linen strip, wash & fresh bed-making",

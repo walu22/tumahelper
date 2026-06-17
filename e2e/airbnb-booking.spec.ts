@@ -50,15 +50,14 @@ test.describe("Airbnb turnover booking end-to-end", () => {
     await loginAsCustomer(page, baseURL!);
     // Open via the airbnb-turnover alias
     await page.goto("/customer/book?funnel=airbnb-turnover");
-    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
+    await expect(page.getByRole("heading", { level: 2, name: "Turnover booking details" })).toBeVisible({
       timeout: 15_000,
     });
     await page.waitForTimeout(1000);
 
-    // Verify dynamic labels ("Property size" instead of "Home size", "Property" in summary)
-    await expect(page.getByText("Property size")).toBeVisible();
-    await expect(page.getByText("Property", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("3 bed · 2 bath").first()).toBeVisible();
+    // Verify turnover-specific labels
+    await expect(page.getByText("Listing size")).toBeVisible();
+    await expect(page.getByText("Turnover window & property")).toBeVisible();
 
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("09:00");

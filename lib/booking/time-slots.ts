@@ -40,8 +40,9 @@ const NANNY_START_TIMES = [
   ...buildHalfHourSlots(17, 21),
 ];
 
-export function getStartTimeOptions(category?: ServiceCategoryKey): StartTimeOption[] {
+export function getStartTimeOptions(category?: ServiceCategoryKey, serviceType?: string): StartTimeOption[] {
   if (category === "nanny") return NANNY_START_TIMES;
+  if (serviceType === "airbnb") return buildHalfHourSlots(7, 18);
   return CLEANING_START_TIMES;
 }
 

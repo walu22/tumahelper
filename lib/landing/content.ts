@@ -98,4 +98,8 @@ export const FAQ_ITEMS = [
     q: "Which areas do you cover?",
     a: "We serve households across Lusaka, including Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, Chelstone, and surrounding areas.",
   },
+  {
+    q: "Do you clean Airbnb or short-stay properties?",
+    a: "Yes. Book a short-stay turnover clean between guest check-out and check-in. We handle linens, bathroom reset, kitchen tidy, and getting the property guest-ready. Ideal for Airbnb hosts and holiday lets in Lusaka.",
+  },
 ];

@@ -145,6 +145,25 @@ function workerCategorySlug(category: ServiceCategoryKey) {
   return category === 'nanny' ? 'nanny' : 'house_cleaner'
 }
 
+function buildBookingDescription(
+  description: string,
+  serviceType: string | undefined,
+  guestCheckoutTime: string,
+  nextCheckIn: string
+) {
+  const parts: string[] = []
+  if (description.trim()) parts.push(description.trim())
+  if (serviceType === 'airbnb') {
+    if (guestCheckoutTime) {
+      parts.push(`Guest check-out: ${guestCheckoutTime}`)
+    }
+    if (nextCheckIn.trim()) {
+      parts.push(`Next check-in: ${nextCheckIn.trim()}`)
+    }
+  }
+  return parts.length > 0 ? parts.join('\n') : undefined
+}
+
 export function BookingWizard() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -177,6 +196,8 @@ export function BookingWizard() {
   const [serviceTime, setServiceTime] = useState('')
   const [locationAddress, setLocationAddress] = useState('')
   const [description, setDescription] = useState('')
+  const [guestCheckoutTime, setGuestCheckoutTime] = useState('')
+  const [nextCheckIn, setNextCheckIn] = useState('')
   const [amount, setAmount] = useState('')
 
   useEffect(() => {
@@ -381,7 +402,12 @@ export function BookingWizard() {
           serviceDate,
           serviceTime,
           locationAddress,
-          description: description || undefined,
+          description: buildBookingDescription(
+            description,
+            serviceDetails.serviceType,
+            guestCheckoutTime,
+            nextCheckIn
+          ),
           serviceDetails,
           amount: amountInCents,
         }),
@@ -471,9 +497,15 @@ export function BookingWizard() {
                 ) : (
                   <>
                     <div>
-                      <h2 className="text-xl font-semibold">Booking details</h2>
+                      <h2 className="text-xl font-semibold">
+                        {serviceDetails.serviceType === 'airbnb'
+                          ? 'Turnover booking details'
+                          : 'Booking details'}
+                      </h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Set your service, then when and where.
+                        {serviceDetails.serviceType === 'airbnb'
+                          ? 'Set your listing, turnover window, then choose a verified cleaner.'
+                          : 'Set your service, then when and where.'}
                       </p>
                     </div>
 
@@ -489,10 +521,14 @@ export function BookingWizard() {
                       serviceTime={serviceTime}
                       locationAddress={locationAddress}
                       description={description}
+                      guestCheckoutTime={guestCheckoutTime}
+                      nextCheckIn={nextCheckIn}
                       onDateChange={setServiceDate}
                       onTimeChange={setServiceTime}
                       onAddressChange={setLocationAddress}
                       onDescriptionChange={setDescription}
+                      onGuestCheckoutTimeChange={setGuestCheckoutTime}
+                      onNextCheckInChange={setNextCheckIn}
                       category={serviceDetails.category}
                       serviceType={serviceDetails.serviceType}
                     />
@@ -666,10 +702,14 @@ export function BookingWizard() {
                         serviceTime={serviceTime}
                         locationAddress={locationAddress}
                         description={description}
+                        guestCheckoutTime={guestCheckoutTime}
+                        nextCheckIn={nextCheckIn}
                         onDateChange={setServiceDate}
                         onTimeChange={setServiceTime}
                         onAddressChange={setLocationAddress}
                         onDescriptionChange={setDescription}
+                        onGuestCheckoutTimeChange={setGuestCheckoutTime}
+                        onNextCheckInChange={setNextCheckIn}
                         category={serviceDetails.category}
                         serviceType={serviceDetails.serviceType}
                         compact
