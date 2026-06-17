@@ -18,7 +18,7 @@ const HOME_SIZE_PRESETS = [
   { id: "large", label: "Large", sub: "5+ bedrooms", bedrooms: 5, bathrooms: 3 },
 ] as const;
 
-const TURNOVER_SIZE_PRESETS = [
+const BETWEEN_GUEST_SIZE_PRESETS = [
   { id: "studio", label: "Studio", sub: "1 bed · open plan", bedrooms: 1, bathrooms: 1 },
   { id: "unit", label: "Standard unit", sub: "2 bed · 1 bath", bedrooms: 2, bathrooms: 1 },
   { id: "listing", label: "Large listing", sub: "3+ bed · 2 bath", bedrooms: 3, bathrooms: 2 },
@@ -80,24 +80,24 @@ export function ServiceConfigPanel({
 
   const childCount = value.children ?? 1;
   const singleChildAge = value.childAgeGroups?.[0] ?? "";
-  const isTurnover = value.serviceType === "airbnb";
-  const sizePresets = isTurnover ? TURNOVER_SIZE_PRESETS : HOME_SIZE_PRESETS;
+  const isBetweenGuest = value.serviceType === "airbnb";
+  const sizePresets = isBetweenGuest ? BETWEEN_GUEST_SIZE_PRESETS : HOME_SIZE_PRESETS;
 
   return (
     <div className="space-y-6">
-      {isTurnover && (
+      {isBetweenGuest && (
         <div className="rounded-2xl border border-sweep-teal/30 bg-sweep-teal/10 p-4">
-          <p className="text-sm font-semibold text-foreground">Short-stay turnover</p>
+          <p className="text-sm font-semibold text-foreground">Between-guest clean</p>
           <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-            Book a clean in the gap between guest check-out and the next check-in. Add your
-            turnover window and property access on the next section.
+            For hosts on Airbnb and short-stay rentals. Book a clean after check-out and
+            before the next guest arrives — add your timing and property access below.
           </p>
         </div>
       )}
 
       <div>
         <p className="text-sm font-semibold text-muted-foreground mb-3">
-          {isTurnover ? "Turnover type" : "Service type"}
+          {isBetweenGuest ? "Clean type" : "Service type"}
         </p>
         <div className="grid gap-3">
           {entry.types.map((type) => (
@@ -139,7 +139,7 @@ export function ServiceConfigPanel({
         <div className="space-y-4">
           <div>
             <p className="text-sm font-medium mb-2">
-              {isTurnover ? "Listing size" : "Home size"}
+              {isBetweenGuest ? "Listing size" : "Home size"}
             </p>
             <div className="grid grid-cols-3 gap-2">
               {sizePresets.map((preset) => {
@@ -310,7 +310,7 @@ export function ServiceConfigPanel({
         <div>
           <p className="text-sm font-medium mb-2">Add extras (optional)</p>
           <p className="text-xs text-muted-foreground mb-3">
-            {isTurnover
+            {isBetweenGuest
               ? "Common add-ons for hosts — welcome packs and key handover."
               : "Optional tasks on top of the standard scope."}
           </p>

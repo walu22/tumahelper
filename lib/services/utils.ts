@@ -35,6 +35,8 @@ export const FUNNEL_ALIASES: Record<
   "deep-clean": { category: "cleaning", type: "deep" },
   "move-clean": { category: "cleaning", type: "move" },
   "airbnb-turnover": { category: "cleaning", type: "airbnb" },
+  "between-guest-clean": { category: "cleaning", type: "airbnb" },
+  "between-guest": { category: "cleaning", type: "airbnb" },
   "airbnb": { category: "cleaning", type: "airbnb" },
   babysitting: { category: "nanny", type: "babysitting" },
   "after-school": { category: "nanny", type: "after_school" },

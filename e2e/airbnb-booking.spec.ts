@@ -9,7 +9,7 @@ import {
 
 const MOCK_BOOKING_ID = "c0000000-0000-0000-0000-000000000003";
 
-test.describe("Airbnb turnover booking end-to-end", () => {
+test.describe("Between-guest clean booking end-to-end", () => {
   test.beforeEach(async ({ page }) => {
     await mockServiceCategories(page);
 
@@ -22,7 +22,7 @@ test.describe("Airbnb turnover booking end-to-end", () => {
     });
   });
 
-  test("customer can book Airbnb turnover clean", async ({ page, baseURL }) => {
+  test("customer can book a between-guest clean", async ({ page, baseURL }) => {
     test.setTimeout(60_000);
 
     let capturedBookingBody: Record<string, unknown> | null = null;
@@ -48,16 +48,14 @@ test.describe("Airbnb turnover booking end-to-end", () => {
     });
 
     await loginAsCustomer(page, baseURL!);
-    // Open via the airbnb-turnover alias
-    await page.goto("/customer/book?funnel=airbnb-turnover");
-    await expect(page.getByRole("heading", { level: 2, name: "Turnover booking details" })).toBeVisible({
+    await page.goto("/customer/book?funnel=between-guest-clean");
+    await expect(page.getByRole("heading", { level: 2, name: "Between-guest booking details" })).toBeVisible({
       timeout: 15_000,
     });
     await page.waitForTimeout(1000);
 
-    // Verify turnover-specific labels
     await expect(page.getByText("Listing size")).toBeVisible();
-    await expect(page.getByText("Turnover window & property")).toBeVisible();
+    await expect(page.getByText("Check-out to check-in & property")).toBeVisible();
 
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("09:00");

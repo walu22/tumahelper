@@ -15,7 +15,7 @@ export const LUSAKA_AREAS = [
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
   { href: "/customer/book?category=nanny&type=babysitting", label: "Nannies", icon: "nanny" },
   { href: "/customer/book?category=cleaning&type=standard", label: "Cleaning", icon: "indoor" },
-  { href: "/customer/book?category=cleaning&type=airbnb", label: "Airbnb", icon: "airbnb" },
+  { href: "/customer/book?category=cleaning&type=airbnb", label: "Between-guest", icon: "airbnb" },
 ];
 
 /** Deep links that skip the service picker and open booking details */
@@ -40,9 +40,9 @@ export const PLATFORM_OFFERINGS = [
     variant: "green" as const,
   },
   {
-    title: "Airbnb turnover",
+    title: "Between-guest clean",
     description:
-      "Hospitality-grade turnover cleaning, linen changes, and restocking between guest stays.",
+      "Cleaning between guest stays — linen changes, bathroom reset, and your listing ready for the next check-in.",
     href: "/customer/book?category=cleaning&type=airbnb",
     variant: "blue" as const,
   },
@@ -100,6 +100,6 @@ export const FAQ_ITEMS = [
   },
   {
     q: "Do you clean Airbnb or short-stay properties?",
-    a: "Yes. Book a short-stay turnover clean between guest check-out and check-in. We handle linens, bathroom reset, kitchen tidy, and getting the property guest-ready. Ideal for Airbnb hosts and holiday lets in Lusaka.",
+    a: "Yes. Book a between-guest clean after check-out and before the next check-in. We handle linens, bathroom reset, kitchen tidy, and getting the property guest-ready. Ideal for Airbnb hosts and holiday lets in Lusaka.",
   },
 ];

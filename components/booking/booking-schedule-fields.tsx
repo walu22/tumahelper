@@ -67,7 +67,7 @@ export function BookingScheduleFields({
 }: BookingScheduleFieldsProps) {
   const today = minDate ?? new Date().toISOString().split("T")[0];
   const startTimes = getStartTimeOptions(category, serviceType);
-  const isTurnover = serviceType === "airbnb";
+  const isBetweenGuest = serviceType === "airbnb";
 
   function appendArea(area: string) {
     if (!locationAddress.trim()) {
@@ -86,7 +86,7 @@ export function BookingScheduleFields({
       <div className="border-b border-border bg-surface/80 px-5 py-4 sm:px-6">
         <div className="flex items-start gap-3">
           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            {isTurnover ? (
+            {isBetweenGuest ? (
               <KeyRound className="h-5 w-5 text-primary" />
             ) : (
               <Calendar className="h-5 w-5 text-primary" />
@@ -94,10 +94,10 @@ export function BookingScheduleFields({
           </div>
           <div>
             <h3 className="font-semibold text-foreground">
-              {isTurnover ? "Turnover window & property" : "When & where"}
+              {isBetweenGuest ? "Check-out to check-in & property" : "When & where"}
             </h3>
             <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">
-              {isTurnover
+              {isBetweenGuest
                 ? "When guests leave, when the next ones arrive, and where the listing is in Lusaka."
                 : "Choose when the visit should happen and where in Lusaka."}
             </p>
@@ -109,13 +109,13 @@ export function BookingScheduleFields({
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             <Clock className="h-3.5 w-3.5" />
-            {isTurnover ? "Turnover schedule" : "Schedule"}
+            {isBetweenGuest ? "Between-guest schedule" : "Schedule"}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <FieldLabel htmlFor="service-date" required>
-                {isTurnover ? "Turnover date" : "Date"}
+                {isBetweenGuest ? "Clean date" : "Date"}
               </FieldLabel>
               <Input
                 id="service-date"
@@ -130,7 +130,7 @@ export function BookingScheduleFields({
 
             <div>
               <FieldLabel htmlFor="service-start-time" required>
-                {isTurnover ? "Cleaner arrival time" : "Start time"}
+                {isBetweenGuest ? "Cleaner arrival time" : "Start time"}
               </FieldLabel>
               <select
                 id="service-start-time"
@@ -149,7 +149,7 @@ export function BookingScheduleFields({
             </div>
           </div>
 
-          {isTurnover && !compact && (
+          {isBetweenGuest && !compact && (
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <FieldLabel htmlFor="guest-checkout-time">Guest check-out time</FieldLabel>
@@ -181,17 +181,17 @@ export function BookingScheduleFields({
         <section className="space-y-4 pt-2 border-t border-border">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
-            {isTurnover ? "Listing location" : "Location"}
+            {isBetweenGuest ? "Listing location" : "Location"}
           </div>
 
           <div>
             <FieldLabel htmlFor="service-address" required>
-              {isTurnover ? "Property address in Lusaka" : "Address in Lusaka"}
+              {isBetweenGuest ? "Property address in Lusaka" : "Address in Lusaka"}
             </FieldLabel>
             <Input
               id="service-address"
               placeholder={
-                isTurnover
+                isBetweenGuest
                   ? "e.g. Apartment 4, Roma Park, Roma"
                   : "e.g. Plot 12, Kabulonga"
               }
@@ -224,12 +224,12 @@ export function BookingScheduleFields({
         {!compact && (
           <section className="space-y-3 pt-2 border-t border-border">
             <FieldLabel htmlFor="service-notes">
-              {isTurnover ? "Access & staging notes" : "Special instructions (optional)"}
+              {isBetweenGuest ? "Access & staging notes" : "Special instructions (optional)"}
             </FieldLabel>
             <Textarea
               id="service-notes"
               placeholder={
-                isTurnover
+                isBetweenGuest
                   ? "Lockbox code, caretaker contact, linen cupboard location, restock items..."
                   : "Gate code, access instructions, pets, parking..."
               }
