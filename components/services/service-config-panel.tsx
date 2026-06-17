@@ -23,6 +23,7 @@ interface ServiceConfigPanelProps {
   value: ServiceDetails;
   onChange: (details: ServiceDetails) => void;
   showPriceHint?: boolean;
+  lockServiceType?: boolean;
 }
 
 export function ServiceConfigPanel({
@@ -30,6 +31,7 @@ export function ServiceConfigPanel({
   value,
   onChange,
   showPriceHint = true,
+  lockServiceType = false,
 }: ServiceConfigPanelProps) {
   const entry = SERVICE_CATALOG[category];
   const selectedType = getServiceType(category, value.serviceType);
@@ -77,31 +79,33 @@ export function ServiceConfigPanel({
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm font-semibold text-muted-foreground mb-3">Service type</p>
-        <div className="grid gap-3">
-          {entry.types.map((type) => (
-            <button
-              key={type.id}
-              type="button"
-              onClick={() =>
-                update({ serviceType: type.id, durationHours: type.defaultHours })
-              }
-              className={cn(
-                "rounded-xl border-2 p-4 text-left transition-colors",
-                value.serviceType === type.id
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/40"
-              )}
-            >
-              <p className="font-semibold">{type.label}</p>
-              <p className="text-sm text-muted-foreground mt-1">{type.description}</p>
-            </button>
-          ))}
+      {!lockServiceType && (
+        <div>
+          <p className="text-sm font-semibold text-muted-foreground mb-3">Service type</p>
+          <div className="grid gap-3">
+            {entry.types.map((type) => (
+              <button
+                key={type.id}
+                type="button"
+                onClick={() =>
+                  update({ serviceType: type.id, durationHours: type.defaultHours })
+                }
+                className={cn(
+                  "rounded-xl border-2 p-4 text-left transition-colors",
+                  value.serviceType === type.id
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/40"
+                )}
+              >
+                <p className="font-semibold">{type.label}</p>
+                <p className="text-sm text-muted-foreground mt-1">{type.description}</p>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {selectedType && (
+      {selectedType && !lockServiceType && (
         <div className="rounded-xl bg-surface border border-border p-4">
           <p className="text-sm font-semibold mb-2">What&apos;s included</p>
           <ul className="space-y-1.5">

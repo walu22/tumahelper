@@ -5,6 +5,7 @@ export interface ServiceTypeOption {
   label: string;
   description: string;
   included: string[];
+  notIncluded?: string[];
   defaultHours: number;
   priceHintMin: number;
   priceHintMax: number;
@@ -112,6 +113,12 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
           "Bathroom clean & towel reset",
           "Kitchen surfaces, dishes & appliance wipe-down",
           "Sweep, mop, vacuum & bins emptied",
+        ],
+        notIncluded: [
+          "Toiletries, snacks, or welcome packs (we clean only)",
+          "Key exchange or guest messaging",
+          "Laundry unless booked as an extra",
+          "Restocking — only if you leave supplies on site",
         ],
         defaultHours: 4,
         priceHintMin: 400,
@@ -235,6 +242,18 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
     durationHours: firstType.defaultHours,
     children: 1,
     childAgeGroups: [],
+    addons: [],
+  };
+}
+
+export function defaultBetweenGuestServiceDetails(): ServiceDetails {
+  const type = getServiceType("cleaning", "airbnb");
+  return {
+    category: "cleaning",
+    serviceType: "airbnb",
+    durationHours: type?.defaultHours ?? 4,
+    bedrooms: 2,
+    bathrooms: 1,
     addons: [],
   };
 }

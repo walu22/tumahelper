@@ -48,13 +48,12 @@ test.describe("Between-guest clean booking end-to-end", () => {
     });
 
     await loginAsCustomer(page, baseURL!);
-    await page.goto("/customer/book?funnel=between-guest-clean");
-    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
+    await page.goto("/customer/book/airbnb");
+    await expect(page.getByRole("heading", { level: 1, name: "Book a between-guest clean" })).toBeVisible({
       timeout: 15_000,
     });
-    await page.waitForTimeout(1000);
-
-    await expect(page.getByText("Between-guest clean")).toBeVisible();
+    await expect(page.getByText("What we clean")).toBeVisible();
+    await expect(page.getByText("What we don't do")).toBeVisible();
     await expect(page.getByText("When & where")).toBeVisible();
 
     await page.locator("#service-date").fill(tomorrowIsoDate());

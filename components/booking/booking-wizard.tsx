@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   Loader2,
 } from 'lucide-react'
+import { BetweenGuestScopePanel } from '@/components/booking/between-guest-scope-panel'
 import { ServiceConfigPanel } from '@/components/services/service-config-panel'
 import { BookingStepShell } from '@/components/booking/booking-step-shell'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
@@ -25,6 +26,7 @@ import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
   categorySlugToKey,
+  defaultBetweenGuestServiceDetails,
   defaultServiceDetails,
   getServiceType,
   paramToCategoryKey,
@@ -128,6 +130,7 @@ function initServiceDetailsFromParams(
   if (workerProfileId) return null
 
   const key = resolveCategoryFromParams(categoryParam, funnelParam)
+    ?? (searchParams.get('type') === 'airbnb' ? 'cleaning' : null)
   if (!key) return null
 
   const parsed = parseServiceDetailsFromParams(searchParams)
@@ -164,19 +167,34 @@ function buildBookingDescription(
   return parts.length > 0 ? parts.join('\n') : undefined
 }
 
-export function BookingWizard() {
+function isLockedAirbnbFlow(
+  airbnbEntry: boolean,
+  typeParam: string | null,
+  funnelParam: string | null
+): boolean {
+  if (airbnbEntry) return true
+  if (typeParam === 'airbnb') return true
+  return resolveFunnelParam(funnelParam)?.type === 'airbnb'
+}
+
+export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const workerProfileId = searchParams.get('worker')
   const categoryParam = searchParams.get('category')
   const funnelParam = searchParams.get('funnel')
+  const typeParam = searchParams.get('type')
+  const lockedAirbnb = isLockedAirbnbFlow(airbnbEntry, typeParam, funnelParam)
   const preselectedWorkerRef = useRef<string | null>(null)
   const urlInitDone = useRef(false)
   const pricePrefilled = useRef(false)
 
-  const [step, setStep] = useState<number>(() =>
-    getInitialStep(categoryParam, funnelParam, workerProfileId)
-  )
+  const [step, setStep] = useState<number>(() => {
+    if (airbnbEntry || isLockedAirbnbFlow(airbnbEntry, typeParam, funnelParam)) {
+      return STEP.DETAILS
+    }
+    return getInitialStep(categoryParam, funnelParam, workerProfileId)
+  })
   const [submitting, setSubmitting] = useState(false)
   const [deepLinkLoading, setDeepLinkLoading] = useState(!!workerProfileId)
 
@@ -184,9 +202,10 @@ export function BookingWizard() {
   const [categoriesLoading, setCategoriesLoading] = useState(true)
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
-  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(() =>
-    initServiceDetailsFromParams(searchParams, categoryParam, funnelParam, workerProfileId)
-  )
+  const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(() => {
+    if (airbnbEntry) return defaultBetweenGuestServiceDetails()
+    return initServiceDetailsFromParams(searchParams, categoryParam, funnelParam, workerProfileId)
+  })
   const [workers, setWorkers] = useState<WorkerSummary[]>([])
   const [workersLoading, setWorkersLoading] = useState(false)
   const [selectedWorker, setSelectedWorker] = useState<WorkerSummary | null>(null)
@@ -445,7 +464,11 @@ export function BookingWizard() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">
-            {step === STEP.PICK ? 'What do you need?' : 'Book a service'}
+            {step === STEP.PICK
+              ? 'What do you need?'
+              : lockedAirbnb
+                ? 'Book a between-guest clean'
+                : 'Book a service'}
           </h1>
           {step >= STEP.DETAILS && (
             <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1">
@@ -499,15 +522,20 @@ export function BookingWizard() {
                     <div>
                       <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Set your service, then when and where.
+                        {lockedAirbnb
+                          ? 'Set property size and schedule, then choose a verified cleaner.'
+                          : 'Set your service, then when and where.'}
                       </p>
                     </div>
+
+                    {lockedAirbnb && <BetweenGuestScopePanel />}
 
                     <ServiceConfigPanel
                       category={serviceDetails.category}
                       value={serviceDetails}
                       onChange={setServiceDetails}
                       showPriceHint={false}
+                      lockServiceType={lockedAirbnb}
                     />
 
                     <BookingScheduleFields
