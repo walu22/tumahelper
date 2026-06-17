@@ -52,8 +52,9 @@ test.describe("Between-guest clean booking end-to-end", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Book a between-guest clean" })).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByText("Included in this clean")).toBeVisible();
+    await expect(page.getByText("What's included in this clean")).toBeVisible();
     await expect(page.getByText("Not included")).toBeVisible();
+    await expect(page.getByText("Optional add-ons")).toBeVisible();
     await expect(page.getByText("When & where")).toBeVisible();
 
     await page.locator("#service-date").fill(tomorrowIsoDate());

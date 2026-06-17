@@ -95,7 +95,7 @@ export function BookingSummaryPanel({
         {!hidePriceEstimate && (
           <div className="rounded-xl bg-primary/5 border border-primary/15 px-4 py-3 text-sm">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-1">
-              Typical price
+              Estimated price range
             </p>
             <p className="font-semibold text-foreground">
               K{price.min} – K{price.max}

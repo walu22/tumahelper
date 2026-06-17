@@ -1,11 +1,12 @@
 "use client";
 
-import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   CHILD_AGE_GROUPS,
   DURATION_OPTIONS,
   SERVICE_CATALOG,
+  getAvailableAddons,
+  sanitizeAddons,
   type ServiceCategoryKey,
   type ServiceDetails,
   getServiceType,
@@ -38,6 +39,8 @@ export function ServiceConfigPanel({
   const price = suggestPrice(value);
   const recommendedHours = suggestDuration(value);
   const showHourSuggestion = recommendedHours !== value.durationHours;
+  const availableAddons = getAvailableAddons(category, value.serviceType);
+  const isBetweenGuest = value.serviceType === "airbnb";
 
   function applyHomePreset(bedrooms: number, bathrooms: number) {
     const next = { ...value, bedrooms, bathrooms };
@@ -48,11 +51,18 @@ export function ServiceConfigPanel({
     onChange({ ...value, ...patch });
   }
 
+  function setServiceType(serviceType: string, defaultHours: number) {
+    const addons = sanitizeAddons(category, serviceType, value.addons);
+    const next = { ...value, serviceType, durationHours: defaultHours, addons };
+    onChange({ ...next, durationHours: suggestDuration(next) });
+  }
+
   function toggleAddon(id: string) {
     const addons = value.addons.includes(id)
       ? value.addons.filter((a) => a !== id)
       : [...value.addons, id];
-    update({ addons });
+    const next = { ...value, addons };
+    onChange({ ...next, durationHours: suggestDuration(next) });
   }
 
   function setChildrenCount(count: number) {
@@ -87,9 +97,7 @@ export function ServiceConfigPanel({
               <button
                 key={type.id}
                 type="button"
-                onClick={() =>
-                  update({ serviceType: type.id, durationHours: type.defaultHours })
-                }
+                onClick={() => setServiceType(type.id, type.defaultHours)}
                 className={cn(
                   "rounded-xl border-2 p-4 text-left transition-colors",
                   value.serviceType === type.id
@@ -105,24 +113,12 @@ export function ServiceConfigPanel({
         </div>
       )}
 
-      {selectedType && !lockServiceType && (
-        <div className="rounded-xl bg-surface border border-border p-4">
-          <p className="text-sm font-semibold mb-2">Included in this clean</p>
-          <ul className="space-y-1.5">
-            {selectedType.included.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       {category === "cleaning" ? (
         <div className="space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">Home size</p>
+            <p className="text-sm font-medium mb-2">
+              {isBetweenGuest ? "Property size" : "Home size"}
+            </p>
             <div className="grid grid-cols-3 gap-2">
               {HOME_SIZE_PRESETS.map((preset) => {
                 const active =
@@ -148,35 +144,41 @@ export function ServiceConfigPanel({
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-medium mb-1.5 block">Bedrooms</label>
-            <select
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
-              value={value.bedrooms ?? 3}
-              onChange={(e) => update({ bedrooms: parseInt(e.target.value, 10) })}
-            >
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <option key={n} value={n}>
-                  {n === 6 ? "5+" : n}
-                </option>
-              ))}
-            </select>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Bedrooms</label>
+              <select
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                value={value.bedrooms ?? 3}
+                onChange={(e) => {
+                  const next = { ...value, bedrooms: parseInt(e.target.value, 10) };
+                  onChange({ ...next, durationHours: suggestDuration(next) });
+                }}
+              >
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <option key={n} value={n}>
+                    {n === 6 ? "5+" : n}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Bathrooms</label>
+              <select
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                value={value.bathrooms ?? 2}
+                onChange={(e) => {
+                  const next = { ...value, bathrooms: parseInt(e.target.value, 10) };
+                  onChange({ ...next, durationHours: suggestDuration(next) });
+                }}
+              >
+                {[1, 2, 3, 4].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div>
-            <label className="text-sm font-medium mb-1.5 block">Bathrooms</label>
-            <select
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
-              value={value.bathrooms ?? 2}
-              onChange={(e) => update({ bathrooms: parseInt(e.target.value, 10) })}
-            >
-              {[1, 2, 3, 4].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
         </div>
       ) : (
         <div className="space-y-4">
@@ -251,6 +253,33 @@ export function ServiceConfigPanel({
         </div>
       )}
 
+      {availableAddons.length > 0 && (
+        <div>
+          <p className="text-sm font-medium mb-1">Optional add-ons</p>
+          <p className="text-xs text-muted-foreground mb-3">
+            Beyond what&apos;s included above — only add what you need.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {availableAddons.map((addon) => (
+              <button
+                key={addon.id}
+                type="button"
+                onClick={() => toggleAddon(addon.id)}
+                className={cn(
+                  "rounded-xl border p-3 text-left text-sm transition-colors",
+                  value.addons.includes(addon.id)
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/40"
+                )}
+              >
+                <p className="font-medium">{addon.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{addon.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
         <div className="flex items-center justify-between gap-3 mb-2">
           <p className="text-sm font-medium">Duration</p>
@@ -266,7 +295,9 @@ export function ServiceConfigPanel({
         </div>
         {showHourSuggestion && (
           <p className="text-xs text-muted-foreground mb-2">
-            Based on your {value.serviceType === "airbnb" ? "property" : "home"} size and extras, we recommend {recommendedHours} hours.
+            Based on your {isBetweenGuest ? "property" : category === "cleaning" ? "home" : "visit"}{" "}
+            size{availableAddons.length > 0 ? " and add-ons" : ""}, we recommend {recommendedHours}{" "}
+            hours.
           </p>
         )}
         <div className="flex flex-wrap gap-2">
@@ -288,42 +319,9 @@ export function ServiceConfigPanel({
         </div>
       </div>
 
-      {entry.addons.length > 0 && (
-        <div>
-          <p className="text-sm font-medium mb-1">
-            {lockServiceType ? "Optional add-ons" : "Add extras (optional)"}
-          </p>
-          <p className="text-xs text-muted-foreground mb-3">
-            {lockServiceType
-              ? "Beyond the standard clean above — only add what you need."
-              : "Beyond what\u2019s included in this service type."}
-          </p>
-          <div className="grid sm:grid-cols-2 gap-2">
-            {entry.addons
-              .filter((addon) => !addon.allowedTypes || addon.allowedTypes.includes(value.serviceType))
-              .map((addon) => (
-              <button
-                key={addon.id}
-                type="button"
-                onClick={() => toggleAddon(addon.id)}
-                className={cn(
-                  "rounded-xl border p-3 text-left text-sm transition-colors",
-                  value.addons.includes(addon.id)
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/40"
-                )}
-              >
-                <p className="font-medium">{addon.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{addon.description}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {showPriceHint && (
+      {showPriceHint && selectedType && (
         <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm">
-          <p className="font-semibold text-primary mb-1">Typical price range</p>
+          <p className="font-semibold text-primary mb-1">Estimated price range</p>
           <p className="text-muted-foreground">
             K{price.min} – K{price.max} for this scope (you agree the final amount with your
             worker). Suggested:{" "}

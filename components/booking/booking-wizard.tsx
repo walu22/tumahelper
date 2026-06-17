@@ -16,7 +16,7 @@ import {
   ChevronLeft,
   Loader2,
 } from 'lucide-react'
-import { BetweenGuestScopePanel } from '@/components/booking/between-guest-scope-panel'
+import { ServiceScopeCard } from '@/components/services/service-scope-card'
 import { ServiceConfigPanel } from '@/components/services/service-config-panel'
 import { BookingStepShell } from '@/components/booking/booking-step-shell'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
@@ -28,6 +28,7 @@ import {
   categorySlugToKey,
   defaultBetweenGuestServiceDetails,
   defaultServiceDetails,
+  sanitizeAddons,
   getServiceType,
   paramToCategoryKey,
   type ServiceCategoryKey,
@@ -344,6 +345,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       const typeOption = getServiceType(categoryKey, serviceTypeId)
       const details = defaultServiceDetails(categoryKey)
       details.serviceType = serviceTypeId
+      details.addons = sanitizeAddons(categoryKey, serviceTypeId, details.addons)
       if (typeOption) details.durationHours = typeOption.defaultHours
 
       const cat = categories.find((c) => c.slug === categoryKeyToDbSlug(categoryKey))
@@ -523,19 +525,23 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
                         {lockedAirbnb
-                          ? 'Set property size and schedule, then choose a verified cleaner.'
-                          : 'Set your service, then when and where.'}
+                          ? 'Confirm scope, property size, and schedule — then choose a cleaner.'
+                          : 'Review what’s included, set your scope, then when and where.'}
                       </p>
                     </div>
 
-                    {lockedAirbnb && <BetweenGuestScopePanel />}
+                    <ServiceScopeCard
+                      category={serviceDetails.category}
+                      serviceType={serviceDetails.serviceType}
+                      compact={!lockedAirbnb}
+                    />
 
                     <ServiceConfigPanel
                       category={serviceDetails.category}
                       value={serviceDetails}
                       onChange={setServiceDetails}
                       showPriceHint={false}
-                      lockServiceType={lockedAirbnb}
+                      lockServiceType={airbnbEntry}
                     />
 
                     <BookingScheduleFields
@@ -567,7 +573,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       <Button
                         variant="outline"
                         onClick={() => goToStep(STEP.PICK)}
-                        disabled={!!categoryParam || !!funnelParam}
+                        disabled={
+                          airbnbEntry ||
+                          !!categoryParam ||
+                          !!funnelParam ||
+                          typeParam === 'airbnb'
+                        }
                       >
                         <ChevronLeft className="mr-2 h-4 w-4" />
                         Back

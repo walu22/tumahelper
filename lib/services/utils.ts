@@ -6,6 +6,7 @@ import {
   getAddon,
   getServiceType,
   paramToCategoryKey,
+  sanitizeAddons,
   type ServiceCategoryKey,
   type ServiceDetails,
 } from "./catalog";
@@ -142,7 +143,7 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
 
   if (details.category === "cleaning") {
     rows.push({
-      label: "Home",
+      label: details.serviceType === "airbnb" ? "Property" : "Home",
       value: `${details.bedrooms ?? 3} bed · ${details.bathrooms ?? 2} bath`,
     });
   } else {
@@ -167,7 +168,7 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
     const labels = details.addons
       .map((id) => getAddon(details.category, id)?.label ?? id)
       .join(", ");
-    rows.push({ label: "Extras", value: labels });
+    rows.push({ label: "Add-ons", value: labels });
   }
 
   return rows;
@@ -243,6 +244,7 @@ export function parseServiceDetailsFromParams(
 
   const addons = searchParams.get("addons");
   if (addons) base.addons = addons.split(",").filter(Boolean);
+  base.addons = sanitizeAddons(category, base.serviceType, base.addons);
 
   return base;
 }

@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, Check, ChevronDown } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, X } from "lucide-react";
 import type { ServiceCatalogEntry } from "@/lib/services/catalog";
 import { defaultServiceDetails } from "@/lib/services/catalog";
+import { AIRBNB_CLEAN_BOOK_HREF } from "@/lib/landing/content";
 import { buildBookUrl } from "@/lib/services/utils";
 
 export function ServiceCategoryPanel({ entry }: { entry: ServiceCatalogEntry }) {
@@ -44,11 +45,15 @@ export function ServiceCategoryPanel({ entry }: { entry: ServiceCatalogEntry }) 
             {entry.types.map((type) => (
               <li key={type.id}>
                 <Link
-                  href={buildBookUrl({
-                    ...defaultServiceDetails(entry.key),
-                    serviceType: type.id,
-                    durationHours: type.defaultHours,
-                  })}
+                  href={
+                    type.id === "airbnb"
+                      ? AIRBNB_CLEAN_BOOK_HREF
+                      : buildBookUrl({
+                          ...defaultServiceDetails(entry.key),
+                          serviceType: type.id,
+                          durationHours: type.defaultHours,
+                        })
+                  }
                   className="group block rounded-xl border border-border p-4 md:p-5 hover:border-primary/40 hover:bg-primary/5 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -79,6 +84,24 @@ export function ServiceCategoryPanel({ entry }: { entry: ServiceCatalogEntry }) 
                         </li>
                       ))}
                     </ul>
+                    {type.notIncluded && type.notIncluded.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                          Not included
+                        </p>
+                        <ul className="space-y-1.5">
+                          {type.notIncluded.map((item) => (
+                            <li
+                              key={item}
+                              className="flex items-start gap-2 text-sm text-muted-foreground"
+                            >
+                              <X className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0 mt-0.5" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </Link>
               </li>
@@ -87,9 +110,9 @@ export function ServiceCategoryPanel({ entry }: { entry: ServiceCatalogEntry }) 
 
           {entry.addons.length > 0 && (
             <>
-              <p className="text-sm font-semibold mb-1">Optional extras</p>
+              <p className="text-sm font-semibold mb-1">Optional add-ons</p>
               <p className="text-xs text-muted-foreground mb-2">
-                Available to add during booking
+                Varies by service type — add during booking
               </p>
               <div className="flex flex-wrap gap-2">
                 {entry.addons.map((a) => (

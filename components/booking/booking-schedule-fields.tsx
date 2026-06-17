@@ -91,7 +91,9 @@ export function BookingScheduleFields({
           <div>
             <h3 className="font-semibold text-foreground">When & where</h3>
             <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">
-              Choose when the clean should happen and where in Lusaka.
+              {category === "nanny"
+                ? "Choose when the visit should happen and where in Lusaka."
+                : "Choose when the clean should happen and where in Lusaka."}
             </p>
           </div>
         </div>

@@ -68,6 +68,12 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
           "Sweep, mop & vacuum floors",
           "Beds made & bins emptied",
         ],
+        notIncluded: [
+          "Inside oven, fridge, or cabinets",
+          "Interior window glass",
+          "Laundry or ironing",
+          "Wall washing or decluttering",
+        ],
         defaultHours: 4,
         priceHintMin: 350,
         priceHintMax: 550,
@@ -83,6 +89,12 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
           "Skirting boards & hard-to-reach areas",
           "Extra attention to kitchen grease & grime",
         ],
+        notIncluded: [
+          "Inside oven or fridge (unless add-on)",
+          "Exterior windows",
+          "Laundry or ironing (unless add-on)",
+          "Packing or moving items",
+        ],
         defaultHours: 6,
         priceHintMin: 500,
         priceHintMax: 800,
@@ -97,6 +109,12 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
           "Appliances inside & out (as agreed)",
           "Windows (interior)",
           "Ready for handover or new tenants",
+        ],
+        notIncluded: [
+          "Packing or moving boxes",
+          "Furniture moving",
+          "Exterior windows or outdoor areas",
+          "Laundry or ironing",
         ],
         defaultHours: 8,
         priceHintMin: 700,
@@ -125,12 +143,48 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       },
     ],
     addons: [
-      { id: "laundry", label: "Laundry", description: "Wash, dry & fold", priceHint: 80 },
-      { id: "ironing", label: "Ironing", description: "Press clothes & linen", priceHint: 80 },
-      { id: "oven", label: "Inside oven", description: "Degrease & scrub oven interior", priceHint: 100, allowedTypes: ['standard', 'deep', 'move', 'airbnb'] },
-      { id: "fridge", label: "Inside fridge", description: "Clean shelves & interior", priceHint: 80, allowedTypes: ['standard', 'deep', 'move', 'airbnb'] },
-      { id: "windows", label: "Interior windows", description: "Glass & frames inside", priceHint: 100, allowedTypes: ['standard', 'deep', 'move', 'airbnb'] },
-      { id: "cabinets", label: "Inside cabinets", description: "Kitchen cabinets (emptied first)", priceHint: 100, allowedTypes: ['standard', 'deep', 'move', 'airbnb'] },
+      {
+        id: "laundry",
+        label: "Laundry",
+        description: "Wash, dry & fold",
+        priceHint: 80,
+        allowedTypes: ["standard", "deep", "airbnb"],
+      },
+      {
+        id: "ironing",
+        label: "Ironing",
+        description: "Press clothes & linen",
+        priceHint: 80,
+        allowedTypes: ["standard", "deep", "airbnb"],
+      },
+      {
+        id: "oven",
+        label: "Inside oven",
+        description: "Degrease & scrub oven interior",
+        priceHint: 100,
+        allowedTypes: ["standard", "deep", "airbnb"],
+      },
+      {
+        id: "fridge",
+        label: "Inside fridge",
+        description: "Clean shelves & interior",
+        priceHint: 80,
+        allowedTypes: ["standard", "deep", "airbnb"],
+      },
+      {
+        id: "windows",
+        label: "Interior windows",
+        description: "Glass & frames inside",
+        priceHint: 100,
+        allowedTypes: ["standard", "deep", "airbnb"],
+      },
+      {
+        id: "cabinets",
+        label: "Inside cabinets",
+        description: "Kitchen cabinets (emptied first)",
+        priceHint: 100,
+        allowedTypes: ["standard", "airbnb"],
+      },
     ],
   },
   nanny: {
@@ -263,6 +317,21 @@ export function getServiceType(category: ServiceCategoryKey, typeId: string) {
 
 export function getAddon(category: ServiceCategoryKey, addonId: string) {
   return SERVICE_CATALOG[category].addons.find((a) => a.id === addonId);
+}
+
+export function getAvailableAddons(category: ServiceCategoryKey, serviceType: string) {
+  return SERVICE_CATALOG[category].addons.filter(
+    (addon) => !addon.allowedTypes || addon.allowedTypes.includes(serviceType)
+  );
+}
+
+export function sanitizeAddons(
+  category: ServiceCategoryKey,
+  serviceType: string,
+  addons: string[]
+) {
+  const valid = new Set(getAvailableAddons(category, serviceType).map((addon) => addon.id));
+  return addons.filter((id) => valid.has(id));
 }
 
 /** Flat list for booking entry (category inferred from service type). */
