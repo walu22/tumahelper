@@ -19,7 +19,7 @@ export function BetweenGuestScopePanel() {
 
       <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border">
         <div className="p-5 sm:p-6">
-          <p className="text-sm font-semibold mb-3">What we clean</p>
+          <p className="text-sm font-semibold mb-3">Included in this clean</p>
           <ul className="space-y-2">
             {serviceType.included.map((item) => (
               <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -32,7 +32,7 @@ export function BetweenGuestScopePanel() {
 
         {serviceType.notIncluded && serviceType.notIncluded.length > 0 && (
           <div className="p-5 sm:p-6 bg-surface/40">
-            <p className="text-sm font-semibold mb-3">What we don&apos;t do</p>
+            <p className="text-sm font-semibold mb-3">Not included</p>
             <ul className="space-y-2">
               {serviceType.notIncluded.map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">

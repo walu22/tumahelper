@@ -107,7 +107,7 @@ export function ServiceConfigPanel({
 
       {selectedType && !lockServiceType && (
         <div className="rounded-xl bg-surface border border-border p-4">
-          <p className="text-sm font-semibold mb-2">What&apos;s included</p>
+          <p className="text-sm font-semibold mb-2">Included in this clean</p>
           <ul className="space-y-1.5">
             {selectedType.included.map((item) => (
               <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -290,7 +290,14 @@ export function ServiceConfigPanel({
 
       {entry.addons.length > 0 && (
         <div>
-          <p className="text-sm font-medium mb-2">Add extras (optional)</p>
+          <p className="text-sm font-medium mb-1">
+            {lockServiceType ? "Optional add-ons" : "Add extras (optional)"}
+          </p>
+          <p className="text-xs text-muted-foreground mb-3">
+            {lockServiceType
+              ? "Beyond the standard clean above — only add what you need."
+              : "Beyond what\u2019s included in this service type."}
+          </p>
           <div className="grid sm:grid-cols-2 gap-2">
             {entry.addons
               .filter((addon) => !addon.allowedTypes || addon.allowedTypes.includes(value.serviceType))
