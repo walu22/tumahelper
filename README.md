@@ -45,15 +45,74 @@ npm run dev
 4. Configure Africa's Talking SMS
 5. Create private storage bucket: `worker-documents`
 
-### Deployment
+### Deployment (Vercel)
+
+Repo: `walu22/tumahelper` · Production branch: `master` (also mirrored on `main`)
+
+#### 1. Create the project
+
+1. Open your team dashboard: [vercel.com/walkers-projects-da1ff726](https://vercel.com/walkers-projects-da1ff726)
+2. Click **Add New…** → **Project**
+3. Under **Import Git Repository**, choose **GitHub** and authorize Vercel if prompted
+4. Select **`walu22/tumahelper`**
+5. Confirm settings:
+   - **Framework Preset**: Next.js
+   - **Root Directory**: `./`
+   - **Build Command**: `npm run build`
+   - **Production Branch**: `master`
+
+#### 2. Add environment variables (required before first deploy)
+
+In **Environment Variables**, add these for **Production**, **Preview**, and **Development**:
+
+| Variable | Example / notes |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://xxxx.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | From Supabase → Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (keep secret) |
+| `NEXT_PUBLIC_APP_URL` | `https://tumahelper.com` (or your `.vercel.app` URL for first deploy) |
+| `NRC_ENCRYPTION_KEY` | 32-character secret string |
+| `SUPABASE_STORAGE_BUCKET` | `worker-documents` |
+
+Optional:
+
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | WhatsApp CTA on landing/hire pages |
+| `AFRICAS_TALKING_API_KEY` | SMS OTP |
+| `AFRICAS_TALKING_USERNAME` | SMS OTP |
+| `AFRICAS_TALKING_SENDER_ID` | `TumaHelper` |
+
+#### 3. Deploy
+
+Click **Deploy**. The first build will fail if Supabase env vars are missing.
+
+After a successful deploy you should see:
+
+- Hero: **“Book verified nannies & cleaners.”**
+- **What we do** section with **Airbnb cleaning** card
+- **Airbnb clean** in the header nav
+
+#### 4. Connect your domain
+
+1. Project → **Settings** → **Domains**
+2. Add `tumahelper.com` and `www.tumahelper.com`
+3. Point DNS to Vercel (or confirm existing records)
+4. Set `NEXT_PUBLIC_APP_URL` to `https://tumahelper.com` and **Redeploy**
+
+#### CLI deploy (optional)
 
 ```bash
-# Push to GitHub
-git push origin main
+npm i -g vercel
+vercel login
+vercel link --scope walkers-projects-da1ff726
+vercel env pull .env.local
+vercel --prod
+```
 
-# Connect to Vercel
-# Add environment variables in Vercel dashboard
-# Deploy
+```bash
+# Push latest code
+git push origin master
 ```
 
 ## Project Structure
