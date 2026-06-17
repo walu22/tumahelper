@@ -51,7 +51,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
   cleaning: {
     key: "cleaning",
     title: "House cleaning",
-    tagline: "Standard, deep, or move-in/out cleans for Lusaka homes",
+    tagline: "Standard, deep, move-in/out, or Airbnb turnover cleans for Lusaka homes",
     bookParam: "cleaning",
     scopeLabel: "home",
     types: [
@@ -99,6 +99,21 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         defaultHours: 8,
         priceHintMin: 700,
         priceHintMax: 1200,
+      },
+      {
+        id: "airbnb",
+        label: "Airbnb / short-stay turnover",
+        description: "Guest checkout clean between bookings — linens, reset, and ready for check-in.",
+        included: [
+          "Change linens & remake beds",
+          "Bathroom reset & towel refresh",
+          "Kitchen wipe-down & dishes",
+          "Vacuum, mop & surface tidy",
+          "Bins emptied & property guest-ready",
+        ],
+        defaultHours: 3,
+        priceHintMin: 300,
+        priceHintMax: 500,
       },
     ],
     addons: [

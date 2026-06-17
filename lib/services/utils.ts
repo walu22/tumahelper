@@ -32,6 +32,8 @@ export const FUNNEL_ALIASES: Record<
   "indoor-cleaning": { category: "cleaning", type: "standard" },
   "deep-clean": { category: "cleaning", type: "deep" },
   "move-clean": { category: "cleaning", type: "move" },
+  "airbnb-clean": { category: "cleaning", type: "airbnb" },
+  "airbnb-cleaning": { category: "cleaning", type: "airbnb" },
   babysitting: { category: "nanny", type: "babysitting" },
   "after-school": { category: "nanny", type: "after_school" },
 };
@@ -230,6 +232,10 @@ export function parseServiceDetailsFromParams(
     const bathrooms = searchParams.get("bathrooms");
     if (bedrooms) base.bedrooms = parseInt(bedrooms, 10) || base.bedrooms;
     if (bathrooms) base.bathrooms = parseInt(bathrooms, 10) || base.bathrooms;
+    if (base.serviceType === "airbnb") {
+      if (!bedrooms) base.bedrooms = 2;
+      if (!bathrooms) base.bathrooms = 1;
+    }
   } else {
     const children = searchParams.get("children");
     if (children) base.children = parseInt(children, 10) || base.children;

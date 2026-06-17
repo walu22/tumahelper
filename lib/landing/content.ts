@@ -20,6 +20,7 @@ export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKe
 /** Deep links that skip the service picker and open booking details */
 export const NANNY_BOOK_HREF = "/customer/book?category=nanny&type=babysitting";
 export const CLEANING_BOOK_HREF = "/customer/book?category=cleaning&type=standard";
+export const AIRBNB_CLEAN_BOOK_HREF = "/customer/book?category=cleaning&type=airbnb";
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
 export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
@@ -34,7 +35,7 @@ export const PLATFORM_OFFERINGS = [
   {
     title: "House cleaning",
     description:
-      "One-off deep cleans or regular visits. Book a verified cleaner across Lusaka.",
+      "One-off deep cleans, regular visits, or Airbnb turnover between guests. Book a verified cleaner across Lusaka.",
     href: "/customer/book?category=cleaning",
     variant: "green" as const,
   },
@@ -89,5 +90,9 @@ export const FAQ_ITEMS = [
   {
     q: "Which areas do you cover?",
     a: "We serve households across Lusaka, including Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, Chelstone, and surrounding areas.",
+  },
+  {
+    q: "Do you clean Airbnb or short-stay properties?",
+    a: "Yes. Book an Airbnb turnover clean for guest changeovers — linens, bathroom reset, kitchen tidy, and the property ready for the next check-in. Same verified cleaners as our regular house cleaning.",
   },
 ];

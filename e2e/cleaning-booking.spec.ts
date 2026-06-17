@@ -96,6 +96,70 @@ test.describe("Cleaning booking end-to-end", () => {
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("10:00");
     await page.locator("#service-address").fill("Meanwood, Lusaka");
-    await expect(continueBtn).toBeEnabled();
+    await     expect(continueBtn).toBeEnabled();
+  });
+
+  test("customer can book Airbnb turnover clean", async ({ page, baseURL }) => {
+    test.setTimeout(60_000);
+
+    let capturedBookingBody: Record<string, unknown> | null = null;
+
+    await page.route("**/api/bookings", async (route) => {
+      if (route.request().method() !== "POST") {
+        await route.continue();
+        return;
+      }
+      capturedBookingBody = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          data: {
+            id: MOCK_BOOKING_ID,
+            booking_code: "TH-ABN001",
+            status: "pending",
+          },
+        }),
+      });
+    });
+
+    await loginAsCustomer(page, baseURL!);
+    await page.goto("/customer/book?category=cleaning&type=airbnb");
+    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByText(/Airbnb/i)).toBeVisible();
+
+    await page.locator("#service-date").fill(tomorrowIsoDate());
+    await page.locator("#service-start-time").selectOption("09:00");
+    await page.locator("#service-address").fill("Apartment 4, Kabulonga, Lusaka");
+
+    await page.getByRole("button", { name: "Choose worker" }).click();
+    await expect(page.getByText("Grace Phiri")).toBeVisible();
+    await page.getByRole("button", { name: /Grace Phiri/i }).click();
+
+    await expect(page.getByRole("heading", { name: "Confirm & pay" })).toBeVisible();
+
+    const feeInput = page.getByRole("spinbutton");
+    await expect(feeInput).not.toHaveValue("", { timeout: 10_000 });
+    await expect(page.getByRole("button", { name: "Confirm booking" })).toBeEnabled();
+
+    await Promise.all([
+      page.waitForURL(new RegExp(`/customer/bookings/${MOCK_BOOKING_ID}`), { timeout: 15_000 }),
+      page.getByRole("button", { name: "Confirm booking" }).click(),
+    ]);
+
+    expect(capturedBookingBody).toMatchObject({
+      workerId: MOCK_CLEANER_WORKER.user_id,
+      categoryId: MOCK_CATEGORIES[1].id,
+      serviceDate: tomorrowIsoDate(),
+      serviceTime: "09:00",
+      locationAddress: "Apartment 4, Kabulonga, Lusaka",
+      serviceDetails: {
+        category: "cleaning",
+        serviceType: "airbnb",
+      },
+    });
   });
 });
