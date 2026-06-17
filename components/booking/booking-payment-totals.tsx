@@ -23,7 +23,7 @@ export function BookingPaymentTotals({
         <span className="text-muted-foreground">Platform fee (10%)</span>
         <span className="font-medium">{formatCurrency(platformFee)}</span>
       </div>
-      <div className="flex justify-between px-4 py-3 text-sm font-semibold bg-white rounded-b-xl">
+      <div className="flex justify-between px-4 py-3 text-sm font-semibold bg-card rounded-b-xl">
         <span>Total to pay</span>
         <span className="text-primary">{formatCurrency(totalCents)}</span>
       </div>

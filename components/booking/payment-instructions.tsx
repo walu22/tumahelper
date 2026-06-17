@@ -160,7 +160,7 @@ export function PaymentInstructions({
 
 function CardShell({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border bg-white p-6 shadow-sm">
+    <div className="rounded-xl border bg-card p-6 shadow-sm">
       <h3 className="font-semibold text-lg mb-4">{title}</h3>
       {children}
     </div>

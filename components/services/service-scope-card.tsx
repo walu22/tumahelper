@@ -21,7 +21,7 @@ export function ServiceScopeCard({ category, serviceType, compact = false }: Ser
   const hasNotIncluded = Boolean(type.notIncluded?.length);
 
   return (
-    <div className="rounded-2xl border border-border bg-white shadow-sm overflow-hidden">
+    <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
       <div className="border-b border-border bg-surface/80 px-5 py-4 sm:px-6">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">
           {entry.title}

@@ -4,6 +4,21 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 type Theme = 'light' | 'dark'
 
+const STORAGE_KEY = 'tumahelper-theme'
+
+function getStoredTheme(): Theme | null {
+  const stored = localStorage.getItem(STORAGE_KEY)
+  return stored === 'dark' || stored === 'light' ? stored : null
+}
+
+function getSystemTheme(): Theme {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function applyTheme(theme: Theme) {
+  document.documentElement.classList.toggle('dark', theme === 'dark')
+}
+
 const ThemeContext = createContext<{
   theme: Theme
   toggleTheme: () => void
@@ -16,18 +31,31 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light')
 
   useEffect(() => {
-    const stored = localStorage.getItem('tumahelper-theme') as Theme | null
-    if (stored) {
-      setTheme(stored)
-      document.documentElement.classList.toggle('dark', stored === 'dark')
+    const stored = getStoredTheme()
+    const initial = stored ?? getSystemTheme()
+    setTheme(initial)
+    applyTheme(initial)
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    const onSystemChange = () => {
+      if (!getStoredTheme()) {
+        const next = getSystemTheme()
+        setTheme(next)
+        applyTheme(next)
+      }
     }
+
+    media.addEventListener('change', onSystemChange)
+    return () => media.removeEventListener('change', onSystemChange)
   }, [])
 
   const toggleTheme = () => {
-    const next = theme === 'light' ? 'dark' : 'light'
-    setTheme(next)
-    localStorage.setItem('tumahelper-theme', next)
-    document.documentElement.classList.toggle('dark', next === 'dark')
+    setTheme((current) => {
+      const next = current === 'light' ? 'dark' : 'light'
+      localStorage.setItem(STORAGE_KEY, next)
+      applyTheme(next)
+      return next
+    })
   }
 
   return (

@@ -54,7 +54,7 @@ export function CustomerDashboardBookingItem({
 
   return (
     <div
-      className={`rounded-2xl border bg-white overflow-hidden transition-all hover:border-primary/30 hover:shadow-md ${
+      className={`rounded-2xl border bg-card overflow-hidden transition-all hover:border-primary/30 hover:shadow-md ${
         highlight ? "border-amber-200 bg-amber-50/40" : "border-border"
       }`}
     >

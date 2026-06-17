@@ -45,7 +45,7 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Profile Header */}
-      <div className="bg-white rounded-lg shadow-md p-8 mb-6">
+      <div className="bg-card rounded-lg shadow-md p-8 mb-6">
         <div className="flex flex-col md:flex-row items-start gap-6">
           <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
             {worker.profile_photo_url ? (
@@ -100,7 +100,7 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
 
       {/* Details Grid */}
       <div className="grid md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-card rounded-lg shadow-md p-6">
           <h2 className="font-semibold text-lg mb-4">Skills</h2>
           <div className="flex flex-wrap gap-2">
             {worker.skills?.map((skill: string) => (
@@ -111,7 +111,7 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-card rounded-lg shadow-md p-6">
           <h2 className="font-semibold text-lg mb-4">Languages</h2>
           <div className="flex flex-wrap gap-2">
             {worker.languages?.map((lang: string) => (
@@ -123,13 +123,13 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-card rounded-lg shadow-md p-6">
           <h2 className="font-semibold text-lg mb-4">Experience</h2>
           <p className="text-gray-700">{worker.experience_years} years of experience</p>
           <p className="text-sm text-gray-500 capitalize mt-1">{worker.category.replace("_", " ")}</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-card rounded-lg shadow-md p-6">
           <h2 className="font-semibold text-lg mb-4">Availability</h2>
           <div className="flex flex-wrap gap-2">
             {worker.employment_types?.map((type: string) => (
@@ -142,7 +142,7 @@ export default async function WorkerDetailPage({ params }: { params: { id: strin
       </div>
 
       {/* Reviews */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-card rounded-lg shadow-md p-6">
         <h2 className="font-semibold text-lg mb-4">Reviews ({reviews?.length || 0})</h2>
         {reviews && reviews.length > 0 ? (
           <div className="space-y-4">

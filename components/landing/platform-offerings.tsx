@@ -11,7 +11,7 @@ const cardStyles = {
 
 export function PlatformOfferings() {
   return (
-    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white border-t border-border">
+    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-background border-t border-border">
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
@@ -58,7 +58,7 @@ export function PlatformOfferings() {
             {PERMANENT_PLACEMENT_ROLES.map((role) => (
               <div
                 key={role.title}
-                className="rounded-2xl border border-border bg-white p-5 text-center"
+                className="rounded-2xl border border-border bg-card p-5 text-center"
               >
                 <h4 className="font-semibold mb-1.5">{role.title}</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">{role.description}</p>

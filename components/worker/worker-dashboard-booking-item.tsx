@@ -49,7 +49,7 @@ export function WorkerDashboardBookingItem({
   return (
     <Link
       href={`/worker/bookings/${booking.id}`}
-      className={`group block rounded-2xl border bg-white p-4 transition-all hover:border-primary/30 hover:shadow-md ${
+      className={`group block rounded-2xl border bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md ${
         highlight ? "border-amber-200 bg-amber-50/40" : "border-border"
       }`}
     >

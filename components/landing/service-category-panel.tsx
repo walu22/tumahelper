@@ -13,7 +13,7 @@ export function ServiceCategoryPanel({ entry }: { entry: ServiceCatalogEntry }) 
   const bookHref = buildBookUrl(defaultServiceDetails(entry.key));
 
   return (
-    <div className="rounded-3xl border border-border bg-white p-8 md:p-10 flex flex-col">
+    <div className="rounded-3xl border border-border bg-card p-8 md:p-10 flex flex-col">
       <h3 className="font-display text-2xl font-bold mb-2">{entry.title}</h3>
       <p className="text-muted-foreground mb-6 leading-relaxed">{entry.tagline}</p>
 

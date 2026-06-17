@@ -48,7 +48,7 @@ export function BookingSummaryPanel({
   const hasWhere = locationAddress.length >= 5;
 
   return (
-    <aside className={`rounded-2xl border border-border bg-white overflow-hidden ${className}`}>
+    <aside className={`rounded-2xl border border-border bg-card overflow-hidden ${className}`}>
       <div className="px-5 py-4 border-b border-border bg-surface/60">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1">
           Your booking

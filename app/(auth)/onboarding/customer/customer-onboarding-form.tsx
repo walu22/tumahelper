@@ -39,7 +39,7 @@ export function CustomerOnboardingForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface px-4">
-      <div className="w-full max-w-md bg-white rounded-3xl border border-border shadow-sm p-8">
+      <div className="w-full max-w-md bg-card rounded-3xl border border-border shadow-sm p-8">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <LogoMark size={48} />

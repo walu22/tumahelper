@@ -31,7 +31,7 @@ export function LandingFaqCta() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-border bg-white p-8 sm:p-10 shadow-lg">
+        <div className="rounded-3xl border border-border bg-card p-8 sm:p-10 shadow-lg">
           <div className="mb-8">
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
               Get started

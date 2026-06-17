@@ -21,7 +21,7 @@ export default function ServiceCategoryPage({
   const entry = SERVICE_CATALOG[key];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12 md:py-20">
         <Link href="/" className="text-sm text-primary hover:underline mb-8 inline-block">
           ← Back to home
@@ -71,7 +71,7 @@ export default function ServiceCategoryPage({
             <h2 className="font-display text-xl font-semibold mb-4">Optional extras</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               {entry.addons.map((addon) => (
-                <div key={addon.id} className="rounded-xl border border-border bg-white p-4">
+                <div key={addon.id} className="rounded-xl border border-border bg-card p-4">
                   <p className="font-medium">{addon.label}</p>
                   <p className="text-sm text-muted-foreground mt-1">{addon.description}</p>
                   <p className="text-xs text-muted-foreground mt-2">+ ~K{addon.priceHint}</p>

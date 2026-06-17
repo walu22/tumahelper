@@ -56,7 +56,7 @@ export default async function CustomerDashboardPage() {
           <div className="space-y-4">
             {upcomingBookings.map((booking: any) => (
               <Link key={booking.id} href={`/customer/bookings/${booking.id}`}>
-                <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
+                <div className="bg-card rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
@@ -101,7 +101,7 @@ export default async function CustomerDashboardPage() {
           <div className="space-y-4">
             {pastBookings.map((booking: any) => (
               <Link key={booking.id} href={`/customer/bookings/${booking.id}`}>
-                <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-opacity opacity-75">
+                <div className="bg-card rounded-lg shadow-sm border p-4 hover:shadow-md transition-opacity opacity-75">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium">{booking.worker?.full_name}</div>

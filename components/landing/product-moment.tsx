@@ -18,7 +18,7 @@ export function ProductMoment() {
 
           <div className="relative grid md:grid-cols-5 gap-4 md:gap-0 md:items-stretch">
             {/* Profile card */}
-            <div className="md:col-span-3 bg-white text-foreground rounded-3xl p-6 md:p-8 shadow-2xl md:rounded-r-none md:my-4">
+            <div className="md:col-span-3 bg-card text-card-foreground rounded-3xl p-6 md:p-8 shadow-2xl md:rounded-r-none md:my-4">
               <div className="flex items-start gap-4 mb-6">
                 <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center font-display text-2xl font-semibold text-primary">
                   SM
@@ -93,7 +93,7 @@ export function ProductMoment() {
                   </div>
                 ))}
               </div>
-              <div className="rounded-2xl bg-white text-primary text-center py-4 font-semibold text-sm">
+              <div className="rounded-2xl bg-card text-primary text-center py-4 font-semibold text-sm">
                 Confirm booking →
               </div>
             </div>

@@ -28,7 +28,7 @@ interface BookingScheduleFieldsProps {
 }
 
 const fieldClass =
-  "h-11 w-full rounded-xl border border-border bg-white px-3.5 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/40";
+  "h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/40";
 
 function FieldLabel({
   htmlFor,
@@ -81,7 +81,7 @@ export function BookingScheduleFields({
   return (
     <div
       id="booking-when-where"
-      className="rounded-2xl border border-border bg-white shadow-sm overflow-hidden"
+      className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden"
     >
       <div className="border-b border-border bg-surface/80 px-5 py-4 sm:px-6">
         <div className="flex items-start gap-3">
@@ -227,7 +227,7 @@ export function BookingScheduleFields({
               value={description}
               onChange={(e) => onDescriptionChange(e.target.value)}
               rows={3}
-              className="rounded-xl border-border bg-white shadow-sm resize-none"
+              className="rounded-xl border-border bg-background shadow-sm resize-none"
             />
           </section>
         )}

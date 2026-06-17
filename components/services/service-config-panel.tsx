@@ -147,7 +147,7 @@ export function ServiceConfigPanel({
             <div>
               <label className="text-sm font-medium mb-1.5 block">Bedrooms</label>
               <select
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background"
                 value={value.bedrooms ?? 3}
                 onChange={(e) => {
                   const next = { ...value, bedrooms: parseInt(e.target.value, 10) };
@@ -164,7 +164,7 @@ export function ServiceConfigPanel({
             <div>
               <label className="text-sm font-medium mb-1.5 block">Bathrooms</label>
               <select
-                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background"
                 value={value.bathrooms ?? 2}
                 onChange={(e) => {
                   const next = { ...value, bathrooms: parseInt(e.target.value, 10) };
@@ -185,7 +185,7 @@ export function ServiceConfigPanel({
           <div>
             <label className="text-sm font-medium mb-1.5 block">Number of children</label>
             <select
-              className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+              className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background"
               value={value.children ?? 1}
               onChange={(e) => setChildrenCount(parseInt(e.target.value, 10))}
             >
@@ -204,7 +204,7 @@ export function ServiceConfigPanel({
                 </label>
                 <select
                   id="child-age"
-                  className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                  className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background"
                   value={singleChildAge}
                   onChange={(e) => setChildAge(0, e.target.value)}
                 >
@@ -233,7 +233,7 @@ export function ServiceConfigPanel({
                       </label>
                       <select
                         id={`child-age-${index}`}
-                        className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-white"
+                        className="w-full border border-border rounded-lg px-3 py-2 text-sm bg-background"
                         value={value.childAgeGroups?.[index] ?? ""}
                         onChange={(e) => setChildAge(index, e.target.value)}
                       >

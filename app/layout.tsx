@@ -3,6 +3,7 @@ import { Figtree, Bricolage_Grotesque } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeScript } from "@/components/theme-script";
 import { HeaderAuth } from "@/components/layout/header-auth";
 import { Footer } from "@/components/layout/footer";
 import { MobileNavAuth } from "@/components/layout/mobile-nav-auth";
@@ -39,6 +40,9 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className={`${sans.variable} ${display.variable} font-sans`}>
         <ThemeProvider>
           {!isAdmin && <HeaderAuth />}

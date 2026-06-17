@@ -92,7 +92,7 @@ export function RegisterForm() {
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-left bg-white"
+                className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-left bg-card"
               >
                 <div className="font-semibold text-lg">{title}</div>
                 <div className="text-sm text-gray-500">{description}</div>
@@ -115,7 +115,7 @@ export function RegisterForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface px-4 py-12">
-      <div className="w-full max-w-md bg-white rounded-3xl border border-border shadow-sm p-8">
+      <div className="w-full max-w-md bg-card rounded-3xl border border-border shadow-sm p-8">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <LogoMark size={48} />

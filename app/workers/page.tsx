@@ -52,24 +52,24 @@ export default async function WorkersPage({ searchParams }: WorkersPageProps) {
 
       <div className="mb-8 rounded-2xl border border-border bg-surface p-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <select className="rounded-xl border border-border bg-white px-3 py-2 text-sm">
+          <select className="rounded-xl border border-border bg-background px-3 py-2 text-sm">
             <option value="">All categories</option>
             <option value="nanny">Nanny</option>
             <option value="house_cleaner">House cleaning</option>
           </select>
-          <select className="rounded-xl border border-border bg-white px-3 py-2 text-sm">
+          <select className="rounded-xl border border-border bg-background px-3 py-2 text-sm">
             <option value="">All areas</option>
             <option value="Kabulonga">Kabulonga</option>
             <option value="Woodlands">Woodlands</option>
             <option value="Roma">Roma</option>
           </select>
-          <select className="rounded-xl border border-border bg-white px-3 py-2 text-sm">
+          <select className="rounded-xl border border-border bg-background px-3 py-2 text-sm">
             <option value="">All verification</option>
             <option value="bronze">Bronze+</option>
             <option value="silver">Silver+</option>
             <option value="gold">Gold+</option>
           </select>
-          <select className="rounded-xl border border-border bg-white px-3 py-2 text-sm">
+          <select className="rounded-xl border border-border bg-background px-3 py-2 text-sm">
             <option value="">Min trust score</option>
             <option value="60">60+</option>
             <option value="75">75+</option>

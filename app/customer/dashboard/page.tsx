@@ -123,7 +123,7 @@ export default async function CustomerDashboard() {
           </div>
         </div>
 
-        <section className="rounded-3xl border border-border bg-white p-6 md:p-8 mb-8 shadow-sm overflow-hidden relative">
+        <section className="rounded-3xl border border-border bg-card p-6 md:p-8 mb-8 shadow-sm overflow-hidden relative">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
           <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
@@ -316,7 +316,7 @@ export default async function CustomerDashboard() {
                   Browse live-in nanny and long-term domestic roles.
                 </p>
                 <Link href="/hire">
-                  <Button size="sm" variant="outline" className="w-full rounded-full bg-white">
+                  <Button size="sm" variant="outline" className="w-full rounded-full">
                     Explore permanent hire
                   </Button>
                 </Link>

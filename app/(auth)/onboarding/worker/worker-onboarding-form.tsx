@@ -180,7 +180,7 @@ export function WorkerOnboardingForm({ initialFullName }: WorkerOnboardingFormPr
   };
 
   const selectClassName =
-    "w-full rounded-xl border border-border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20";
+    "w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20";
 
   return (
     <div className="min-h-screen bg-surface py-10 px-4 sm:px-6">
@@ -197,7 +197,7 @@ export function WorkerOnboardingForm({ initialFullName }: WorkerOnboardingFormPr
           </p>
         </div>
 
-        <div className="rounded-3xl border border-border bg-white p-6 md:p-8 shadow-sm">
+        <div className="rounded-3xl border border-border bg-card p-6 md:p-8 shadow-sm">
           <div className="flex items-center gap-2 mb-8">
             {[1, 2, 3].map((s) => (
               <div

@@ -39,17 +39,17 @@ export default async function EmployerDashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-lg shadow-sm p-4 text-center">
+        <div className="bg-card rounded-lg shadow-sm p-4 text-center">
           <Briefcase className="w-6 h-6 text-primary mx-auto mb-2" />
           <div className="text-2xl font-bold">{activeJobs.length}</div>
           <div className="text-sm text-gray-500">Active Jobs</div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm p-4 text-center">
+        <div className="bg-card rounded-lg shadow-sm p-4 text-center">
           <Users className="w-6 h-6 text-primary mx-auto mb-2" />
           <div className="text-2xl font-bold">{totalApplications}</div>
           <div className="text-sm text-gray-500">Applications</div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm p-4 text-center">
+        <div className="bg-card rounded-lg shadow-sm p-4 text-center">
           <Eye className="w-6 h-6 text-primary mx-auto mb-2" />
           <div className="text-2xl font-bold">{jobPosts?.filter((j) => j.status === "filled").length || 0}</div>
           <div className="text-sm text-gray-500">Hires</div>
@@ -63,7 +63,7 @@ export default async function EmployerDashboardPage() {
           <div className="space-y-4">
             {jobPosts.map((job: any) => (
               <Link key={job.id} href={`/employer/jobs/${job.id}`}>
-                <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
+                <div className="bg-card rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="font-semibold text-lg">{job.title}</div>

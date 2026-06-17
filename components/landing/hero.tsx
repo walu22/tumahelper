@@ -11,7 +11,7 @@ const TRUST_POINTS = [
 
 export function LandingHero() {
   return (
-    <section className="relative overflow-hidden bg-white sweep-circles">
+    <section className="relative overflow-hidden bg-background sweep-circles">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-10 md:pt-20 md:pb-16">
         <div className="text-center max-w-3xl mx-auto">
           <div className="flex justify-center mb-6 md:hidden">

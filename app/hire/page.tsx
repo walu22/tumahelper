@@ -26,7 +26,7 @@ const STEPS = [
 
 export default function HirePage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-20">
         <p className="text-sm font-semibold text-primary mb-3 tracking-wide">
           Permanent placements
@@ -73,7 +73,7 @@ export default function HirePage() {
 
           <Link
             href="/customer/book"
-            className="flex items-center justify-center w-full rounded-full border border-border py-3.5 text-sm font-semibold hover:bg-white transition-colors"
+            className="flex items-center justify-center w-full rounded-full border border-border py-3.5 text-sm font-semibold hover:bg-card transition-colors"
           >
             Or book a visit first
           </Link>

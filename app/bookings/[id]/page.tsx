@@ -33,7 +33,7 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-card rounded-lg shadow-md p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">Booking {booking.booking_code}</h1>
           <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${

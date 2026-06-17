@@ -15,7 +15,7 @@ interface WorkerCardProps {
 export function WorkerCard({ worker }: WorkerCardProps) {
   return (
     <Link href={`/workers/${worker.id}`} className="block h-full">
-      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4 border border-gray-100 h-full">
+      <div className="bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow p-4 border border-gray-100 h-full">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
             {worker.profile_photo_url ? (

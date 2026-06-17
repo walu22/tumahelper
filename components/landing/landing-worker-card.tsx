@@ -50,7 +50,7 @@ export function LandingWorkerCard({
   return (
     <Link
       href={`/workers/${worker.id}`}
-      className={`group flex h-full flex-col rounded-3xl border bg-white p-5 transition-all hover:border-primary/40 hover:shadow-lg ${
+      className={`group flex h-full flex-col rounded-3xl border bg-card p-5 transition-all hover:border-primary/40 hover:shadow-lg ${
         featured ? "border-primary/30 ring-4 ring-primary/5" : "border-border"
       }`}
     >

@@ -33,7 +33,7 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-64 border-r bg-white min-h-screen flex flex-col">
+    <aside className="w-64 border-r bg-card min-h-screen flex flex-col">
       <div className="p-4 border-b">
         <Link href="/admin" className="flex items-center gap-2">
           <LogoMark size={28} />

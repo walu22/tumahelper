@@ -11,7 +11,7 @@ export default function LoginPage({
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-xl shadow-md p-8">
+        <div className="bg-card rounded-xl shadow-md p-8">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <LogoMark size={48} />

@@ -34,7 +34,7 @@ export default function DevLoginPage({
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white p-8 rounded-xl shadow-md max-w-sm w-full">
+      <div className="bg-card p-8 rounded-xl shadow-md max-w-sm w-full">
         <h1 className="text-xl font-bold mb-2">Dev Login</h1>
         <p className="text-sm text-muted-foreground mb-6">
           {isDevBypassEnabled()

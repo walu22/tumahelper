@@ -141,7 +141,7 @@ export default async function WorkerDashboardPage() {
           </div>
         </div>
 
-        <section className="rounded-3xl border border-border bg-white p-6 md:p-8 mb-8 shadow-sm overflow-hidden relative">
+        <section className="rounded-3xl border border-border bg-card p-6 md:p-8 mb-8 shadow-sm overflow-hidden relative">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
           <div className="relative flex flex-col md:flex-row md:items-center gap-6">
             <div className="h-20 w-20 md:h-24 md:w-24 rounded-2xl bg-primary/10 overflow-hidden shrink-0 ring-4 ring-white shadow-md">

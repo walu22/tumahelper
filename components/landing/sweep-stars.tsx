@@ -35,7 +35,7 @@ export function SweepStarsSection({
             </Link>
             <Link
               href="/workers"
-              className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-3.5 text-sm font-semibold hover:bg-white transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-8 py-3.5 text-sm font-semibold hover:bg-card transition-colors"
             >
               Find workers
             </Link>
@@ -95,7 +95,7 @@ export function SweepStarsSection({
           </Link>
           <Link
             href="/workers"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-8 py-3.5 text-sm font-semibold hover:border-primary/30 transition-colors w-full sm:w-auto"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card px-8 py-3.5 text-sm font-semibold hover:border-primary/30 transition-colors w-full sm:w-auto"
           >
             Find workers
             <ArrowRight className="h-4 w-4" />

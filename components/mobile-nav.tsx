@@ -49,7 +49,7 @@ export function MobileNav({ role = "guest" }: { role?: NavRole }) {
   if (role === "admin") return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-border md:hidden z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border md:hidden z-50">
       <div className="flex items-center justify-around py-2">
         {items.map((item) => {
           const isActive =

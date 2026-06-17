@@ -47,7 +47,7 @@ export default async function HomePage() {
   } catch {}
 
   return (
-    <div className="overflow-x-hidden bg-white">
+    <div className="overflow-x-hidden bg-background">
       <LandingHero />
       <PlatformOfferings />
       <ServicesDetailSection />
