@@ -23,6 +23,7 @@ import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingPaymentTotals } from '@/components/booking/booking-payment-totals'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
 import { AirbnbBookingIntro } from '@/components/booking/airbnb-booking-intro'
+import { AirbnbLiveEstimate } from '@/components/booking/airbnb-live-estimate'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
@@ -465,7 +466,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         locationAddress,
         workerName: selectedWorker?.full_name,
         amount,
-        emphasizeEstimate: lockedAirbnb,
+        emphasizeEstimate: false,
       }
     : null
 
@@ -519,11 +520,24 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
         {step === STEP.DETAILS && serviceDetails && (
           <BookingStepShell
+            layout={lockedAirbnb ? 'stacked' : 'sidebar'}
             summary={
-              summaryProps ? <BookingSummaryPanel {...summaryProps} /> : undefined
+              lockedAirbnb
+                ? undefined
+                : summaryProps
+                  ? <BookingSummaryPanel {...summaryProps} />
+                  : undefined
             }
           >
             {lockedAirbnb && <AirbnbBookingIntro />}
+            {lockedAirbnb && (
+              <AirbnbLiveEstimate
+                details={serviceDetails}
+                serviceDate={serviceDate}
+                serviceTime={serviceTime}
+                locationAddress={locationAddress}
+              />
+            )}
             <Card>
               <CardContent className="p-6 space-y-6">
                 {deepLinkLoading ? (
@@ -611,6 +625,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
             summary={
               summaryProps ? <BookingSummaryPanel {...summaryProps} /> : undefined
             }
+            summarySide={lockedAirbnb ? 'right' : 'left'}
           >
             <Card>
               <CardContent className="p-6 space-y-4">
@@ -722,6 +737,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                 <BookingSummaryPanel {...summaryProps} hidePriceEstimate />
               ) : undefined
             }
+            summarySide={lockedAirbnb ? 'right' : 'left'}
           >
             <Card>
               <CardContent className="p-6 space-y-6">
