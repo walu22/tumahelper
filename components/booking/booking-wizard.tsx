@@ -497,6 +497,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     : null
 
   const progressSteps = PROGRESS_STEPS
+  const showWizardProgress = step >= STEP.DETAILS && !(step === STEP.DETAILS && guidedFlow)
 
   const bookingTitle =
     step === STEP.PICK
@@ -579,7 +580,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       >
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{bookingTitle}</h1>
-          {step >= STEP.DETAILS && (
+          {showWizardProgress && (
             <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1">
               {progressSteps.map((s, i) => (
                 <div key={s.num} className="flex items-center gap-2 shrink-0">
