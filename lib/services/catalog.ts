@@ -42,9 +42,13 @@ export interface ServiceDetails {
   frequency?: TurnoverFrequency;
   /** Airbnb: how soon the host needs the clean */
   whenPreference?: "today" | "last_minute" | "tomorrow_later";
-  /** Airbnb: linen handling for turnover */
-  linenPreference?: "replace_no_wash" | "wash_repack" | "basket_only";
+  /** Airbnb: how linen should be handled (one or more) */
+  linenPreferences?: LinenPreference[];
+  /** @deprecated Use linenPreferences */
+  linenPreference?: LinenPreference;
 }
+
+export type LinenPreference = "replace_no_wash" | "wash_repack" | "basket_only";
 
 export type TurnoverFrequency = "once" | "per_checkout" | "weekly" | "every_2_weeks";
 
@@ -355,6 +359,12 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
   };
 }
 
+export function getLinenPreferences(details: ServiceDetails): LinenPreference[] {
+  if (details.linenPreferences?.length) return details.linenPreferences;
+  if (details.linenPreference) return [details.linenPreference];
+  return ["replace_no_wash"];
+}
+
 export function defaultBetweenGuestServiceDetails(): ServiceDetails {
   const type = getServiceType("cleaning", "airbnb");
   return {
@@ -365,7 +375,7 @@ export function defaultBetweenGuestServiceDetails(): ServiceDetails {
     bathrooms: 1,
     addons: [],
     frequency: "once",
-    linenPreference: "replace_no_wash",
+    linenPreferences: ["replace_no_wash"],
   };
 }
 

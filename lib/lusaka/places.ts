@@ -58,6 +58,35 @@ export function buildAddressWithArea(current: string, area: string): string {
   return `${trimmed}, ${area}`;
 }
 
+/** Normalize a Lusaka address: dedupe parts and ensure a single trailing "Lusaka, Zambia". */
+export function finalizeLusakaAddress(street: string, unit?: string): string {
+  const streetPart = street.trim();
+  if (!streetPart) return "";
+
+  const unitPart = unit?.trim();
+  const segments: string[] = [];
+
+  for (const chunk of streetPart.split(",")) {
+    const trimmed = chunk.trim();
+    if (trimmed) segments.push(trimmed);
+  }
+  if (unitPart) segments.push(unitPart);
+
+  const parts: string[] = [];
+  const seen = new Set<string>();
+
+  for (let segment of segments) {
+    segment = segment.replace(/\s+Lusaka$/i, "").trim();
+    const key = segment.toLowerCase();
+    if (!segment || key === "lusaka" || key === "zambia" || seen.has(key)) continue;
+    seen.add(key);
+    parts.push(segment);
+  }
+
+  parts.push("Lusaka", "Zambia");
+  return parts.join(", ");
+}
+
 /** Ranked place suggestions for the address field */
 export function searchLusakaPlaces(query: string, limit = 8): LusakaPlaceSuggestion[] {
   const q = normalize(query);

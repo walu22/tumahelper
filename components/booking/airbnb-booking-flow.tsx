@@ -33,6 +33,7 @@ import {
 import {
   DURATION_OPTIONS,
   TURNOVER_FREQUENCY_OPTIONS,
+  getLinenPreferences,
   type ServiceDetails,
   type TurnoverFrequency,
 } from "@/lib/services/catalog";
@@ -120,7 +121,7 @@ export function AirbnbBookingFlow({
   const recommendedHours = suggestDuration(serviceDetails);
   const isRepeat = serviceDetails.frequency !== "once";
   const whenPreference = serviceDetails.whenPreference;
-  const linenPreference = serviceDetails.linenPreference ?? "replace_no_wash";
+  const linenPreferences = getLinenPreferences(serviceDetails);
   const repeatCadenceChosen =
     !isRepeat ||
     (serviceDetails.frequency !== "once" && !!serviceDetails.frequency);
@@ -147,17 +148,24 @@ export function AirbnbBookingFlow({
     }
   }
 
-  function setLinenPreference(pref: LinenPreference) {
+  function toggleLinenPreference(pref: LinenPreference) {
+    const current = getLinenPreferences(serviceDetails);
+    let next: LinenPreference[];
+    if (current.includes(pref)) {
+      next = current.filter((p) => p !== pref);
+      if (next.length === 0) return;
+    } else {
+      next = [...current, pref];
+    }
+
     const addons = [...serviceDetails.addons];
+    const wantsLaundry = next.includes("wash_repack");
     const hasLaundry = addons.includes("laundry");
-    if (pref === "wash_repack" && !hasLaundry) {
-      addons.push("laundry");
-    }
-    if (pref !== "wash_repack" && hasLaundry) {
-      addons.splice(addons.indexOf("laundry"), 1);
-    }
-    const next = { ...serviceDetails, linenPreference: pref, addons };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    if (wantsLaundry && !hasLaundry) addons.push("laundry");
+    if (!wantsLaundry && hasLaundry) addons.splice(addons.indexOf("laundry"), 1);
+
+    const updated = { ...serviceDetails, linenPreferences: next, addons };
+    onServiceDetailsChange({ ...updated, durationHours: suggestDuration(updated) });
   }
 
   function toggleExtraTask(id: string) {
@@ -187,7 +195,7 @@ export function AirbnbBookingFlow({
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!whenPreference &&
-    !!linenPreference;
+    linenPreferences.length > 0;
 
   if (step === "address") {
     return (
@@ -398,14 +406,14 @@ export function AirbnbBookingFlow({
       <div>
         <h3 className="text-lg font-semibold mb-1">Linen and towels</h3>
         <p className="text-sm text-muted-foreground mb-3">
-          How should the cleaner handle bedding, mats, and towels?
+          How should the cleaner handle bedding, mats, and towels? Select all that apply.
         </p>
         <div className="space-y-2">
           {LINEN_OPTIONS.map((option) => (
             <AirbnbOptionCard
               key={option.id}
-              selected={linenPreference === option.id}
-              onClick={() => setLinenPreference(option.id)}
+              selected={linenPreferences.includes(option.id)}
+              onClick={() => toggleLinenPreference(option.id)}
               title={option.label}
               description={option.description}
             />

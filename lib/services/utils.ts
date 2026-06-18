@@ -5,6 +5,7 @@ import {
   TURNOVER_FREQUENCY_OPTIONS,
   defaultServiceDetails,
   getAddon,
+  getLinenPreferences,
   getServiceType,
   paramToCategoryKey,
   sanitizeAddons,
@@ -12,6 +13,7 @@ import {
   type ServiceDetails,
   type TurnoverFrequency,
 } from "./catalog";
+import { formatLinenPreferences } from "@/lib/booking/airbnb-flow";
 
 /** Hours each add-on typically adds to a visit */
 const ADDON_HOUR_INCREMENT: Record<string, number> = {
@@ -158,6 +160,12 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
         label: "Frequency",
         value: formatTurnoverFrequency(details.frequency),
       });
+    }
+    if (details.serviceType === "airbnb") {
+      const linen = formatLinenPreferences(getLinenPreferences(details));
+      if (linen) {
+        rows.push({ label: "Linen", value: linen });
+      }
     }
   } else {
     const count = details.children ?? 1;

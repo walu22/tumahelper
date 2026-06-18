@@ -1,3 +1,5 @@
+import { finalizeLusakaAddress } from "@/lib/lusaka/places";
+
 export type AirbnbFlowStep = "address" | "plan" | "scope";
 
 export type AirbnbWhenPreference = "today" | "last_minute" | "tomorrow_later";
@@ -11,13 +13,7 @@ export const AIRBNB_FLOW_STEPS: { id: AirbnbFlowStep; label: string }[] = [
 ];
 
 export function formatAirbnbAddress(street: string, unit?: string): string {
-  const streetPart = street.trim();
-  const unitPart = unit?.trim();
-  if (!streetPart) return "";
-  const parts = [streetPart];
-  if (unitPart) parts.push(unitPart);
-  parts.push("Lusaka", "Zambia");
-  return parts.join(", ");
+  return finalizeLusakaAddress(street, unit);
 }
 
 export function todayIsoDate(): string {
@@ -79,6 +75,13 @@ export const LINEN_OPTIONS: {
     description: "Dirty linen goes in your basket. You handle washing separately.",
   },
 ];
+
+export function formatLinenPreferences(prefs: LinenPreference[]): string {
+  if (!prefs.length) return "";
+  return prefs
+    .map((id) => LINEN_OPTIONS.find((o) => o.id === id)?.label ?? id)
+    .join(", ");
+}
 
 export const AIRBNB_EXTRA_TASKS = [
   {
