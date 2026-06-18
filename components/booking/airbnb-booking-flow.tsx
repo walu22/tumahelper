@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { LusakaAddressInput } from "@/components/booking/lusaka-address-input";
 import { AirbnbFlowProgress } from "@/components/booking/airbnb-flow-progress";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
@@ -195,8 +196,7 @@ export function AirbnbBookingFlow({
         <div>
           <h2 className="text-2xl font-semibold">Where is your property?</h2>
           <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-            We match you with verified cleaners in Lusaka. Start with the address guests use to
-            find your listing.
+            Start typing your address. We will suggest areas and suburbs across Lusaka.
           </p>
         </div>
 
@@ -205,12 +205,12 @@ export function AirbnbBookingFlow({
             <label htmlFor="airbnb-street" className="text-sm font-medium mb-2 block">
               Street or plot address <span className="text-primary">*</span>
             </label>
-            <Input
+            <LusakaAddressInput
               id="airbnb-street"
-              placeholder="e.g. Plot 12, Kabulonga"
               value={streetAddress}
-              onChange={(e) => onStreetAddressChange(e.target.value)}
-              className="h-11 rounded-xl"
+              onChange={onStreetAddressChange}
+              placeholder="e.g. Plot 12, Kabulonga"
+              required
             />
           </div>
 

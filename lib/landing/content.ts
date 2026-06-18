@@ -9,7 +9,15 @@ export const LUSAKA_AREAS = [
   "Chelstone",
   "Kalundu",
   "Longacres",
-];
+  "Rhodes Park",
+  "Avondale",
+  "Chainda",
+  "Chilenje",
+  "Kamwala",
+  "Libala",
+  "Makeni",
+  "Sunningdale",
+] as const;
 
 /** Launch categories only: nannies + cleaning */
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
