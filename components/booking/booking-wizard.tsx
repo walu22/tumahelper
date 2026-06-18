@@ -475,7 +475,11 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
   return (
     <div className="min-h-screen">
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main
+        className={`mx-auto px-4 sm:px-6 lg:px-8 py-8 ${
+          lockedAirbnb ? 'max-w-6xl' : 'max-w-5xl'
+        }`}
+      >
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">
             {step === STEP.PICK

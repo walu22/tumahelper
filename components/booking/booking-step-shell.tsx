@@ -3,13 +3,11 @@ import type { ReactNode } from "react";
 interface BookingStepShellProps {
   summary?: ReactNode;
   children: ReactNode;
-  /** Single column — no sidebar (better for Airbnb property step) */
   layout?: "sidebar" | "stacked";
-  /** Desktop sidebar position when layout is sidebar */
   summarySide?: "left" | "right";
 }
 
-/** Sidebar summary on desktop; stacked summary above content on mobile unless layout is stacked. */
+/** Sidebar summary on md+ screens; stacked above content on small screens. */
 export function BookingStepShell({
   summary,
   children,
@@ -24,23 +22,23 @@ export function BookingStepShell({
     summarySide === "right" ? (
       <>
         <div className="min-w-0">{children}</div>
-        <div className="hidden lg:block lg:sticky lg:top-8">{summary}</div>
+        <div className="hidden md:block md:sticky md:top-8">{summary}</div>
       </>
     ) : (
       <>
-        <div className="hidden lg:block lg:sticky lg:top-8">{summary}</div>
+        <div className="hidden md:block md:sticky md:top-8">{summary}</div>
         <div className="min-w-0">{children}</div>
       </>
     );
 
   const gridCols =
     summarySide === "right"
-      ? "lg:grid-cols-[1fr_minmax(260px,280px)]"
-      : "lg:grid-cols-[minmax(260px,280px)_1fr]";
+      ? "md:grid-cols-[1fr_minmax(280px,300px)]"
+      : "md:grid-cols-[minmax(280px,300px)_1fr]";
 
   return (
-    <div className={`lg:grid ${gridCols} gap-6 items-start`}>
-      <div className="lg:hidden mb-2">{summary}</div>
+    <div className={`md:grid ${gridCols} gap-6 items-start`}>
+      <div className="md:hidden mb-2">{summary}</div>
       {summaryDesktop}
     </div>
   );

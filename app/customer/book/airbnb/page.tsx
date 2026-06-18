@@ -2,6 +2,8 @@ import { Suspense } from 'react'
 import { Loader2 } from 'lucide-react'
 import { BookingWizard } from '@/components/booking/booking-wizard'
 
+export const dynamic = 'force-dynamic'
+
 export default function AirbnbBookPage() {
   return (
     <Suspense
