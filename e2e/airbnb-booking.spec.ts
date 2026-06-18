@@ -53,13 +53,14 @@ test.describe("Between-guest clean booking end-to-end", () => {
       timeout: 15_000,
     });
     await expect(page.getByText("Between-guest clean for your property")).toBeVisible();
-    await expect(page.getByText("How often?")).toBeVisible();
+    await expect(page.getByText("Property location")).toBeVisible();
     await expect(page.getByText("Booking details")).toBeVisible();
     await expect(page.getByText("Live estimate")).toBeVisible();
+    await expect(page.getByText("How often?")).toBeVisible();
+    await expect(page.getByText("Schedule")).toBeVisible();
     await expect(page.getByText("What's included in my clean?")).toBeVisible();
     await expect(page.getByRole("button", { name: "Tell me more" })).toBeVisible();
     await expect(page.getByText("Optional add-ons")).toBeVisible();
-    await expect(page.getByText("When & where")).toBeVisible();
 
     await page.getByRole("button", { name: "Tell me more" }).click();
     await expect(page.getByRole("dialog", { name: "What's included in my clean?" })).toBeVisible();

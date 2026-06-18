@@ -542,7 +542,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       </h2>
                       <p className="text-sm text-muted-foreground mt-1">
                         {lockedAirbnb
-                          ? 'Property size, frequency, and schedule. Then choose your cleaner.'
+                          ? 'Start with your property address, then size, frequency, and schedule.'
                           : 'Review what’s included, set your scope, then when and where.'}
                       </p>
                     </div>
@@ -554,30 +554,80 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       />
                     )}
 
-                    <ServiceConfigPanel
-                      category={serviceDetails.category}
-                      value={serviceDetails}
-                      onChange={setServiceDetails}
-                      showPriceHint={false}
-                      lockServiceType={airbnbEntry}
-                    />
+                    {lockedAirbnb ? (
+                      <>
+                        <BookingScheduleFields
+                          section="address"
+                          serviceDate={serviceDate}
+                          serviceTime={serviceTime}
+                          locationAddress={locationAddress}
+                          description={description}
+                          guestCheckoutTime={guestCheckoutTime}
+                          nextCheckIn={nextCheckIn}
+                          onDateChange={setServiceDate}
+                          onTimeChange={setServiceTime}
+                          onAddressChange={setLocationAddress}
+                          onDescriptionChange={setDescription}
+                          onGuestCheckoutTimeChange={setGuestCheckoutTime}
+                          onNextCheckInChange={setNextCheckIn}
+                          category={serviceDetails.category}
+                          serviceType={serviceDetails.serviceType}
+                        />
 
-                    <BookingScheduleFields
-                      serviceDate={serviceDate}
-                      serviceTime={serviceTime}
-                      locationAddress={locationAddress}
-                      description={description}
-                      guestCheckoutTime={guestCheckoutTime}
-                      nextCheckIn={nextCheckIn}
-                      onDateChange={setServiceDate}
-                      onTimeChange={setServiceTime}
-                      onAddressChange={setLocationAddress}
-                      onDescriptionChange={setDescription}
-                      onGuestCheckoutTimeChange={setGuestCheckoutTime}
-                      onNextCheckInChange={setNextCheckIn}
-                      category={serviceDetails.category}
-                      serviceType={serviceDetails.serviceType}
-                    />
+                        <ServiceConfigPanel
+                          category={serviceDetails.category}
+                          value={serviceDetails}
+                          onChange={setServiceDetails}
+                          showPriceHint={false}
+                          lockServiceType={airbnbEntry}
+                        />
+
+                        <BookingScheduleFields
+                          section="schedule"
+                          serviceDate={serviceDate}
+                          serviceTime={serviceTime}
+                          locationAddress={locationAddress}
+                          description={description}
+                          guestCheckoutTime={guestCheckoutTime}
+                          nextCheckIn={nextCheckIn}
+                          onDateChange={setServiceDate}
+                          onTimeChange={setServiceTime}
+                          onAddressChange={setLocationAddress}
+                          onDescriptionChange={setDescription}
+                          onGuestCheckoutTimeChange={setGuestCheckoutTime}
+                          onNextCheckInChange={setNextCheckIn}
+                          category={serviceDetails.category}
+                          serviceType={serviceDetails.serviceType}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <ServiceConfigPanel
+                          category={serviceDetails.category}
+                          value={serviceDetails}
+                          onChange={setServiceDetails}
+                          showPriceHint={false}
+                          lockServiceType={airbnbEntry}
+                        />
+
+                        <BookingScheduleFields
+                          serviceDate={serviceDate}
+                          serviceTime={serviceTime}
+                          locationAddress={locationAddress}
+                          description={description}
+                          guestCheckoutTime={guestCheckoutTime}
+                          nextCheckIn={nextCheckIn}
+                          onDateChange={setServiceDate}
+                          onTimeChange={setServiceTime}
+                          onAddressChange={setLocationAddress}
+                          onDescriptionChange={setDescription}
+                          onGuestCheckoutTimeChange={setGuestCheckoutTime}
+                          onNextCheckInChange={setNextCheckIn}
+                          category={serviceDetails.category}
+                          serviceType={serviceDetails.serviceType}
+                        />
+                      </>
+                    )}
 
                     {!canProceedDetails && (
                       <p className="text-sm text-muted-foreground text-center">
