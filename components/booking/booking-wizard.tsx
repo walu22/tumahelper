@@ -331,12 +331,20 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   }, [workerProfileId, categories, categoriesLoading, searchParams])
 
   useEffect(() => {
-    if (step === STEP.PAYMENT && serviceDetails && !amount && !pricePrefilled.current) {
-      const { typical } = suggestPrice(serviceDetails)
-      setAmount(String(typical))
-      pricePrefilled.current = true
+    if (step !== STEP.PAYMENT || !serviceDetails) return;
+
+    if (lockedAirbnb) {
+      const { typical } = suggestPrice(serviceDetails);
+      setAmount(String(typical));
+      return;
     }
-  }, [step, serviceDetails, amount])
+
+    if (!amount && !pricePrefilled.current) {
+      const { typical } = suggestPrice(serviceDetails);
+      setAmount(String(typical));
+      pricePrefilled.current = true;
+    }
+  }, [step, serviceDetails, amount, lockedAirbnb]);
 
   const filteredWorkers = workers.filter((w) => {
     if (!searchQuery) return true
@@ -812,7 +820,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                 <div>
                   <h2 className="text-xl font-semibold">Confirm & pay</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Set your fee and confirm the booking.
+                    {lockedAirbnb
+                      ? "Review the guide price and confirm your booking."
+                      : "Set your fee and confirm the booking."}
                   </p>
                 </div>
 
@@ -844,24 +854,39 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       />
                     )}
 
-                    <div className="space-y-2">
-                      <label htmlFor="service-fee" className="text-sm font-medium">
-                        Service fee (ZMW)
-                      </label>
-                      <Input
-                        id="service-fee"
-                        type="number"
-                        min="1"
-                        step="1"
-                        placeholder="e.g. 500"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        className="text-lg h-12"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Suggested K{suggestPrice(serviceDetails).typical} based on your scope.
-                      </p>
-                    </div>
+                    {lockedAirbnb ? (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Guide price (ZMW)</p>
+                        <div className="rounded-xl border border-border bg-surface/50 px-4 py-3">
+                          <p className="font-display text-2xl font-bold tabular-nums text-foreground">
+                            K{suggestPrice(serviceDetails).typical}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                            Based on property size, visit length, linen, and add-ons. You pay the
+                            total below via mobile money after the clean.
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <label htmlFor="service-fee" className="text-sm font-medium">
+                          Service fee (ZMW)
+                        </label>
+                        <Input
+                          id="service-fee"
+                          type="number"
+                          min="1"
+                          step="1"
+                          placeholder="e.g. 500"
+                          value={amount}
+                          onChange={(e) => setAmount(e.target.value)}
+                          className="text-lg h-12"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Suggested K{suggestPrice(serviceDetails).typical} based on your scope.
+                        </p>
+                      </div>
+                    )}
 
                     {amount && parseFloat(amount) >= 1 && (
                       <BookingPaymentTotals

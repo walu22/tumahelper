@@ -408,8 +408,8 @@ export function AirbnbBookingFlow({
           {whenPreference ? ` · ${formatWhenPreference(whenPreference)}` : ""}
         </p>
         <p className="text-muted-foreground mt-1 leading-relaxed">
-          Tell us about the property and what the cleaner should focus on. You agree the final
-          fee with your cleaner before the visit.
+          Tell us about the property and what the cleaner should focus on. The guide price in your
+          booking summary updates as you go.
         </p>
       </div>
 

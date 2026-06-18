@@ -78,8 +78,8 @@ export function BookingSummaryPanel({
             </div>
             <p className="text-sm opacity-90 mt-2 flex items-center gap-1.5">
               <Timer className="h-3.5 w-3.5 shrink-0" />
-              Est. {details.durationHours} hour{details.durationHours === 1 ? "" : "s"}. Agree the
-              final fee with your cleaner.
+              Est. {details.durationHours} hour{details.durationHours === 1 ? "" : "s"}. Confirm
+              at this guide price when you book.
             </p>
           </div>
         )}

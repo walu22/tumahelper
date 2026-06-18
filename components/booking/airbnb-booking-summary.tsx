@@ -76,7 +76,7 @@ export function AirbnbBookingSummary({
               </span>
             </p>
             <p className="text-xs opacity-80 mt-2 leading-relaxed">
-              Updates as you change size, linen, and add-ons. Final fee agreed with your cleaner.
+              Updates as you change size, linen, and add-ons. Confirm at this price when you book.
             </p>
           </div>
         )}

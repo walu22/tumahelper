@@ -73,8 +73,8 @@ test.describe("Between-guest clean booking end-to-end", () => {
 
     await expect(page.getByRole("heading", { name: "Confirm & pay" })).toBeVisible();
 
-    const feeInput = page.getByRole("spinbutton");
-    await expect(feeInput).not.toHaveValue("", { timeout: 10_000 });
+    await expect(page.getByText(/Guide price \(ZMW\)/i)).toBeVisible();
+    await expect(page.getByText(/^K\d+$/).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Confirm booking" })).toBeEnabled();
 
     await Promise.all([
