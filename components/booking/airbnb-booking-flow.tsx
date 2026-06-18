@@ -447,15 +447,33 @@ export function AirbnbBookingFlow({
           How should the cleaner handle bedding, mats, and towels? Select all that apply.
         </p>
         <div className="space-y-2">
-          {LINEN_OPTIONS.map((option) => (
-            <AirbnbOptionCard
-              key={option.id}
-              selected={linenPreferences.includes(option.id)}
-              onClick={() => toggleLinenPreference(option.id)}
-              title={option.label}
-              description={option.description}
-            />
-          ))}
+          {LINEN_OPTIONS.map((option) => {
+            const checked = linenPreferences.includes(option.id);
+            return (
+              <label
+                key={option.id}
+                className={cn(
+                  "flex items-start gap-3 rounded-xl border-2 p-4 cursor-pointer transition-colors",
+                  checked
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/40 bg-card"
+                )}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleLinenPreference(option.id)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border text-primary accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                />
+                <span className="min-w-0">
+                  <span className="block font-semibold text-foreground">{option.label}</span>
+                  <span className="block text-sm text-muted-foreground mt-1 leading-relaxed">
+                    {option.description}
+                  </span>
+                </span>
+              </label>
+            );
+          })}
         </div>
       </div>
 
