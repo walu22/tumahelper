@@ -172,7 +172,10 @@ export function CleaningBookingFlow({
 
       <div className="rounded-2xl border border-border bg-surface/40 px-4 py-3 text-sm">
         <p className="font-semibold text-foreground">
-          {formatVisitCadence(serviceDetails.frequency)}
+          {formatVisitCadence(serviceDetails.frequency, {
+            category: "cleaning",
+            serviceType: serviceDetails.serviceType,
+          })}
           {whenPreference ? ` · ${formatWhenPreference(whenPreference)}` : ""}
         </p>
         <p className="text-muted-foreground mt-1 leading-relaxed">

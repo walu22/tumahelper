@@ -48,7 +48,10 @@ export function ServiceBookingSummary({
   const recommendedHours = suggestDuration(details);
   const hasWhere = locationAddress.length >= 5;
   const hasWhen = !!(serviceDate && serviceTime);
-  const cadence = formatVisitCadence(details.frequency);
+  const cadence = formatVisitCadence(details.frequency, {
+    category: details.category,
+    serviceType: details.serviceType,
+  });
   const whenLabel = formatWhenPreference(details.whenPreference);
   const serviceType = getServiceType(details.category, details.serviceType);
   const isAirbnb = details.serviceType === "airbnb";

@@ -62,10 +62,25 @@ export function formatWhenPreference(pref?: WhenPreference): string {
   }
 }
 
-export function formatVisitCadence(frequency?: string): string {
-  return (
-    TURNOVER_FREQUENCY_OPTIONS.find((o) => o.id === frequency)?.label ?? "One-time visit"
-  );
+export function formatVisitCadence(
+  frequency?: string,
+  options?: { category?: ServiceCategoryKey; serviceType?: string }
+): string {
+  const isAirbnbTurnover = options?.serviceType === "airbnb";
+
+  if (isAirbnbTurnover) {
+    return (
+      TURNOVER_FREQUENCY_OPTIONS.find((o) => o.id === frequency)?.label ?? "One-time clean"
+    );
+  }
+
+  const visitLabels: Record<string, string> = {
+    once: "One-time visit",
+    weekly: "Every week",
+    every_2_weeks: "Every two weeks",
+  };
+
+  return visitLabels[frequency ?? "once"] ?? "One-time visit";
 }
 
 export function getBookingPageTitle(

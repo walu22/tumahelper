@@ -221,7 +221,10 @@ export function SchedulePlanSection({
       {whenPreference && (
         <div className="rounded-2xl border border-border bg-surface/40 px-4 py-3 text-sm">
           <p className="font-semibold text-foreground">
-            {formatVisitCadence(serviceDetails.frequency)}
+            {formatVisitCadence(serviceDetails.frequency, {
+              category,
+              serviceType,
+            })}
           </p>
         </div>
       )}
