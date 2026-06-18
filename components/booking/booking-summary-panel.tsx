@@ -18,6 +18,7 @@ interface BookingSummaryPanelProps {
   amount?: string;
   hidePriceEstimate?: boolean;
   emphasizeEstimate?: boolean;
+  summaryTitle?: string;
   className?: string;
 }
 
@@ -41,6 +42,7 @@ export function BookingSummaryPanel({
   amount,
   hidePriceEstimate = false,
   emphasizeEstimate = false,
+  summaryTitle = "Your booking",
   className = "",
 }: BookingSummaryPanelProps) {
   const type = getServiceType(details.category, details.serviceType);
@@ -53,7 +55,7 @@ export function BookingSummaryPanel({
     <aside className={`rounded-2xl border border-border bg-card overflow-hidden ${className}`}>
       <div className="px-5 py-4 border-b border-border bg-surface/60">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1">
-          Your booking
+          {summaryTitle}
         </p>
         <p className="font-display text-lg font-bold leading-snug">
           {type?.label ?? categoryName ?? "Service"}

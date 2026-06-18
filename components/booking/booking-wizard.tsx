@@ -23,7 +23,7 @@ import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingPaymentTotals } from '@/components/booking/booking-payment-totals'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
 import { AirbnbBookingIntro } from '@/components/booking/airbnb-booking-intro'
-import { AirbnbLiveEstimate } from '@/components/booking/airbnb-live-estimate'
+import { AirbnbScopeTeaser } from '@/components/booking/airbnb-scope-teaser'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
@@ -466,7 +466,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         locationAddress,
         workerName: selectedWorker?.full_name,
         amount,
-        emphasizeEstimate: false,
+        emphasizeEstimate: lockedAirbnb,
+        summaryTitle: lockedAirbnb ? 'Booking details' : undefined,
       }
     : null
 
@@ -520,24 +521,13 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
         {step === STEP.DETAILS && serviceDetails && (
           <BookingStepShell
-            layout={lockedAirbnb ? 'stacked' : 'sidebar'}
+            layout="sidebar"
             summary={
-              lockedAirbnb
-                ? undefined
-                : summaryProps
-                  ? <BookingSummaryPanel {...summaryProps} />
-                  : undefined
+              summaryProps ? <BookingSummaryPanel {...summaryProps} /> : undefined
             }
+            summarySide={lockedAirbnb ? 'right' : 'left'}
           >
             {lockedAirbnb && <AirbnbBookingIntro />}
-            {lockedAirbnb && (
-              <AirbnbLiveEstimate
-                details={serviceDetails}
-                serviceDate={serviceDate}
-                serviceTime={serviceTime}
-                locationAddress={locationAddress}
-              />
-            )}
             <Card>
               <CardContent className="p-6 space-y-6">
                 {deepLinkLoading ? (
@@ -547,7 +537,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                 ) : (
                   <>
                     <div>
-                      <h2 className="text-xl font-semibold">Booking details</h2>
+                      <h2 className="text-xl font-semibold">
+                        {lockedAirbnb ? 'Your property' : 'Booking details'}
+                      </h2>
                       <p className="text-sm text-muted-foreground mt-1">
                         {lockedAirbnb
                           ? 'Property size, frequency, and schedule — then choose your cleaner.'
@@ -555,11 +547,14 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       </p>
                     </div>
 
-                    <ServiceScopeCard
-                      category={serviceDetails.category}
-                      serviceType={serviceDetails.serviceType}
-                      compact={!lockedAirbnb}
-                    />
+                    {lockedAirbnb ? (
+                      <AirbnbScopeTeaser />
+                    ) : (
+                      <ServiceScopeCard
+                        category={serviceDetails.category}
+                        serviceType={serviceDetails.serviceType}
+                      />
+                    )}
 
                     <ServiceConfigPanel
                       category={serviceDetails.category}
