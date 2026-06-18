@@ -3,7 +3,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Loader2, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { LUSAKA_POPULAR_AREAS } from "@/lib/lusaka/places";
 import type { AddressSuggestion } from "@/lib/lusaka/address-search";
 import { cn } from "@/lib/utils";
 
@@ -90,22 +89,10 @@ export function LusakaAddressInput({
     setOpen(false);
   }
 
-  function appendArea(area: string) {
-    const trimmed = value.trim();
-    const fillValue = trimmed
-      ? trimmed.toLowerCase().includes(area.toLowerCase())
-        ? trimmed
-        : `${trimmed}, ${area}`
-      : area;
-    onChange(fillValue);
-    setOpen(false);
-  }
-
   const showDropdown = open && (suggestions.length > 0 || loading);
 
   return (
-    <div ref={containerRef} className="space-y-3">
-      <div className="relative">
+    <div ref={containerRef} className="relative">
         <Input
           id={id}
           value={value}
@@ -174,23 +161,6 @@ export function LusakaAddressInput({
             ))}
           </ul>
         )}
-      </div>
-
-      <div>
-        <p className="text-xs font-medium text-muted-foreground mb-2">Popular in Lusaka</p>
-        <div className="flex flex-wrap gap-2">
-          {LUSAKA_POPULAR_AREAS.map((area) => (
-            <button
-              key={area}
-              type="button"
-              onClick={() => appendArea(area)}
-              className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:border-primary/40 hover:bg-primary/5 transition-colors"
-            >
-              {area}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
