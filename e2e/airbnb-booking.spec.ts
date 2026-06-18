@@ -49,25 +49,25 @@ test.describe("Between-guest clean booking end-to-end", () => {
 
     await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book/airbnb");
-    await expect(page.getByRole("heading", { level: 1, name: "Book a between-guest clean" })).toBeVisible({
+    await expect(page.getByRole("heading", { level: 1, name: "Book a turnover clean" })).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByRole("heading", { name: "Where do you need help?" })).toBeVisible();
-    await expect(page.getByText("Booking details")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Where is your property?" })).toBeVisible();
+    await expect(page.getByText("Your booking")).toBeVisible();
 
     await page.locator("#airbnb-street").fill("Plot 10, Roma");
-    await page.getByText("Set location").click();
+    await page.getByText("Confirm this address").click();
 
-    await expect(page.getByRole("heading", { name: "How often do you need help?" })).toBeVisible();
-    await page.getByRole("button", { name: "One time" }).click();
-    await page.getByRole("button", { name: "Tomorrow / later" }).click();
+    await expect(page.getByRole("heading", { name: "Turnover cadence" })).toBeVisible();
+    await page.getByRole("button", { name: "Single turnover" }).click();
+    await page.getByRole("button", { name: "Pick a date" }).click();
     await page.getByRole("button", { name: "Continue" }).click();
 
-    await expect(page.getByRole("heading", { name: "How long should I book?" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Property size" })).toBeVisible();
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("09:00");
 
-    await page.getByRole("button", { name: "Find a worker" }).click();
+    await page.getByRole("button", { name: "Choose your cleaner" }).click();
     await expect(page.getByText("Grace Phiri")).toBeVisible();
     await page.getByRole("button", { name: /Grace Phiri/i }).click();
 

@@ -55,23 +55,23 @@ export const TURNOVER_FREQUENCY_OPTIONS: {
 }[] = [
   {
     id: "once",
-    label: "Once-off",
-    description: "A single between-guest clean",
+    label: "Single turnover",
+    description: "One clean before your next guest arrives",
   },
   {
     id: "per_checkout",
-    label: "Every checkout",
-    description: "Book again after each guest leaves",
+    label: "After every guest",
+    description: "Book again each time guests check out",
   },
   {
     id: "weekly",
-    label: "Weekly",
-    description: "Same turnover schedule each week",
+    label: "Every week",
+    description: "Same day each week for steady bookings",
   },
   {
     id: "every_2_weeks",
-    label: "Every 2 weeks",
-    description: "Fortnightly between-guest cleans",
+    label: "Every two weeks",
+    description: "Fortnightly turnover for quieter listings",
   },
 ];
 

@@ -494,7 +494,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
             {step === STEP.PICK
               ? 'What do you need?'
               : lockedAirbnb
-                ? 'Book a between-guest clean'
+                ? 'Book a turnover clean'
                 : 'Book a service'}
           </h1>
           {step >= STEP.DETAILS && (
@@ -540,6 +540,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                 step={airbnbSubStep}
                 locationAddress={locationAddress}
                 details={serviceDetails}
+                serviceDate={serviceDate}
+                serviceTime={serviceTime}
                 showEstimate={airbnbSubStep === 'scope'}
               />
             }
@@ -674,6 +676,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                   step="scope"
                   locationAddress={locationAddress}
                   details={serviceDetails}
+                  serviceDate={serviceDate}
+                  serviceTime={serviceTime}
                   showEstimate
                 />
               ) : summaryProps ? (
@@ -793,6 +797,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                   step="scope"
                   locationAddress={locationAddress}
                   details={serviceDetails}
+                  serviceDate={serviceDate}
+                  serviceTime={serviceTime}
                   showEstimate
                 />
               ) : summaryProps ? (

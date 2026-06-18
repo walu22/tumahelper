@@ -32,7 +32,7 @@ export function AirbnbScopeTeaser({ embedded = false }: AirbnbScopeTeaserProps) 
           onClick={() => setOpen(true)}
           className="mt-3 text-sm font-semibold text-primary hover:underline underline-offset-2"
         >
-          Tell me more
+          View full checklist
         </button>
       </div>
 

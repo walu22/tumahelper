@@ -13,11 +13,11 @@ describe("turnover frequency", () => {
       frequency: "weekly" as const,
     };
     const rows = getServiceScopeRows(details);
-    expect(rows.some((r) => r.label === "Frequency" && r.value === "Weekly")).toBe(true);
+    expect(rows.some((r) => r.label === "Frequency" && r.value === "Every week")).toBe(true);
   });
 
   it("formats turnover frequency labels", () => {
-    expect(formatTurnoverFrequency("per_checkout")).toBe("Every checkout");
-    expect(formatTurnoverFrequency(undefined)).toBe("Once-off");
+    expect(formatTurnoverFrequency("per_checkout")).toBe("After every guest");
+    expect(formatTurnoverFrequency(undefined)).toBe("Single turnover");
   });
 });

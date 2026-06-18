@@ -3,7 +3,7 @@ import type { ServiceCategoryKey } from "@/lib/services/catalog";
 export interface StartTimeOption {
   /** Stored on the booking (HH:mm) */
   value: string;
-  /** Shown in the dropdown, SweepSouth-style: "8:00 AM – 8:30 AM" */
+  /** Shown in the dropdown, e.g. "8:00 AM to 8:30 AM" */
   label: string;
 }
 
@@ -28,7 +28,7 @@ function buildHalfHourSlots(startHour: number, endHour: number): StartTimeOption
     const endMinutePart = endTotal % 1 === 0 ? 0 : 30;
     slots.push({
       value: padTime(hour, minute),
-      label: `${formatTime12(hour, minute)} – ${formatTime12(endHourPart, endMinutePart)}`,
+      label: `${formatTime12(hour, minute)} to ${formatTime12(endHourPart, endMinutePart)}`,
     });
   }
   return slots;
@@ -49,7 +49,7 @@ export function getStartTimeOptions(category?: ServiceCategoryKey, serviceType?:
 export function formatBookingTime(value: string): string {
   if (!value) return "";
   const option = [...CLEANING_START_TIMES, ...NANNY_START_TIMES].find((o) => o.value === value);
-  if (option) return option.label.split(" – ")[0] ?? option.label;
+  if (option) return option.label.split(" to ")[0] ?? option.label;
 
   const [h, m] = value.split(":").map(Number);
   if (Number.isNaN(h)) return value;

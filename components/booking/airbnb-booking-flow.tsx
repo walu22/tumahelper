@@ -15,10 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { AirbnbFlowProgress } from "@/components/booking/airbnb-flow-progress";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
   AIRBNB_EXTRA_TASKS,
   formatAirbnbAddress,
+  formatTurnoverCadence,
+  formatWhenPreference,
   LINEN_OPTIONS,
   todayIsoDate,
   tomorrowIsoDate,
@@ -32,13 +35,13 @@ import {
   type ServiceDetails,
   type TurnoverFrequency,
 } from "@/lib/services/catalog";
-import { getStartTimeOptions } from "@/lib/booking/time-slots";
+import { getStartTimeOptions, type StartTimeOption } from "@/lib/booking/time-slots";
 import { suggestDuration, suggestPrice } from "@/lib/services/utils";
 import { cn } from "@/lib/utils";
 
 const HOME_SIZE_PRESETS = [
-  { id: "small", label: "Small", sub: "1 to 2 bedrooms", bedrooms: 2, bathrooms: 1 },
-  { id: "medium", label: "Medium", sub: "3 to 4 bedrooms", bedrooms: 3, bathrooms: 2 },
+  { id: "small", label: "Compact", sub: "1 to 2 bedrooms", bedrooms: 2, bathrooms: 1 },
+  { id: "medium", label: "Standard", sub: "3 to 4 bedrooms", bedrooms: 3, bathrooms: 2 },
   { id: "large", label: "Large", sub: "5+ bedrooms", bedrooms: 5, bathrooms: 3 },
 ] as const;
 
@@ -68,6 +71,22 @@ function formatDisplayDate(isoDate: string): string {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
+function filterStartTimes(
+  times: StartTimeOption[],
+  serviceDate: string,
+  whenPreference?: AirbnbWhenPreference
+): StartTimeOption[] {
+  if (serviceDate !== todayIsoDate()) return times;
+  if (whenPreference !== "last_minute") return times;
+
+  const minHour = new Date().getHours() + 1;
+  const filtered = times.filter((slot) => {
+    const hour = parseInt(slot.value.split(":")[0] ?? "0", 10);
+    return hour >= minHour;
+  });
+  return filtered.length > 0 ? filtered : times.slice(-3);
+}
+
 export function AirbnbBookingFlow({
   step,
   onStepChange,
@@ -92,11 +111,18 @@ export function AirbnbBookingFlow({
     [streetAddress, unitAddress]
   );
   const canPreviewLocation = streetAddress.trim().length >= 5;
-  const startTimes = getStartTimeOptions("cleaning", "airbnb");
+  const allStartTimes = getStartTimeOptions("cleaning", "airbnb");
+  const startTimes = useMemo(
+    () => filterStartTimes(allStartTimes, serviceDate, serviceDetails.whenPreference),
+    [allStartTimes, serviceDate, serviceDetails.whenPreference]
+  );
   const recommendedHours = suggestDuration(serviceDetails);
-  const isRepeat = serviceDetails.frequency !== "once" && serviceDetails.frequency !== undefined;
+  const isRepeat = serviceDetails.frequency !== "once";
   const whenPreference = serviceDetails.whenPreference;
   const linenPreference = serviceDetails.linenPreference ?? "replace_no_wash";
+  const repeatCadenceChosen =
+    !isRepeat ||
+    (serviceDetails.frequency !== "once" && !!serviceDetails.frequency);
 
   function update(patch: Partial<ServiceDetails>) {
     onServiceDetailsChange({ ...serviceDetails, ...patch });
@@ -112,11 +138,11 @@ export function AirbnbBookingFlow({
     update({ whenPreference: pref });
     if (pref === "today" || pref === "last_minute") {
       onDateChange(todayIsoDate());
-      if (!serviceTime) onTimeChange("14:00");
-    } else {
-      if (!serviceDate || serviceDate === todayIsoDate()) {
-        onDateChange(tomorrowIsoDate());
-      }
+      const slots = filterStartTimes(allStartTimes, todayIsoDate(), pref);
+      onTimeChange(slots[0]?.value ?? "09:00");
+    } else if (!serviceDate || serviceDate === todayIsoDate()) {
+      onDateChange(tomorrowIsoDate());
+      onTimeChange("09:00");
     }
   }
 
@@ -127,8 +153,7 @@ export function AirbnbBookingFlow({
       addons.push("laundry");
     }
     if (pref !== "wash_repack" && hasLaundry) {
-      const idx = addons.indexOf("laundry");
-      addons.splice(idx, 1);
+      addons.splice(addons.indexOf("laundry"), 1);
     }
     const next = { ...serviceDetails, linenPreference: pref, addons };
     onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
@@ -145,7 +170,7 @@ export function AirbnbBookingFlow({
   function adjustHours(delta: number) {
     const options = [...DURATION_OPTIONS];
     const current = serviceDetails.durationHours;
-    const idx = options.indexOf(current as (typeof options)[number]);
+    const idx = Math.max(0, options.indexOf(current as (typeof options)[number]));
     const nextIdx = Math.max(0, Math.min(options.length - 1, idx + delta));
     update({ durationHours: options[nextIdx] ?? current });
   }
@@ -155,7 +180,8 @@ export function AirbnbBookingFlow({
     onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
   }
 
-  const canFindWorker =
+  const canContinuePlan = !!whenPreference && repeatCadenceChosen;
+  const canChooseCleaner =
     !!serviceDate &&
     !!serviceTime &&
     locationAddress.length >= 5 &&
@@ -165,17 +191,19 @@ export function AirbnbBookingFlow({
   if (step === "address") {
     return (
       <div className="space-y-6">
+        <AirbnbFlowProgress current="address" />
         <div>
-          <h2 className="text-2xl font-semibold">Where do you need help?</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Enter your short-stay property address in Lusaka.
+          <h2 className="text-2xl font-semibold">Where is your property?</h2>
+          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+            We match you with verified cleaners in Lusaka. Start with the address guests use to
+            find your listing.
           </p>
         </div>
 
         <div className="space-y-4">
           <div>
             <label htmlFor="airbnb-street" className="text-sm font-medium mb-2 block">
-              Street address <span className="text-primary">*</span>
+              Street or plot address <span className="text-primary">*</span>
             </label>
             <Input
               id="airbnb-street"
@@ -188,7 +216,7 @@ export function AirbnbBookingFlow({
 
           <div>
             <label htmlFor="airbnb-unit" className="text-sm font-medium mb-2 block">
-              Unit / apartment no. and name (optional)
+              Unit or building name (optional)
             </label>
             <Input
               id="airbnb-unit"
@@ -207,13 +235,15 @@ export function AirbnbBookingFlow({
             className="w-full rounded-2xl border-2 border-primary bg-primary/5 p-4 text-left hover:bg-primary/10 transition-colors"
           >
             <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
-              Set location
+              Confirm this address
             </p>
             <p className="flex items-start gap-2 font-medium text-foreground leading-snug">
               <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               {previewAddress}
             </p>
-            <p className="text-sm text-muted-foreground mt-2">Tap to use this address</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Continue with this property location
+            </p>
           </button>
         )}
       </div>
@@ -223,10 +253,11 @@ export function AirbnbBookingFlow({
   if (step === "plan") {
     return (
       <div className="space-y-8">
+        <AirbnbFlowProgress current="plan" />
         <div>
-          <h2 className="text-2xl font-semibold">How often do you need help?</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            How often do you need the service?
+          <h2 className="text-2xl font-semibold">Turnover cadence</h2>
+          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+            Is this a one-off clean between guests, or something you want on a regular rhythm?
           </p>
         </div>
 
@@ -234,64 +265,70 @@ export function AirbnbBookingFlow({
           <AirbnbOptionCard
             selected={!isRepeat}
             onClick={() => setFrequencyMode(false)}
-            title="One time"
-            description="For once-off services that will not repeat"
+            title="Single turnover"
+            description="One clean before your next guest arrives"
           />
           <AirbnbOptionCard
             selected={isRepeat}
             onClick={() => setFrequencyMode(true)}
-            title="Repeat"
-            description="Book regular turnover cleans for your property"
+            title="Regular turnovers"
+            description="Same property cleaned on a repeating schedule"
             icon={Repeat}
           />
         </div>
 
         {isRepeat && (
-          <div className="grid sm:grid-cols-2 gap-2">
-            {TURNOVER_FREQUENCY_OPTIONS.filter((o) => o.id !== "once").map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => update({ frequency: option.id as TurnoverFrequency })}
-                className={cn(
-                  "rounded-xl border-2 p-3 text-left text-sm transition-colors",
-                  serviceDetails.frequency === option.id
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/40"
-                )}
-              >
-                <p className="font-semibold">{option.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{option.description}</p>
-              </button>
-            ))}
+          <div className="space-y-2">
+            <p className="text-sm font-medium">How often should we return?</p>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {TURNOVER_FREQUENCY_OPTIONS.filter((o) => o.id !== "once").map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => update({ frequency: option.id as TurnoverFrequency })}
+                  className={cn(
+                    "rounded-xl border-2 p-3 text-left text-sm transition-colors",
+                    serviceDetails.frequency === option.id
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40"
+                  )}
+                >
+                  <p className="font-semibold">{option.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{option.description}</p>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
         <div>
-          <h2 className="text-2xl font-semibold">When do you need help?</h2>
-          <p className="text-sm text-muted-foreground mt-1">Choose when the clean should happen.</p>
+          <h2 className="text-2xl font-semibold">When should the clean happen?</h2>
+          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+            Pick how soon you need the turnover. You can fine-tune the exact slot on the next
+            screen.
+          </p>
         </div>
 
         <div className="grid sm:grid-cols-3 gap-3">
           <AirbnbOptionCard
             selected={whenPreference === "today"}
             onClick={() => setWhenPreference("today")}
-            title="Today"
-            description="Get help asap today"
+            title="As soon as possible"
+            description="Today, during normal working hours"
             icon={Zap}
           />
           <AirbnbOptionCard
             selected={whenPreference === "last_minute"}
             onClick={() => setWhenPreference("last_minute")}
-            title="Last minute"
-            description="Urgent turnover today"
+            title="Same-day urgent"
+            description="Guest checked out and you need help today"
             icon={CalendarClock}
           />
           <AirbnbOptionCard
             selected={whenPreference === "tomorrow_later"}
             onClick={() => setWhenPreference("tomorrow_later")}
-            title="Tomorrow / later"
-            description="Get help tomorrow or on another day"
+            title="Pick a date"
+            description="Tomorrow or another day that suits you"
             icon={Calendar}
           />
         </div>
@@ -301,7 +338,7 @@ export function AirbnbBookingFlow({
             <ChevronLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          <Button onClick={() => onStepChange("scope")} disabled={!whenPreference}>
+          <Button onClick={() => onStepChange("scope")} disabled={!canContinuePlan}>
             Continue
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
@@ -312,32 +349,29 @@ export function AirbnbBookingFlow({
 
   const selectedTimeLabel =
     startTimes.find((s) => s.value === serviceTime)?.label ?? serviceTime;
+  const price = suggestPrice(serviceDetails);
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-semibold">How long should I book?</h2>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-          You can book between 3 and 8 hours with us. Airbnb suggests that turnover cleans
-          typically take 4 to 7 hours. When choosing the duration, consider the size of your
-          property and whether laundry is required.
-        </p>
-      </div>
+      <AirbnbFlowProgress current="scope" />
 
-      <div className="rounded-2xl border border-border bg-surface/40 p-4">
-        <p className="text-sm font-semibold text-foreground">
-          {isRepeat ? "Repeat booking" : "One time booking"}
+      <div className="rounded-2xl border border-border bg-surface/40 px-4 py-3 text-sm">
+        <p className="font-semibold text-foreground">
+          {formatTurnoverCadence(serviceDetails.frequency)}
+          {whenPreference ? ` · ${formatWhenPreference(whenPreference)}` : ""}
         </p>
-        <p className="text-sm text-muted-foreground mt-1">
-          {isRepeat
-            ? "Regular turnover help. You can change your cleaner any time."
-            : "Get once-off help. Try a new worker. Cancel any time."}
+        <p className="text-muted-foreground mt-1 leading-relaxed">
+          Tell us about the property and what the cleaner should focus on. You agree the final
+          fee with your cleaner before the visit.
         </p>
       </div>
 
       <div>
-        <p className="text-sm font-medium mb-2">Property size</p>
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <h3 className="text-lg font-semibold mb-2">Property size</h3>
+        <p className="text-sm text-muted-foreground mb-3">
+          Bedrooms and bathrooms set our suggested visit length.
+        </p>
+        <div className="grid grid-cols-3 gap-2">
           {HOME_SIZE_PRESETS.map((preset) => {
             const active =
               (serviceDetails.bedrooms ?? 3) === preset.bedrooms &&
@@ -360,55 +394,10 @@ export function AirbnbBookingFlow({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border p-5 space-y-4">
-        <p className="text-sm font-semibold">
-          {whenPreference === "today" || whenPreference === "last_minute" ? "Today" : "Date & time"}
-        </p>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="service-date" className="text-sm font-medium mb-2 block">
-              Date
-            </label>
-            <Input
-              id="service-date"
-              type="date"
-              value={serviceDate}
-              onChange={(e) => onDateChange(e.target.value)}
-              min={todayIsoDate()}
-              className="h-11 rounded-xl"
-            />
-            {serviceDate && (
-              <p className="text-xs text-muted-foreground mt-1">{formatDisplayDate(serviceDate)}</p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="service-start-time" className="text-sm font-medium mb-2 block">
-              Time
-            </label>
-            <select
-              id="service-start-time"
-              className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm"
-              value={serviceTime}
-              onChange={(e) => onTimeChange(e.target.value)}
-            >
-              <option value="">Choose a time</option>
-              {startTimes.map((slot) => (
-                <option key={slot.value} value={slot.value}>
-                  {slot.label}
-                </option>
-              ))}
-            </select>
-            {selectedTimeLabel && (
-              <p className="text-xs text-muted-foreground mt-1">{selectedTimeLabel}</p>
-            )}
-          </div>
-        </div>
-      </div>
-
       <div>
-        <h3 className="text-lg font-semibold mb-1">Do you require linen to be cleaned?</h3>
+        <h3 className="text-lg font-semibold mb-1">Linen and towels</h3>
         <p className="text-sm text-muted-foreground mb-3">
-          What should we do with linen (dirty bedding, mats and towels)?
+          How should the cleaner handle bedding, mats, and towels?
         </p>
         <div className="space-y-2">
           {LINEN_OPTIONS.map((option) => (
@@ -424,7 +413,7 @@ export function AirbnbBookingFlow({
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-3">Extra tasks</h3>
+        <h3 className="text-lg font-semibold mb-3">Add-on tasks</h3>
         <div className="grid sm:grid-cols-3 gap-3">
           {AIRBNB_EXTRA_TASKS.map((task) => (
             <AirbnbOptionCard
@@ -439,7 +428,11 @@ export function AirbnbBookingFlow({
       </div>
 
       <div>
-        <p className="text-sm font-medium mb-3">How long?</p>
+        <h3 className="text-lg font-semibold mb-2">Visit length</h3>
+        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+          Book between 3 and 8 hours. Most turnovers in Lusaka run 4 to 6 hours depending on
+          size, laundry, and add-ons.
+        </p>
         <div className="flex items-center gap-4">
           <Button
             type="button"
@@ -470,23 +463,70 @@ export function AirbnbBookingFlow({
               onClick={() => update({ durationHours: recommendedHours })}
               className="text-sm font-semibold text-primary hover:underline"
             >
-              Use recommended {recommendedHours}h
+              Suggested {recommendedHours}h
             </button>
           )}
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Est. price K{suggestPrice(serviceDetails).typical} for {serviceDetails.durationHours}{" "}
-          hours
+          Guide price about K{price.typical} for {serviceDetails.durationHours} hours
         </p>
+      </div>
+
+      <div className="rounded-2xl border border-border p-5 space-y-4">
+        <h3 className="text-lg font-semibold">Arrival window</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="service-date" className="text-sm font-medium mb-2 block">
+              Date
+            </label>
+            <Input
+              id="service-date"
+              type="date"
+              value={serviceDate}
+              onChange={(e) => onDateChange(e.target.value)}
+              min={todayIsoDate()}
+              className="h-11 rounded-xl"
+            />
+            {serviceDate && (
+              <p className="text-xs text-muted-foreground mt-1">{formatDisplayDate(serviceDate)}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="service-start-time" className="text-sm font-medium mb-2 block">
+              Start time
+            </label>
+            <select
+              id="service-start-time"
+              className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm"
+              value={serviceTime}
+              onChange={(e) => onTimeChange(e.target.value)}
+            >
+              <option value="">Choose a time</option>
+              {startTimes.map((slot) => (
+                <option key={slot.value} value={slot.value}>
+                  {slot.label}
+                </option>
+              ))}
+            </select>
+            {selectedTimeLabel && (
+              <p className="text-xs text-muted-foreground mt-1">{selectedTimeLabel}</p>
+            )}
+          </div>
+        </div>
+        {whenPreference === "last_minute" && serviceDate === todayIsoDate() && (
+          <p className="text-xs text-muted-foreground">
+            Showing later slots today for urgent turnovers.
+          </p>
+        )}
       </div>
 
       <div>
         <label htmlFor="service-notes" className="text-sm font-medium mb-2 block">
-          Add specific instructions
+          Access and notes for your cleaner
         </label>
         <Textarea
           id="service-notes"
-          placeholder="Add your notes here. Gate code, lockbox, linen location..."
+          placeholder="Gate code, lockbox, where linen is kept, parking..."
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           rows={3}
@@ -499,8 +539,8 @@ export function AirbnbBookingFlow({
           <ChevronLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <Button onClick={onFindWorker} disabled={!canFindWorker}>
-          Find a worker
+        <Button onClick={onFindWorker} disabled={!canChooseCleaner}>
+          Choose your cleaner
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </div>

@@ -141,8 +141,8 @@ export interface ServiceScopeRow {
 }
 
 export function formatTurnoverFrequency(frequency: TurnoverFrequency | undefined): string {
-  if (!frequency) return "Once-off";
-  return TURNOVER_FREQUENCY_OPTIONS.find((o) => o.id === frequency)?.label ?? "Once-off";
+  if (!frequency) return "Single turnover";
+  return TURNOVER_FREQUENCY_OPTIONS.find((o) => o.id === frequency)?.label ?? "Single turnover";
 }
 
 export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] {

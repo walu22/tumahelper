@@ -1,5 +1,5 @@
 export const AIRBNB_SCOPE_PITCH =
-  "We clean your short-stay property so the next guest can walk in to a fresh space. Rooms are sanitised and reset to a turnover standard, aligned with Airbnb's enhanced cleaning and reset guidance.";
+  "A full turnover reset for short-stay homes in Lusaka: kitchens and bathrooms sanitised, beds remade, floors done, and the place left ready for your next guest.";
 
 export interface AirbnbScopeSection {
   id: string;
