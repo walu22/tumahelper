@@ -347,6 +347,7 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
       bedrooms: 3,
       bathrooms: 2,
       addons: [],
+      frequency: "once",
     };
   }
   return {
@@ -356,6 +357,7 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
     children: 1,
     childAgeGroups: [],
     addons: [],
+    frequency: "once",
   };
 }
 

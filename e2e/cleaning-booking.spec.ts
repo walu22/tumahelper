@@ -9,6 +9,14 @@ import {
 
 const MOCK_BOOKING_ID = "c0000000-0000-0000-0000-000000000002";
 
+async function completeCleaningSchedule(page: import("@playwright/test").Page) {
+  await page.getByRole("button", { name: "One-time visit" }).click();
+  await page.getByRole("button", { name: "Pick a date" }).click();
+  await page.locator("#service-date").fill(tomorrowIsoDate());
+  await page.locator("#service-start-time").selectOption("09:00");
+  await page.getByRole("button", { name: "Continue" }).click();
+}
+
 test.describe("Cleaning booking end-to-end", () => {
   test.beforeEach(async ({ page }) => {
     await mockServiceCategories(page);
@@ -49,16 +57,19 @@ test.describe("Cleaning booking end-to-end", () => {
 
     await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book?category=cleaning&type=standard");
-    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
+    await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
       timeout: 15_000,
     });
-    await page.waitForTimeout(1000);
+    await expect(page.getByRole("heading", { name: "Where should we clean?" })).toBeVisible();
 
-    await page.locator("#service-date").fill(tomorrowIsoDate());
-    await page.locator("#service-start-time").selectOption("09:00");
-    await page.locator("#service-address").fill("Plot 8, Woodlands, Lusaka");
+    await page.locator("#cleaning-street").fill("Plot 8, Woodlands");
+    await page.getByText("Confirm this address").click();
 
-    await page.getByRole("button", { name: "Choose worker" }).click();
+    await expect(page.getByRole("heading", { name: "How often?" })).toBeVisible();
+    await completeCleaningSchedule(page);
+
+    await expect(page.getByRole("heading", { name: "Home size" })).toBeVisible();
+    await page.getByRole("button", { name: "Choose your cleaner" }).click();
     await expect(page.getByText("Grace Phiri")).toBeVisible();
     await page.getByRole("button", { name: /Grace Phiri/i }).click();
 
@@ -78,7 +89,7 @@ test.describe("Cleaning booking end-to-end", () => {
       categoryId: MOCK_CATEGORIES[1].id,
       serviceDate: tomorrowIsoDate(),
       serviceTime: "09:00",
-      locationAddress: "Plot 8, Woodlands, Lusaka",
+      locationAddress: expect.stringContaining("Plot 8, Woodlands"),
       serviceDetails: {
         category: "cleaning",
         serviceType: "standard",
@@ -86,18 +97,26 @@ test.describe("Cleaning booking end-to-end", () => {
     });
   });
 
-  test("cleaning details require date, time, and address", async ({ page, baseURL }) => {
+  test("schedule step requires date and time before continuing", async ({ page, baseURL }) => {
     await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book?category=cleaning&type=standard");
-    await expect(page.locator("#service-date")).toBeVisible({ timeout: 15_000 });
-    await page.waitForTimeout(1000);
+    await expect(page.getByRole("heading", { name: "Where should we clean?" })).toBeVisible({
+      timeout: 15_000,
+    });
 
-    const continueBtn = page.getByRole("button", { name: "Choose worker" });
+    await page.locator("#cleaning-street").fill("Meanwood, Lusaka");
+    await page.getByText("Confirm this address").click();
+
+    await expect(page.getByRole("heading", { name: "How often?" })).toBeVisible();
+    const continueBtn = page.getByRole("button", { name: "Continue" });
+    await expect(continueBtn).toBeDisabled();
+
+    await page.getByRole("button", { name: "One-time visit" }).click();
+    await page.getByRole("button", { name: "Pick a date" }).click();
     await expect(continueBtn).toBeDisabled();
 
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("10:00");
-    await page.locator("#service-address").fill("Meanwood, Lusaka");
     await expect(continueBtn).toBeEnabled();
   });
 });
