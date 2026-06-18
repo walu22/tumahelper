@@ -2,15 +2,14 @@
 
 import { Calendar, MapPin, Sparkles, Timer } from "lucide-react";
 import type { ServiceDetails } from "@/lib/services/catalog";
-import { getAddon, getLinenPreferences } from "@/lib/services/catalog";
-import { suggestPrice } from "@/lib/services/utils";
+import { suggestDuration, suggestPrice, getServiceScopeRows } from "@/lib/services/utils";
 import {
-  formatLinenPreferences,
   formatTurnoverCadence,
   formatWhenPreference,
   type AirbnbFlowStep,
 } from "@/lib/booking/airbnb-flow";
 import { AirbnbScopeTeaser } from "@/components/booking/airbnb-scope-teaser";
+import { ServiceScopeDetails } from "@/components/booking/service-scope-details";
 import { formatBookingTime } from "@/lib/booking/time-slots";
 
 interface AirbnbBookingSummaryProps {
@@ -41,14 +40,12 @@ export function AirbnbBookingSummary({
   showEstimate = false,
 }: AirbnbBookingSummaryProps) {
   const price = suggestPrice(details);
+  const recommendedHours = suggestDuration(details);
   const hasWhere = locationAddress.length >= 5;
   const hasWhen = !!(serviceDate && serviceTime);
   const cadence = formatTurnoverCadence(details.frequency);
   const whenLabel = formatWhenPreference(details.whenPreference);
-  const linenLabel = formatLinenPreferences(getLinenPreferences(details));
-  const addonLabels = details.addons
-    .map((id) => getAddon("cleaning", id)?.label ?? id)
-    .filter(Boolean);
+  const scopeRows = getServiceScopeRows(details).filter((row) => row.label !== "Frequency");
 
   return (
     <aside className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -59,6 +56,31 @@ export function AirbnbBookingSummary({
       </div>
 
       <div className="px-5 py-4 space-y-4">
+        {showEstimate && (
+          <div className="rounded-xl bg-primary text-primary-foreground px-4 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] opacity-90 mb-2">
+              Guide price
+            </p>
+            <p className="font-display text-3xl font-bold tabular-nums leading-none">
+              K{price.typical}
+            </p>
+            <p className="text-sm opacity-90 mt-2 tabular-nums">
+              K{price.min} to K{price.max} typical range
+            </p>
+            <p className="text-sm opacity-90 mt-2 flex items-center gap-1.5">
+              <Timer className="h-3.5 w-3.5 shrink-0" />
+              <span className="tabular-nums">
+                {details.durationHours} hour{details.durationHours === 1 ? "" : "s"}
+                {recommendedHours !== details.durationHours &&
+                  ` · ${recommendedHours}h suggested`}
+              </span>
+            </p>
+            <p className="text-xs opacity-80 mt-2 leading-relaxed">
+              Updates as you change size, linen, and add-ons. Final fee agreed with your cleaner.
+            </p>
+          </div>
+        )}
+
         {hasWhere && (
           <div className="text-sm">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
@@ -111,47 +133,16 @@ export function AirbnbBookingSummary({
           </div>
         )}
 
-        {step === "scope" && linenLabel && (
-          <div className="text-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-              Linen
+        {step === "scope" && scopeRows.length > 0 && (
+          <div className="pt-1 border-t border-border/80">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+              Clean scope
             </p>
-            <p className="text-foreground leading-snug">{linenLabel}</p>
-          </div>
-        )}
-
-        {step === "scope" && addonLabels.length > 0 && (
-          <div className="text-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-              Add-ons
-            </p>
-            <p className="text-foreground leading-snug">{addonLabels.join(", ")}</p>
-          </div>
-        )}
-
-        {showEstimate && (
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-border bg-surface/50 px-3 py-3 text-center">
-              <p className="text-xs text-muted-foreground mb-1">Visit length</p>
-              <p className="font-display text-2xl font-bold text-foreground">
-                {details.durationHours}h
-              </p>
-            </div>
-            <div className="rounded-xl border border-primary/20 bg-primary/5 px-3 py-3 text-center">
-              <p className="text-xs text-muted-foreground mb-1">Guide price</p>
-              <p className="font-display text-2xl font-bold text-primary">K{price.typical}</p>
-            </div>
+            <ServiceScopeDetails rows={scopeRows} />
           </div>
         )}
 
         {step === "plan" && <AirbnbScopeTeaser embedded />}
-
-        {step === "scope" && showEstimate && (
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-            <Timer className="h-3.5 w-3.5 shrink-0" />
-            Typical range K{price.min} to K{price.max}. Final fee agreed with your cleaner.
-          </p>
-        )}
 
         {step === "address" && !hasWhere && (
           <p className="text-sm text-muted-foreground flex items-start gap-2">

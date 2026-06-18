@@ -39,7 +39,7 @@ import {
   type TurnoverFrequency,
 } from "@/lib/services/catalog";
 import { getStartTimeOptions, type StartTimeOption } from "@/lib/booking/time-slots";
-import { suggestDuration, suggestPrice } from "@/lib/services/utils";
+import { suggestDuration } from "@/lib/services/utils";
 import { cn } from "@/lib/utils";
 
 const HOME_SIZE_PRESETS = [
@@ -395,7 +395,6 @@ export function AirbnbBookingFlow({
     );
   }
 
-  const price = suggestPrice(serviceDetails);
   const laundryAddon = getAddon("cleaning", "laundry");
   const includesLaundry = linenPreferences.includes("wash_repack");
 
@@ -521,9 +520,6 @@ export function AirbnbBookingFlow({
             </button>
           )}
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Guide price about K{price.typical} for {serviceDetails.durationHours} hours
-        </p>
       </div>
 
       <div>
