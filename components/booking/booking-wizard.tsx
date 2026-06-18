@@ -22,7 +22,9 @@ import { BookingStepShell } from '@/components/booking/booking-step-shell'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingPaymentTotals } from '@/components/booking/booking-payment-totals'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
-import { AirbnbBookingIntro } from '@/components/booking/airbnb-booking-intro'
+import { AirbnbBookingFlow } from '@/components/booking/airbnb-booking-flow'
+import { AirbnbBookingSummary } from '@/components/booking/airbnb-booking-summary'
+import type { AirbnbFlowStep } from '@/lib/booking/airbnb-flow'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
@@ -86,9 +88,9 @@ const PROGRESS_STEPS = [
 ]
 
 const AIRBNB_PROGRESS_STEPS = [
-  { num: STEP.DETAILS, label: 'Property' },
-  { num: STEP.WORKER, label: 'Cleaner' },
-  { num: STEP.PAYMENT, label: 'Confirm' },
+  { num: STEP.DETAILS, label: 'Details' },
+  { num: STEP.WORKER, label: 'Worker' },
+  { num: STEP.PAYMENT, label: 'Payment' },
 ]
 
 function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
@@ -227,6 +229,10 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   const [nextCheckIn, setNextCheckIn] = useState('')
   const [amount, setAmount] = useState('')
 
+  const [airbnbSubStep, setAirbnbSubStep] = useState<AirbnbFlowStep>('address')
+  const [streetAddress, setStreetAddress] = useState('')
+  const [unitAddress, setUnitAddress] = useState('')
+
   useEffect(() => {
     ;(async () => {
       try {
@@ -344,8 +350,11 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
   const goToStep = useCallback((s: number) => {
     setStep(s)
+    if (s === STEP.DETAILS && lockedAirbnb && locationAddress.length >= 5) {
+      setAirbnbSubStep('scope')
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [])
+  }, [lockedAirbnb, locationAddress])
 
   const selectServiceType = useCallback(
     (categoryKey: ServiceCategoryKey, serviceTypeId: string) => {
@@ -467,7 +476,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         amount,
         emphasizeEstimate: lockedAirbnb,
         summaryTitle: lockedAirbnb ? 'Booking details' : undefined,
-        showAirbnbScopeTeaser: lockedAirbnb,
+        showAirbnbScopeTeaser: false,
       }
     : null
 
@@ -523,15 +532,61 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           </Card>
         )}
 
-        {step === STEP.DETAILS && serviceDetails && (
+        {step === STEP.DETAILS && serviceDetails && lockedAirbnb && (
+          <BookingStepShell
+            layout="sidebar"
+            summary={
+              <AirbnbBookingSummary
+                step={airbnbSubStep}
+                locationAddress={locationAddress}
+                details={serviceDetails}
+                showEstimate={airbnbSubStep === 'scope'}
+              />
+            }
+            summarySide="right"
+          >
+            <Card>
+              <CardContent className="p-6 sm:p-8">
+                {deepLinkLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <AirbnbBookingFlow
+                    step={airbnbSubStep}
+                    onStepChange={setAirbnbSubStep}
+                    streetAddress={streetAddress}
+                    unitAddress={unitAddress}
+                    onStreetAddressChange={setStreetAddress}
+                    onUnitAddressChange={setUnitAddress}
+                    locationAddress={locationAddress}
+                    onLocationConfirm={(full) => {
+                      setLocationAddress(full)
+                      setAirbnbSubStep('plan')
+                    }}
+                    serviceDetails={serviceDetails}
+                    onServiceDetailsChange={setServiceDetails}
+                    serviceDate={serviceDate}
+                    serviceTime={serviceTime}
+                    description={description}
+                    onDateChange={setServiceDate}
+                    onTimeChange={setServiceTime}
+                    onDescriptionChange={setDescription}
+                    onFindWorker={() => goToStep(STEP.WORKER)}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </BookingStepShell>
+        )}
+
+        {step === STEP.DETAILS && serviceDetails && !lockedAirbnb && (
           <BookingStepShell
             layout="sidebar"
             summary={
               summaryProps ? <BookingSummaryPanel {...summaryProps} /> : undefined
             }
-            summarySide={lockedAirbnb ? 'right' : 'left'}
           >
-            {lockedAirbnb && <AirbnbBookingIntro />}
             <Card>
               <CardContent className="p-6 space-y-6">
                 {deepLinkLoading ? (
@@ -541,97 +596,41 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                 ) : (
                   <>
                     <div>
-                      <h2 className="text-xl font-semibold">
-                        {lockedAirbnb ? 'Your property' : 'Booking details'}
-                      </h2>
+                      <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {lockedAirbnb
-                          ? 'Start with your property address, then size, frequency, and schedule.'
-                          : 'Review what’s included, set your scope, then when and where.'}
+                        Review what’s included, set your scope, then when and where.
                       </p>
                     </div>
 
-                    {!lockedAirbnb && (
-                      <ServiceScopeCard
-                        category={serviceDetails.category}
-                        serviceType={serviceDetails.serviceType}
-                      />
-                    )}
+                    <ServiceScopeCard
+                      category={serviceDetails.category}
+                      serviceType={serviceDetails.serviceType}
+                    />
 
-                    {lockedAirbnb ? (
-                      <>
-                        <BookingScheduleFields
-                          section="address"
-                          serviceDate={serviceDate}
-                          serviceTime={serviceTime}
-                          locationAddress={locationAddress}
-                          description={description}
-                          guestCheckoutTime={guestCheckoutTime}
-                          nextCheckIn={nextCheckIn}
-                          onDateChange={setServiceDate}
-                          onTimeChange={setServiceTime}
-                          onAddressChange={setLocationAddress}
-                          onDescriptionChange={setDescription}
-                          onGuestCheckoutTimeChange={setGuestCheckoutTime}
-                          onNextCheckInChange={setNextCheckIn}
-                          category={serviceDetails.category}
-                          serviceType={serviceDetails.serviceType}
-                        />
+                    <ServiceConfigPanel
+                      category={serviceDetails.category}
+                      value={serviceDetails}
+                      onChange={setServiceDetails}
+                      showPriceHint={false}
+                      lockServiceType={airbnbEntry}
+                    />
 
-                        <ServiceConfigPanel
-                          category={serviceDetails.category}
-                          value={serviceDetails}
-                          onChange={setServiceDetails}
-                          showPriceHint={false}
-                          lockServiceType={airbnbEntry}
-                        />
-
-                        <BookingScheduleFields
-                          section="schedule"
-                          serviceDate={serviceDate}
-                          serviceTime={serviceTime}
-                          locationAddress={locationAddress}
-                          description={description}
-                          guestCheckoutTime={guestCheckoutTime}
-                          nextCheckIn={nextCheckIn}
-                          onDateChange={setServiceDate}
-                          onTimeChange={setServiceTime}
-                          onAddressChange={setLocationAddress}
-                          onDescriptionChange={setDescription}
-                          onGuestCheckoutTimeChange={setGuestCheckoutTime}
-                          onNextCheckInChange={setNextCheckIn}
-                          category={serviceDetails.category}
-                          serviceType={serviceDetails.serviceType}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <ServiceConfigPanel
-                          category={serviceDetails.category}
-                          value={serviceDetails}
-                          onChange={setServiceDetails}
-                          showPriceHint={false}
-                          lockServiceType={airbnbEntry}
-                        />
-
-                        <BookingScheduleFields
-                          serviceDate={serviceDate}
-                          serviceTime={serviceTime}
-                          locationAddress={locationAddress}
-                          description={description}
-                          guestCheckoutTime={guestCheckoutTime}
-                          nextCheckIn={nextCheckIn}
-                          onDateChange={setServiceDate}
-                          onTimeChange={setServiceTime}
-                          onAddressChange={setLocationAddress}
-                          onDescriptionChange={setDescription}
-                          onGuestCheckoutTimeChange={setGuestCheckoutTime}
-                          onNextCheckInChange={setNextCheckIn}
-                          category={serviceDetails.category}
-                          serviceType={serviceDetails.serviceType}
-                        />
-                      </>
-                    )}
+                    <BookingScheduleFields
+                      serviceDate={serviceDate}
+                      serviceTime={serviceTime}
+                      locationAddress={locationAddress}
+                      description={description}
+                      guestCheckoutTime={guestCheckoutTime}
+                      nextCheckIn={nextCheckIn}
+                      onDateChange={setServiceDate}
+                      onTimeChange={setServiceTime}
+                      onAddressChange={setLocationAddress}
+                      onDescriptionChange={setDescription}
+                      onGuestCheckoutTimeChange={setGuestCheckoutTime}
+                      onNextCheckInChange={setNextCheckIn}
+                      category={serviceDetails.category}
+                      serviceType={serviceDetails.serviceType}
+                    />
 
                     {!canProceedDetails && (
                       <p className="text-sm text-muted-foreground text-center">
@@ -656,7 +655,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                         Back
                       </Button>
                       <Button onClick={() => goToStep(STEP.WORKER)} disabled={!canProceedDetails}>
-                        {lockedAirbnb ? 'Choose cleaner' : 'Choose worker'}
+                        Choose worker
                         <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
@@ -670,7 +669,16 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         {step === STEP.WORKER && (
           <BookingStepShell
             summary={
-              summaryProps ? <BookingSummaryPanel {...summaryProps} /> : undefined
+              lockedAirbnb && serviceDetails ? (
+                <AirbnbBookingSummary
+                  step="scope"
+                  locationAddress={locationAddress}
+                  details={serviceDetails}
+                  showEstimate
+                />
+              ) : summaryProps ? (
+                <BookingSummaryPanel {...summaryProps} />
+              ) : undefined
             }
             summarySide={lockedAirbnb ? 'right' : 'left'}
           >
@@ -780,7 +788,14 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         {step === STEP.PAYMENT && serviceDetails && (
           <BookingStepShell
             summary={
-              summaryProps ? (
+              lockedAirbnb ? (
+                <AirbnbBookingSummary
+                  step="scope"
+                  locationAddress={locationAddress}
+                  details={serviceDetails}
+                  showEstimate
+                />
+              ) : summaryProps ? (
                 <BookingSummaryPanel {...summaryProps} hidePriceEstimate />
               ) : undefined
             }

@@ -52,27 +52,22 @@ test.describe("Between-guest clean booking end-to-end", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Book a between-guest clean" })).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByText("Between-guest clean for your property")).toBeVisible();
-    await expect(page.getByText("Property location")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Where do you need help?" })).toBeVisible();
     await expect(page.getByText("Booking details")).toBeVisible();
-    await expect(page.getByText("Live estimate")).toBeVisible();
-    await expect(page.getByText("How often?")).toBeVisible();
-    await expect(page.getByText("Schedule")).toBeVisible();
-    await expect(page.getByText("What's included in my clean?")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Tell me more" })).toBeVisible();
-    await expect(page.getByText("Optional add-ons")).toBeVisible();
 
-    await page.getByRole("button", { name: "Tell me more" }).click();
-    await expect(page.getByRole("dialog", { name: "What's included in my clean?" })).toBeVisible();
-    await expect(page.getByText("Living room")).toBeVisible();
-    await expect(page.getByText("Not included")).toBeVisible();
-    await page.getByRole("button", { name: "Close" }).click();
+    await page.locator("#airbnb-street").fill("Plot 10, Roma");
+    await page.getByText("Set location").click();
 
+    await expect(page.getByRole("heading", { name: "How often do you need help?" })).toBeVisible();
+    await page.getByRole("button", { name: "One time" }).click();
+    await page.getByRole("button", { name: "Tomorrow / later" }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+
+    await expect(page.getByRole("heading", { name: "How long should I book?" })).toBeVisible();
     await page.locator("#service-date").fill(tomorrowIsoDate());
     await page.locator("#service-start-time").selectOption("09:00");
-    await page.locator("#service-address").fill("Plot 10, Roma, Lusaka");
 
-    await page.getByRole("button", { name: "Choose cleaner" }).click();
+    await page.getByRole("button", { name: "Find a worker" }).click();
     await expect(page.getByText("Grace Phiri")).toBeVisible();
     await page.getByRole("button", { name: /Grace Phiri/i }).click();
 
@@ -92,7 +87,7 @@ test.describe("Between-guest clean booking end-to-end", () => {
       categoryId: MOCK_CATEGORIES[1].id,
       serviceDate: tomorrowIsoDate(),
       serviceTime: "09:00",
-      locationAddress: "Plot 10, Roma, Lusaka",
+      locationAddress: expect.stringContaining("Plot 10, Roma"),
       serviceDetails: {
         category: "cleaning",
         serviceType: "airbnb",

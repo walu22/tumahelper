@@ -40,6 +40,10 @@ export interface ServiceDetails {
   addons: string[];
   /** Between-guest / short-stay turnover cadence */
   frequency?: TurnoverFrequency;
+  /** Airbnb: how soon the host needs the clean */
+  whenPreference?: "today" | "last_minute" | "tomorrow_later";
+  /** Airbnb: linen handling for turnover */
+  linenPreference?: "replace_no_wash" | "wash_repack" | "basket_only";
 }
 
 export type TurnoverFrequency = "once" | "per_checkout" | "weekly" | "every_2_weeks";
@@ -216,6 +220,27 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         priceHint: 100,
         allowedTypes: ["standard", "airbnb"],
       },
+      {
+        id: "appliances",
+        label: "Clean appliances",
+        description: "Microwave, kettle, toaster, and coffee machine",
+        priceHint: 80,
+        allowedTypes: ["airbnb"],
+      },
+      {
+        id: "restock_supplies",
+        label: "Restock supplies",
+        description: "Kitchen consumables you keep on site",
+        priceHint: 50,
+        allowedTypes: ["airbnb"],
+      },
+      {
+        id: "restock_toiletries",
+        label: "Restock toiletries",
+        description: "Soap, shampoo, and bathroom essentials on site",
+        priceHint: 50,
+        allowedTypes: ["airbnb"],
+      },
     ],
   },
   nanny: {
@@ -340,6 +365,7 @@ export function defaultBetweenGuestServiceDetails(): ServiceDetails {
     bathrooms: 1,
     addons: [],
     frequency: "once",
+    linenPreference: "replace_no_wash",
   };
 }
 
