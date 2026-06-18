@@ -49,7 +49,7 @@ test.describe("Between-guest clean booking end-to-end", () => {
 
     await loginAsCustomer(page, baseURL!);
     await page.goto("/customer/book/airbnb");
-    await expect(page.getByRole("heading", { level: 1, name: "Book a turnover clean" })).toBeVisible({
+    await expect(page.getByRole("heading", { level: 1, name: "Book Airbnb cleaning" })).toBeVisible({
       timeout: 15_000,
     });
     await expect(page.getByRole("heading", { name: "Where is your property?" })).toBeVisible();

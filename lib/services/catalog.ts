@@ -157,9 +157,9 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       },
       {
         id: "airbnb",
-        label: "Between-guest clean",
+        label: "Airbnb cleaning",
         description:
-          "Cleaning between guest stays — for Airbnb and short-stay properties in Lusaka.",
+          "Cleaning between guest stays for Airbnb and short-stay properties in Lusaka.",
         included: [
           "All bedrooms & living areas",
           "Beds remade with linen left on site",

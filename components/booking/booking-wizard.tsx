@@ -494,7 +494,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
             {step === STEP.PICK
               ? 'What do you need?'
               : lockedAirbnb
-                ? 'Book a turnover clean'
+                ? 'Book Airbnb cleaning'
                 : 'Book a service'}
           </h1>
           {step >= STEP.DETAILS && (
