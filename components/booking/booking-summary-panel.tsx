@@ -7,6 +7,7 @@ import { getServiceScopeRows, suggestPrice } from "@/lib/services/utils";
 import { ServiceScopeDetails } from "@/components/booking/service-scope-details";
 import { formatBookingTime } from "@/lib/booking/time-slots";
 import { formatCurrency } from "@/lib/utils";
+import { AirbnbScopeTeaser } from "@/components/booking/airbnb-scope-teaser";
 
 interface BookingSummaryPanelProps {
   details: ServiceDetails;
@@ -19,6 +20,7 @@ interface BookingSummaryPanelProps {
   hidePriceEstimate?: boolean;
   emphasizeEstimate?: boolean;
   summaryTitle?: string;
+  showAirbnbScopeTeaser?: boolean;
   className?: string;
 }
 
@@ -43,6 +45,7 @@ export function BookingSummaryPanel({
   hidePriceEstimate = false,
   emphasizeEstimate = false,
   summaryTitle = "Your booking",
+  showAirbnbScopeTeaser = false,
   className = "",
 }: BookingSummaryPanelProps) {
   const type = getServiceType(details.category, details.serviceType);
@@ -70,13 +73,13 @@ export function BookingSummaryPanel({
             </p>
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <p className="font-display text-2xl font-bold leading-none">
-                K{price.min} – K{price.max}
+                K{price.min} to K{price.max}
               </p>
             </div>
             <p className="text-sm opacity-90 mt-2 flex items-center gap-1.5">
               <Timer className="h-3.5 w-3.5 shrink-0" />
-              Est. {details.durationHours} hour{details.durationHours === 1 ? "" : "s"} · agree
-              final fee with your cleaner
+              Est. {details.durationHours} hour{details.durationHours === 1 ? "" : "s"}. Agree the
+              final fee with your cleaner.
             </p>
           </div>
         )}
@@ -120,7 +123,7 @@ export function BookingSummaryPanel({
               Estimated price range
             </p>
             <p className="font-semibold text-foreground">
-              K{price.min} – K{price.max}
+              K{price.min} to K{price.max}
             </p>
             {amount && parseFloat(amount) >= 1 && (
               <p className="text-muted-foreground mt-1">
@@ -132,6 +135,7 @@ export function BookingSummaryPanel({
             )}
           </div>
         )}
+        {showAirbnbScopeTeaser && <AirbnbScopeTeaser embedded />}
       </div>
     </aside>
   );

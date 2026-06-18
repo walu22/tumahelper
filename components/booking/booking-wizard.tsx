@@ -23,7 +23,6 @@ import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingPaymentTotals } from '@/components/booking/booking-payment-totals'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
 import { AirbnbBookingIntro } from '@/components/booking/airbnb-booking-intro'
-import { AirbnbScopeTeaser } from '@/components/booking/airbnb-scope-teaser'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
@@ -468,6 +467,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         amount,
         emphasizeEstimate: lockedAirbnb,
         summaryTitle: lockedAirbnb ? 'Booking details' : undefined,
+        showAirbnbScopeTeaser: lockedAirbnb,
       }
     : null
 
@@ -542,14 +542,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       </h2>
                       <p className="text-sm text-muted-foreground mt-1">
                         {lockedAirbnb
-                          ? 'Property size, frequency, and schedule — then choose your cleaner.'
+                          ? 'Property size, frequency, and schedule. Then choose your cleaner.'
                           : 'Review what’s included, set your scope, then when and where.'}
                       </p>
                     </div>
 
-                    {lockedAirbnb ? (
-                      <AirbnbScopeTeaser />
-                    ) : (
+                    {!lockedAirbnb && (
                       <ServiceScopeCard
                         category={serviceDetails.category}
                         serviceType={serviceDetails.serviceType}

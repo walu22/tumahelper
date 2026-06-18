@@ -56,13 +56,13 @@ test.describe("Between-guest clean booking end-to-end", () => {
     await expect(page.getByText("How often?")).toBeVisible();
     await expect(page.getByText("Booking details")).toBeVisible();
     await expect(page.getByText("Live estimate")).toBeVisible();
-    await expect(page.getByText("What's included in your clean?")).toBeVisible();
+    await expect(page.getByText("What's included in my clean?")).toBeVisible();
     await expect(page.getByRole("button", { name: "Tell me more" })).toBeVisible();
     await expect(page.getByText("Optional add-ons")).toBeVisible();
     await expect(page.getByText("When & where")).toBeVisible();
 
     await page.getByRole("button", { name: "Tell me more" }).click();
-    await expect(page.getByRole("dialog", { name: "What's included in your clean?" })).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "What's included in my clean?" })).toBeVisible();
     await expect(page.getByText("Living room")).toBeVisible();
     await expect(page.getByText("Not included")).toBeVisible();
     await page.getByRole("button", { name: "Close" }).click();

@@ -9,14 +9,22 @@ import {
 } from "@/lib/services/airbnb-scope";
 import { SlideOverPanel } from "@/components/booking/slide-over-panel";
 
-export function AirbnbScopeTeaser() {
+interface AirbnbScopeTeaserProps {
+  embedded?: boolean;
+}
+
+export function AirbnbScopeTeaser({ embedded = false }: AirbnbScopeTeaserProps) {
   const [open, setOpen] = useState(false);
+
+  const wrapperClass = embedded
+    ? "border-t border-border pt-4"
+    : "rounded-2xl border border-border bg-surface/40 p-5 sm:p-6";
 
   return (
     <>
-      <div className="rounded-2xl border border-border bg-surface/40 p-5 sm:p-6">
+      <div className={wrapperClass}>
         <p className="text-sm font-semibold text-foreground mb-2">
-          What&apos;s included in your clean?
+          What&apos;s included in my clean?
         </p>
         <p className="text-sm text-muted-foreground leading-relaxed">{AIRBNB_SCOPE_PITCH}</p>
         <button
@@ -31,7 +39,7 @@ export function AirbnbScopeTeaser() {
       <SlideOverPanel
         open={open}
         onClose={() => setOpen(false)}
-        title="What's included in your clean?"
+        title="What's included in my clean?"
       >
         <div className="space-y-8">
           {AIRBNB_SCOPE_SECTIONS.map((section) => (
