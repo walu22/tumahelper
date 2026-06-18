@@ -61,11 +61,11 @@ test.describe("Between-guest clean booking end-to-end", () => {
     await expect(page.getByRole("heading", { name: "How often?" })).toBeVisible();
     await page.getByRole("button", { name: "One-time clean" }).click();
     await page.getByRole("button", { name: "Pick a date" }).click();
+    await page.locator("#service-date").fill(tomorrowIsoDate());
+    await page.locator("#service-start-time").selectOption("09:00");
     await page.getByRole("button", { name: "Continue" }).click();
 
     await expect(page.getByRole("heading", { name: "Property size" })).toBeVisible();
-    await page.locator("#service-date").fill(tomorrowIsoDate());
-    await page.locator("#service-start-time").selectOption("09:00");
 
     await page.getByRole("button", { name: "Choose your cleaner" }).click();
     await expect(page.getByText("Grace Phiri")).toBeVisible();

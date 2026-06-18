@@ -9,7 +9,7 @@ export type LinenPreference = "replace_no_wash" | "wash_repack" | "basket_only";
 export const AIRBNB_FLOW_STEPS: { id: AirbnbFlowStep; label: string }[] = [
   { id: "address", label: "Property" },
   { id: "plan", label: "Schedule" },
-  { id: "scope", label: "Job details" },
+  { id: "scope", label: "Clean details" },
 ];
 
 export function formatAirbnbAddress(street: string, unit?: string): string {

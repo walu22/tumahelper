@@ -2,8 +2,10 @@
 
 import { Calendar, MapPin, Sparkles, Timer } from "lucide-react";
 import type { ServiceDetails } from "@/lib/services/catalog";
+import { getAddon, getLinenPreferences } from "@/lib/services/catalog";
 import { suggestPrice } from "@/lib/services/utils";
 import {
+  formatLinenPreferences,
   formatTurnoverCadence,
   formatWhenPreference,
   type AirbnbFlowStep,
@@ -43,6 +45,10 @@ export function AirbnbBookingSummary({
   const hasWhen = !!(serviceDate && serviceTime);
   const cadence = formatTurnoverCadence(details.frequency);
   const whenLabel = formatWhenPreference(details.whenPreference);
+  const linenLabel = formatLinenPreferences(getLinenPreferences(details));
+  const addonLabels = details.addons
+    .map((id) => getAddon("cleaning", id)?.label ?? id)
+    .filter(Boolean);
 
   return (
     <aside className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -91,7 +97,7 @@ export function AirbnbBookingSummary({
           </div>
         )}
 
-        {step === "scope" && hasWhen && (
+        {(step === "plan" || step === "scope") && hasWhen && (
           <div className="text-sm">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
               Arrival
@@ -102,6 +108,24 @@ export function AirbnbBookingSummary({
                 {formatDateLabel(serviceDate)} at {formatBookingTime(serviceTime)}
               </span>
             </p>
+          </div>
+        )}
+
+        {step === "scope" && linenLabel && (
+          <div className="text-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+              Linen
+            </p>
+            <p className="text-foreground leading-snug">{linenLabel}</p>
+          </div>
+        )}
+
+        {step === "scope" && addonLabels.length > 0 && (
+          <div className="text-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+              Add-ons
+            </p>
+            <p className="text-foreground leading-snug">{addonLabels.join(", ")}</p>
           </div>
         )}
 
