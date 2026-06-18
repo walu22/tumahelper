@@ -120,14 +120,14 @@ export function BookingSummaryPanel({
         {!hidePriceEstimate && !emphasizeEstimate && (
           <div className="rounded-xl bg-primary/5 border border-primary/15 px-4 py-3 text-sm">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-1">
-              Estimated price range
+              Guide price
             </p>
             <p className="font-semibold text-foreground">
               K{price.min} to K{price.max}
             </p>
             {amount && parseFloat(amount) >= 1 && (
               <p className="text-muted-foreground mt-1">
-                Agreed fee:{" "}
+                Confirmed at:{" "}
                 <span className="font-semibold text-foreground">
                   {formatCurrency(Math.round(parseFloat(amount) * 100))}
                 </span>

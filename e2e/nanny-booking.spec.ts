@@ -68,9 +68,8 @@ test.describe("Nanny booking end-to-end", () => {
     await page.getByRole("button", { name: /Sarah Mulenga/i }).click();
     await expect(page.getByRole("heading", { name: "Confirm & pay" })).toBeVisible();
 
-    const feeInput = page.getByRole("spinbutton");
-    await expect(feeInput).toHaveValue("275");
-    await feeInput.fill("350");
+    await expect(page.getByText(/Guide price \(ZMW\)/i)).toBeVisible();
+    await expect(page.getByText(/^K\d+$/).first()).toBeVisible();
 
     await Promise.all([
       page.waitForURL(new RegExp(`/customer/bookings/${MOCK_BOOKING_ID}`), { timeout: 15_000 }),
@@ -83,7 +82,7 @@ test.describe("Nanny booking end-to-end", () => {
       serviceDate: tomorrowIsoDate(),
       serviceTime: "08:00",
       locationAddress: "Plot 12, Kabulonga, Lusaka",
-      amount: 35000,
+      amount: 27500,
       serviceDetails: {
         category: "nanny",
         serviceType: "babysitting",

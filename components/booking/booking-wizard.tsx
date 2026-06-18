@@ -44,6 +44,16 @@ import {
   nannyChildAgesComplete,
 } from '@/lib/services/utils'
 
+function guidePriceHint(details: ServiceDetails): string {
+  if (details.serviceType === "airbnb") {
+    return "Based on property size, visit length, linen, and add-ons. You pay the total below via mobile money after the clean.";
+  }
+  if (details.category === "nanny") {
+    return "Based on children, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+  }
+  return "Based on home size, visit length, and add-ons. You pay the total below via mobile money after the clean.";
+}
+
 interface Category {
   id: string
   name: string
@@ -197,7 +207,6 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   const lockedAirbnb = isLockedAirbnbFlow(airbnbEntry, typeParam, funnelParam)
   const preselectedWorkerRef = useRef<string | null>(null)
   const urlInitDone = useRef(false)
-  const pricePrefilled = useRef(false)
 
   const [step, setStep] = useState<number>(() => {
     if (airbnbEntry || isLockedAirbnbFlow(airbnbEntry, typeParam, funnelParam)) {
@@ -332,19 +341,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
   useEffect(() => {
     if (step !== STEP.PAYMENT || !serviceDetails) return;
-
-    if (lockedAirbnb) {
-      const { typical } = suggestPrice(serviceDetails);
-      setAmount(String(typical));
-      return;
-    }
-
-    if (!amount && !pricePrefilled.current) {
-      const { typical } = suggestPrice(serviceDetails);
-      setAmount(String(typical));
-      pricePrefilled.current = true;
-    }
-  }, [step, serviceDetails, amount, lockedAirbnb]);
+    const { typical } = suggestPrice(serviceDetails);
+    setAmount(String(typical));
+  }, [step, serviceDetails]);
 
   const filteredWorkers = workers.filter((w) => {
     if (!searchQuery) return true
@@ -820,9 +819,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                 <div>
                   <h2 className="text-xl font-semibold">Confirm & pay</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {lockedAirbnb
-                      ? "Review the guide price and confirm your booking."
-                      : "Set your fee and confirm the booking."}
+                    Review the guide price and confirm your booking.
                   </p>
                 </div>
 
@@ -854,39 +851,17 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       />
                     )}
 
-                    {lockedAirbnb ? (
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Guide price (ZMW)</p>
-                        <div className="rounded-xl border border-border bg-surface/50 px-4 py-3">
-                          <p className="font-display text-2xl font-bold tabular-nums text-foreground">
-                            K{suggestPrice(serviceDetails).typical}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                            Based on property size, visit length, linen, and add-ons. You pay the
-                            total below via mobile money after the clean.
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <label htmlFor="service-fee" className="text-sm font-medium">
-                          Service fee (ZMW)
-                        </label>
-                        <Input
-                          id="service-fee"
-                          type="number"
-                          min="1"
-                          step="1"
-                          placeholder="e.g. 500"
-                          value={amount}
-                          onChange={(e) => setAmount(e.target.value)}
-                          className="text-lg h-12"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Suggested K{suggestPrice(serviceDetails).typical} based on your scope.
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Guide price (ZMW)</p>
+                      <div className="rounded-xl border border-border bg-surface/50 px-4 py-3">
+                        <p className="font-display text-2xl font-bold tabular-nums text-foreground">
+                          K{suggestPrice(serviceDetails).typical}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                          {guidePriceHint(serviceDetails)}
                         </p>
                       </div>
-                    )}
+                    </div>
 
                     {amount && parseFloat(amount) >= 1 && (
                       <BookingPaymentTotals
