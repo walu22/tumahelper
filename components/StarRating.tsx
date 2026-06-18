@@ -20,13 +20,13 @@ export function StarRating({ value, onChange, readOnly = false, size = "md" }: S
   };
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           type="button"
           disabled={readOnly}
-          className={`${readOnly ? "cursor-default" : "cursor-pointer"} transition-colors`}
+          className={`${readOnly ? "cursor-default" : "cursor-pointer"} transition-colors p-2 -m-1 min-h-11 min-w-11 flex items-center justify-center`}
           onMouseEnter={() => !readOnly && setHoverValue(star)}
           onMouseLeave={() => !readOnly && setHoverValue(0)}
           onClick={() => !readOnly && onChange?.(star)}

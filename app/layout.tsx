@@ -30,6 +30,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -46,8 +52,8 @@ export default function RootLayout({
       <body className={`${sans.variable} ${display.variable} font-sans`}>
         <ThemeProvider>
           {!isAdmin && <HeaderAuth />}
-          <main className={isAdmin ? "" : "min-h-screen pb-16 md:pb-0"}>{children}</main>
-          {!isAdmin && <Footer />}
+          <main className={isAdmin ? "" : "min-h-screen pb-safe-nav md:pb-0"}>{children}</main>
+          {!isAdmin && <Footer className="hidden md:block" />}
           {!isAdmin && <MobileNavAuth />}
           <Toaster position="top-center" richColors />
         </ThemeProvider>

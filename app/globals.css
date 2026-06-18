@@ -148,3 +148,11 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pb-safe-nav {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}

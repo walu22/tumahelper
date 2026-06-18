@@ -574,14 +574,32 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   return (
     <div className="min-h-screen">
       <main
-        className={`mx-auto px-4 sm:px-6 lg:px-8 py-8 ${
+        className={`mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 ${
           guidedFlow ? 'max-w-6xl' : 'max-w-5xl'
         }`}
       >
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{bookingTitle}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">{bookingTitle}</h1>
           {showWizardProgress && (
-            <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1">
+            <>
+              <div className="md:hidden mt-4 space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Step {progressSteps.findIndex((s) => s.num === step) + 1} of {progressSteps.length}
+                  <span className="text-foreground font-medium">
+                    {" "}
+                    · {progressSteps.find((s) => s.num === step)?.label}
+                  </span>
+                </p>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all duration-300"
+                    style={{
+                      width: `${((progressSteps.findIndex((s) => s.num === step) + 1) / progressSteps.length) * 100}%`,
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="hidden md:flex items-center gap-2 mt-4 overflow-x-auto pb-1 scrollbar-hide">
               {progressSteps.map((s, i) => (
                 <div key={s.num} className="flex items-center gap-2 shrink-0">
                   <div
@@ -603,7 +621,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                   {i < progressSteps.length - 1 && <div className="h-0.5 w-6 bg-muted" />}
                 </div>
               ))}
-            </div>
+              </div>
+            </>
           )}
         </div>
 
@@ -745,8 +764,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                   </div>
                 )}
 
-                <div className="flex justify-between pt-2 gap-3">
-                  <Button variant="outline" onClick={() => goToStep(STEP.DETAILS)}>
+                <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-between sm:items-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => goToStep(STEP.DETAILS)}
+                    className="w-full sm:w-auto min-h-11"
+                  >
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Edit details
                   </Button>
@@ -760,6 +783,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                         }
                         goToStep(STEP.PAYMENT)
                       }}
+                      className="w-full sm:w-auto min-h-11"
                     >
                       Continue with {selectedWorker.full_name.split(' ')[0]}
                       <ChevronRight className="ml-2 h-4 w-4" />

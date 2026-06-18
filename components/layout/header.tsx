@@ -70,7 +70,11 @@ export function Header({ user }: { user: AppUser | null }) {
             )}
           </div>
 
-          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-3 min-h-11 min-w-11 flex items-center justify-center rounded-lg"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+          >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>

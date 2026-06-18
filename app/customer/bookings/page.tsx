@@ -87,12 +87,16 @@ export default async function CustomerBookingsPage({
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold mb-2">My Bookings</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-2">My Bookings</h1>
       <p className="text-muted-foreground mb-8">Track all your service bookings</p>
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
         {tabs.map((tab) => (
-          <Link key={tab.key} href={tab.key === 'all' ? '/customer/bookings' : `/customer/bookings?status=${tab.key}`}>
+          <Link
+            key={tab.key}
+            href={tab.key === 'all' ? '/customer/bookings' : `/customer/bookings?status=${tab.key}`}
+            className="shrink-0"
+          >
             <Button variant={filter === tab.key ? 'default' : 'outline'} size="sm">
               {tab.label}
             </Button>

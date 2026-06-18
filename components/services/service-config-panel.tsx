@@ -121,7 +121,7 @@ export function ServiceConfigPanel({
             <p className="text-sm font-medium mb-2">
               {isBetweenGuest ? "Property size" : "Home size"}
             </p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {HOME_SIZE_PRESETS.map((preset) => {
                 const active =
                   (value.bedrooms ?? 3) === preset.bedrooms &&

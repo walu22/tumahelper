@@ -49,7 +49,7 @@ export function MobileNav({ role = "guest" }: { role?: NavRole }) {
   if (role === "admin") return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border md:hidden z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border md:hidden z-50 pb-safe">
       <div className="flex items-center justify-around py-2">
         {items.map((item) => {
           const isActive =
@@ -61,7 +61,7 @@ export function MobileNav({ role = "guest" }: { role?: NavRole }) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors min-w-[4rem]",
+                "flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-lg transition-colors min-w-[4.5rem] min-h-[3rem]",
                 isActive ? "text-primary" : "text-muted-foreground"
               )}
             >

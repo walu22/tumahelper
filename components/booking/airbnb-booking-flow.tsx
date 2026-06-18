@@ -4,8 +4,6 @@ import { useMemo } from "react";
 import {
   Calendar,
   CalendarClock,
-  ChevronLeft,
-  ChevronRight,
   MapPin,
   Minus,
   Plus,
@@ -15,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { LusakaAddressInput } from "@/components/booking/lusaka-address-input";
 import { AirbnbFlowProgress } from "@/components/booking/airbnb-flow-progress";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
@@ -381,16 +380,12 @@ export function AirbnbBookingFlow({
           </div>
         )}
 
-        <div className="flex justify-between pt-2 gap-3">
-          <Button variant="outline" onClick={() => onStepChange("address")}>
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <Button onClick={() => onStepChange("scope")} disabled={!canContinuePlan}>
-            Continue
-            <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
+        <BookingStepFooter
+          onBack={() => onStepChange("address")}
+          primaryLabel="Continue"
+          onPrimary={() => onStepChange("scope")}
+          primaryDisabled={!canContinuePlan}
+        />
       </div>
     );
   }
@@ -418,7 +413,7 @@ export function AirbnbBookingFlow({
         <p className="text-sm text-muted-foreground mb-3">
           Bedrooms and bathrooms set our suggested visit length.
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {HOME_SIZE_PRESETS.map((preset) => {
             const active =
               (serviceDetails.bedrooms ?? 3) === preset.bedrooms &&
@@ -504,7 +499,7 @@ export function AirbnbBookingFlow({
           Book between 3 and 8 hours. Most between-guest cleans in Lusaka run 4 to 6 hours depending on
           size, laundry, and add-ons.
         </p>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <Button
             type="button"
             variant="outline"
@@ -554,16 +549,12 @@ export function AirbnbBookingFlow({
         />
       </div>
 
-      <div className="flex justify-between pt-2 gap-3">
-        <Button variant="outline" onClick={() => onStepChange("plan")}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        <Button onClick={onFindWorker} disabled={!canChooseCleaner}>
-          Choose your cleaner
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      <BookingStepFooter
+        onBack={() => onStepChange("plan")}
+        primaryLabel="Choose your cleaner"
+        onPrimary={onFindWorker}
+        primaryDisabled={!canChooseCleaner}
+      />
     </div>
   );
 }

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { AIRBNB_CLEAN_BOOK_HREF, FOOTER_TAGLINE } from "@/lib/landing/content";
+import { cn } from "@/lib/utils";
 
-export function Footer() {
+export function Footer({ className }: { className?: string }) {
   return (
-    <footer className="bg-surface border-t border-border">
+    <footer className={cn("bg-surface border-t border-border", className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>

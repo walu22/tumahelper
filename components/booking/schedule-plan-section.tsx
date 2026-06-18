@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
-import { Calendar, CalendarClock, ChevronLeft, ChevronRight, Repeat, Zap } from "lucide-react";
+import { Calendar, CalendarClock, Repeat, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
   REGULAR_FREQUENCY_OPTIONS,
@@ -229,16 +229,12 @@ export function SchedulePlanSection({
         </div>
       )}
 
-      <div className="flex justify-between pt-2 gap-3">
-        <Button variant="outline" onClick={onBack}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        <Button onClick={onContinue} disabled={!canContinue}>
-          Continue
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      <BookingStepFooter
+        onBack={onBack}
+        primaryLabel="Continue"
+        onPrimary={onContinue}
+        primaryDisabled={!canContinue}
+      />
     </div>
   );
 }

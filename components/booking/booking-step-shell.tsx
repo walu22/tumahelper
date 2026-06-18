@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { MobileCollapsibleSummary } from "@/components/booking/mobile-collapsible-summary";
 
 interface BookingStepShellProps {
   summary?: ReactNode;
@@ -38,7 +39,7 @@ export function BookingStepShell({
 
   return (
     <div className={`md:grid ${gridCols} gap-6 items-start`}>
-      <div className="md:hidden mb-2">{summary}</div>
+      <MobileCollapsibleSummary>{summary}</MobileCollapsibleSummary>
       {summaryDesktop}
     </div>
   );

@@ -155,9 +155,9 @@ export default async function CustomerBookingDetailPage({
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1 space-y-6">
             <Card>
-              <CardHeader className="flex flex-row items-start justify-between">
+              <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3">
                 <div>
-                  <CardTitle className="text-xl">
+                  <CardTitle className="text-lg sm:text-xl">
                     Booking #{booking.booking_code}
                   </CardTitle>
                   <p className="text-sm text-muted-foreground mt-1">

@@ -1,8 +1,9 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
@@ -217,7 +218,7 @@ export function CleaningBookingFlow({
         <p className="text-sm text-muted-foreground mb-3">
           Bedrooms and bathrooms set our suggested visit length.
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {HOME_SIZE_PRESETS.map((preset) => {
             const active =
               (serviceDetails.bedrooms ?? 3) === preset.bedrooms &&
@@ -263,7 +264,7 @@ export function CleaningBookingFlow({
         <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
           Book between 3 and 8 hours. We suggest a length based on your home size and add-ons.
         </p>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <Button
             type="button"
             variant="outline"
@@ -313,16 +314,12 @@ export function CleaningBookingFlow({
         />
       </div>
 
-      <div className="flex justify-between pt-2 gap-3">
-        <Button variant="outline" onClick={() => onStepChange("plan")}>
-          <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-        <Button onClick={onFindWorker} disabled={!canChooseWorker}>
-          Choose your cleaner
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+      <BookingStepFooter
+        onBack={() => onStepChange("plan")}
+        primaryLabel="Choose your cleaner"
+        onPrimary={onFindWorker}
+        primaryDisabled={!canChooseWorker}
+      />
     </div>
   );
 }
