@@ -1,32 +1,20 @@
 import { createServerComponentClient, createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { DEV_SESSION_COOKIE, isDevBypassEnabled } from '@/lib/auth/config'
 import { getAdminClient } from '@/lib/supabase'
-
-function isDevSessionActive() {
-  const value = cookies().get(DEV_SESSION_COOKIE)?.value
-  if (!value) return false
-
-  try {
-    const payload = JSON.parse(
-      Buffer.from(value, 'base64url').toString('utf8')
-    ) as { id?: string; exp?: number }
-    return Boolean(payload?.id && payload.exp && payload.exp > Date.now())
-  } catch {
-    return false
-  }
-}
 
 function hasRealServiceRoleKey() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
   return Boolean(key && !key.includes('your-') && !key.includes('placeholder'))
 }
 
+/**
+ * App auth (getCurrentUser / requireAuth) can resolve a user while Supabase
+ * auth.uid() is missing or out of sync in server components — RLS then hides
+ * rows and booking pages 404. Use the service role whenever it is configured
+ * and always scope queries by the authenticated user id in application code.
+ */
 function shouldUseAdminClientForAppAuth() {
-  if (process.env.NODE_ENV !== 'production' && hasRealServiceRoleKey()) {
-    return true
-  }
-  return isDevBypassEnabled() || isDevSessionActive()
+  return hasRealServiceRoleKey()
 }
 
 export function createServerSupabaseClient() {
@@ -35,9 +23,8 @@ export function createServerSupabaseClient() {
 }
 
 /**
- * Server pages authenticated via app session (including dev login) may not have
- * a matching Supabase auth.uid(), so RLS would hide rows. When dev bypass is
- * active, use the service role and always filter by user id in the query.
+ * Server pages and route handlers authenticated via getCurrentUser / requireAuth.
+ * Uses the service role when configured; callers must filter by user id in queries.
  */
 export function createAuthenticatedServerClient() {
   if (shouldUseAdminClientForAppAuth()) {

@@ -92,9 +92,10 @@ export default async function CustomerBookingDetailPage({
     .from('bookings')
     .select('*')
     .eq('id', params.id)
+    .eq('customer_id', user.id)
     .maybeSingle<Omit<BookingWithRelations, 'worker' | 'category'>>()
 
-  if (error || !bookingRow || bookingRow.customer_id !== user.id) {
+  if (error || !bookingRow) {
     notFound()
   }
 
