@@ -196,7 +196,8 @@ export function AirbnbBookingFlow({
         <div>
           <h2 className="text-2xl font-semibold">Where is your property?</h2>
           <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-            Start typing your address. We will suggest areas and suburbs across Lusaka.
+            Start typing a street or plot. Matching roads and suburbs in Lusaka will appear as you
+            type.
           </p>
         </div>
 

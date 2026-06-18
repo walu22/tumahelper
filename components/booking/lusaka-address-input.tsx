@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { MapPin } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  LUSAKA_POPULAR_AREAS,
-  searchLusakaPlaces,
-  type LusakaPlaceSuggestion,
-} from "@/lib/lusaka/places";
+import { LUSAKA_POPULAR_AREAS } from "@/lib/lusaka/places";
+import type { AddressSuggestion } from "@/lib/lusaka/address-search";
 import { cn } from "@/lib/utils";
 
 interface LusakaAddressInputProps {
@@ -29,13 +26,53 @@ export function LusakaAddressInput({
 }: LusakaAddressInputProps) {
   const listId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const suggestions = searchLusakaPlaces(value);
+  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setActiveIndex(0);
+  }, [suggestions]);
+
+  useEffect(() => {
+    const q = value.trim();
+
+    if (!q) {
+      setSuggestions([]);
+      setLoading(false);
+      return;
+    }
+
+    const timer = window.setTimeout(async () => {
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      setLoading(true);
+
+      try {
+        const response = await fetch(`/api/addresses/suggest?q=${encodeURIComponent(q)}`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) return;
+        const data = (await response.json()) as { suggestions: AddressSuggestion[] };
+        setSuggestions(data.suggestions ?? []);
+        setOpen(true);
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setSuggestions([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    }, 200);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [value]);
 
   useEffect(() => {
@@ -48,16 +85,23 @@ export function LusakaAddressInput({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  function selectSuggestion(suggestion: LusakaPlaceSuggestion) {
+  function selectSuggestion(suggestion: AddressSuggestion) {
     onChange(suggestion.fillValue);
     setOpen(false);
   }
 
   function appendArea(area: string) {
-    const match = suggestions.find((s) => s.area === area);
-    onChange(match?.fillValue ?? (value.trim() ? `${value.trim()}, ${area}` : area));
+    const trimmed = value.trim();
+    const fillValue = trimmed
+      ? trimmed.toLowerCase().includes(area.toLowerCase())
+        ? trimmed
+        : `${trimmed}, ${area}`
+      : area;
+    onChange(fillValue);
     setOpen(false);
   }
+
+  const showDropdown = open && (suggestions.length > 0 || loading);
 
   return (
     <div ref={containerRef} className="space-y-3">
@@ -71,7 +115,7 @@ export function LusakaAddressInput({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={(e) => {
-            if (!open || suggestions.length === 0) return;
+            if (!showDropdown || suggestions.length === 0) return;
             if (e.key === "ArrowDown") {
               e.preventDefault();
               setActiveIndex((i) => Math.min(i + 1, suggestions.length - 1));
@@ -88,22 +132,29 @@ export function LusakaAddressInput({
           placeholder={placeholder}
           required={required}
           role="combobox"
-          aria-expanded={open}
+          aria-expanded={showDropdown}
           aria-controls={listId}
           aria-autocomplete="list"
           autoComplete="off"
           className={cn("h-11 rounded-xl pr-10", className)}
         />
-        <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        {loading ? (
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
+        ) : (
+          <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        )}
 
-        {open && suggestions.length > 0 && (
+        {showDropdown && (
           <ul
             id={listId}
             role="listbox"
-            className="absolute z-20 mt-1 w-full rounded-xl border border-border bg-card shadow-lg overflow-hidden"
+            className="absolute z-20 mt-1 w-full max-h-72 overflow-y-auto rounded-xl border border-border bg-card shadow-lg"
           >
+            {loading && suggestions.length === 0 && (
+              <li className="px-4 py-3 text-sm text-muted-foreground">Looking up places in Lusaka...</li>
+            )}
             {suggestions.map((suggestion, index) => (
-              <li key={suggestion.area} role="option" aria-selected={index === activeIndex}>
+              <li key={suggestion.id} role="option" aria-selected={index === activeIndex}>
                 <button
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
@@ -113,9 +164,10 @@ export function LusakaAddressInput({
                     index === activeIndex && "bg-primary/5"
                   )}
                 >
-                  <span className="font-medium text-foreground">{suggestion.fillValue}</span>
+                  <span className="font-medium text-foreground">{suggestion.label}</span>
                   <span className="block text-xs text-muted-foreground mt-0.5">
-                    {suggestion.area}, Lusaka
+                    {suggestion.sublabel ?? "Lusaka, Zambia"}
+                    {suggestion.source === "street" ? " · Street" : " · Area"}
                   </span>
                 </button>
               </li>
