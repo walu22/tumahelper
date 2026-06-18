@@ -58,8 +58,8 @@ test.describe("Between-guest clean booking end-to-end", () => {
     await page.locator("#airbnb-street").fill("Plot 10, Roma");
     await page.getByText("Confirm this address").click();
 
-    await expect(page.getByRole("heading", { name: "Turnover cadence" })).toBeVisible();
-    await page.getByRole("button", { name: "Single turnover" }).click();
+    await expect(page.getByRole("heading", { name: "How often?" })).toBeVisible();
+    await page.getByRole("button", { name: "One-time clean" }).click();
     await page.getByRole("button", { name: "Pick a date" }).click();
     await page.getByRole("button", { name: "Continue" }).click();
 

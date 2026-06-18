@@ -256,9 +256,9 @@ export function AirbnbBookingFlow({
       <div className="space-y-8">
         <AirbnbFlowProgress current="plan" />
         <div>
-          <h2 className="text-2xl font-semibold">Turnover cadence</h2>
+          <h2 className="text-2xl font-semibold">How often?</h2>
           <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-            Is this a one-off clean between guests, or something you want on a regular rhythm?
+            Is this a one-off clean between guests, or something you want on a regular schedule?
           </p>
         </div>
 
@@ -266,14 +266,14 @@ export function AirbnbBookingFlow({
           <AirbnbOptionCard
             selected={!isRepeat}
             onClick={() => setFrequencyMode(false)}
-            title="Single turnover"
-            description="One clean before your next guest arrives"
+            title="One-time clean"
+            description="A single clean before your next guest arrives"
           />
           <AirbnbOptionCard
             selected={isRepeat}
             onClick={() => setFrequencyMode(true)}
-            title="Regular turnovers"
-            description="Same property cleaned on a repeating schedule"
+            title="Regular cleans"
+            description="The same property cleaned on a repeating schedule"
             icon={Repeat}
           />
         </div>
@@ -305,7 +305,7 @@ export function AirbnbBookingFlow({
         <div>
           <h2 className="text-2xl font-semibold">When should the clean happen?</h2>
           <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-            Pick how soon you need the turnover. You can fine-tune the exact slot on the next
+            Pick how soon you need the clean. You can fine-tune the exact slot on the next
             screen.
           </p>
         </div>
@@ -431,7 +431,7 @@ export function AirbnbBookingFlow({
       <div>
         <h3 className="text-lg font-semibold mb-2">Visit length</h3>
         <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-          Book between 3 and 8 hours. Most turnovers in Lusaka run 4 to 6 hours depending on
+          Book between 3 and 8 hours. Most between-guest cleans in Lusaka run 4 to 6 hours depending on
           size, laundry, and add-ons.
         </p>
         <div className="flex items-center gap-4">
@@ -516,7 +516,7 @@ export function AirbnbBookingFlow({
         </div>
         {whenPreference === "last_minute" && serviceDate === todayIsoDate() && (
           <p className="text-xs text-muted-foreground">
-            Showing later slots today for urgent turnovers.
+            Showing later slots today for urgent same-day cleans.
           </p>
         )}
       </div>

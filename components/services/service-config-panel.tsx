@@ -186,7 +186,7 @@ export function ServiceConfigPanel({
             <div>
               <p className="text-sm font-medium mb-1">How often?</p>
               <p className="text-xs text-muted-foreground mb-3">
-                Once-off or recurring turnover — you can book the first visit now.
+                Once-off or regular cleans. You can book the first visit now.
               </p>
               <div className="grid sm:grid-cols-2 gap-2">
                 {TURNOVER_FREQUENCY_OPTIONS.map((option) => (

@@ -1,5 +1,5 @@
 export const AIRBNB_SCOPE_PITCH =
-  "A full turnover reset for short-stay homes in Lusaka: kitchens and bathrooms sanitised, beds remade, floors done, and the place left ready for your next guest.";
+  "A full clean between guest stays in Lusaka: kitchens and bathrooms sanitised, beds remade, floors done, and the place left ready for your next guest.";
 
 export interface AirbnbScopeSection {
   id: string;
@@ -39,7 +39,7 @@ export const AIRBNB_SCOPE_SECTIONS: AirbnbScopeSection[] = [
   {
     id: "bedrooms",
     title: "Bedrooms",
-    subtitle: "Bedroom turnover:",
+    subtitle: "Bedroom reset:",
     items: [
       "Dust furniture and surfaces",
       "Strip used bedding",

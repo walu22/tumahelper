@@ -55,7 +55,7 @@ export const TURNOVER_FREQUENCY_OPTIONS: {
 }[] = [
   {
     id: "once",
-    label: "Single turnover",
+    label: "One-time clean",
     description: "One clean before your next guest arrives",
   },
   {
@@ -71,7 +71,7 @@ export const TURNOVER_FREQUENCY_OPTIONS: {
   {
     id: "every_2_weeks",
     label: "Every two weeks",
-    description: "Fortnightly turnover for quieter listings",
+    description: "Fortnightly cleans for quieter listings",
   },
 ];
 

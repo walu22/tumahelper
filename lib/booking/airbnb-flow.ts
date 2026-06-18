@@ -46,7 +46,7 @@ export function formatWhenPreference(pref?: AirbnbWhenPreference): string {
 export function formatTurnoverCadence(frequency?: string): string {
   switch (frequency) {
     case "once":
-      return "Single turnover";
+      return "One-time clean";
     case "per_checkout":
       return "After every guest";
     case "weekly":
@@ -54,7 +54,7 @@ export function formatTurnoverCadence(frequency?: string): string {
     case "every_2_weeks":
       return "Every two weeks";
     default:
-      return "Single turnover";
+      return "One-time clean";
   }
 }
 

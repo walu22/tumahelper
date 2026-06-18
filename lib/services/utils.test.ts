@@ -18,6 +18,6 @@ describe("turnover frequency", () => {
 
   it("formats turnover frequency labels", () => {
     expect(formatTurnoverFrequency("per_checkout")).toBe("After every guest");
-    expect(formatTurnoverFrequency(undefined)).toBe("Single turnover");
+    expect(formatTurnoverFrequency(undefined)).toBe("One-time clean");
   });
 });

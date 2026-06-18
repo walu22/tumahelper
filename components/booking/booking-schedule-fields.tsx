@@ -276,7 +276,7 @@ export function BookingScheduleFields({
         title="Schedule"
         description={
           isBetweenGuest
-            ? "Pick the clean date and start time for this turnover."
+            ? "Pick the clean date and start time for this visit."
             : category === "nanny"
               ? "Choose when the visit should happen."
               : "Choose when the clean should happen."

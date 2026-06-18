@@ -15,7 +15,7 @@ const TRUST_POINTS = [
   },
   {
     icon: Sparkles,
-    text: "Choose a verified cleaner — book once or set a regular turnover",
+    text: "Choose a verified cleaner. Book once or set up regular cleans",
   },
 ] as const;
 

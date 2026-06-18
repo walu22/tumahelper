@@ -76,7 +76,7 @@ export function AirbnbBookingSummary({
           <div className="text-sm space-y-2">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                Cadence
+                How often
               </p>
               <p className="text-foreground">{cadence}</p>
             </div>
