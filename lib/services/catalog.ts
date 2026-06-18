@@ -38,7 +38,38 @@ export interface ServiceDetails {
   children?: number;
   childAgeGroups?: string[];
   addons: string[];
+  /** Between-guest / short-stay turnover cadence */
+  frequency?: TurnoverFrequency;
 }
+
+export type TurnoverFrequency = "once" | "per_checkout" | "weekly" | "every_2_weeks";
+
+export const TURNOVER_FREQUENCY_OPTIONS: {
+  id: TurnoverFrequency;
+  label: string;
+  description: string;
+}[] = [
+  {
+    id: "once",
+    label: "Once-off",
+    description: "A single between-guest clean",
+  },
+  {
+    id: "per_checkout",
+    label: "Every checkout",
+    description: "Book again after each guest leaves",
+  },
+  {
+    id: "weekly",
+    label: "Weekly",
+    description: "Same turnover schedule each week",
+  },
+  {
+    id: "every_2_weeks",
+    label: "Every 2 weeks",
+    description: "Fortnightly between-guest cleans",
+  },
+];
 
 export const CHILD_AGE_GROUPS = [
   { id: "0-2", label: "0–2 years (infant)" },
@@ -308,6 +339,7 @@ export function defaultBetweenGuestServiceDetails(): ServiceDetails {
     bedrooms: 2,
     bathrooms: 1,
     addons: [],
+    frequency: "once",
   };
 }
 

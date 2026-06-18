@@ -5,10 +5,12 @@ import {
   CHILD_AGE_GROUPS,
   DURATION_OPTIONS,
   SERVICE_CATALOG,
+  TURNOVER_FREQUENCY_OPTIONS,
   getAvailableAddons,
   sanitizeAddons,
   type ServiceCategoryKey,
   type ServiceDetails,
+  type TurnoverFrequency,
   getServiceType,
 } from "@/lib/services/catalog";
 import { suggestDuration, suggestPrice } from "@/lib/services/utils";
@@ -179,6 +181,33 @@ export function ServiceConfigPanel({
               </select>
             </div>
           </div>
+
+          {isBetweenGuest && (
+            <div>
+              <p className="text-sm font-medium mb-1">How often?</p>
+              <p className="text-xs text-muted-foreground mb-3">
+                Once-off or recurring turnover — you can book the first visit now.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {TURNOVER_FREQUENCY_OPTIONS.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => update({ frequency: option.id as TurnoverFrequency })}
+                    className={cn(
+                      "rounded-xl border-2 p-3 text-left transition-colors",
+                      (value.frequency ?? "once") === option.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/40"
+                    )}
+                  >
+                    <p className="text-sm font-semibold">{option.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{option.description}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="space-y-4">

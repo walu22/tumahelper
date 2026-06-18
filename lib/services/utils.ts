@@ -2,6 +2,7 @@ import {
   CHILD_AGE_GROUPS,
   DURATION_OPTIONS,
   SERVICE_CATALOG,
+  TURNOVER_FREQUENCY_OPTIONS,
   defaultServiceDetails,
   getAddon,
   getServiceType,
@@ -9,6 +10,7 @@ import {
   sanitizeAddons,
   type ServiceCategoryKey,
   type ServiceDetails,
+  type TurnoverFrequency,
 } from "./catalog";
 
 /** Hours each add-on typically adds to a visit */
@@ -138,6 +140,11 @@ export interface ServiceScopeRow {
   value: string;
 }
 
+export function formatTurnoverFrequency(frequency: TurnoverFrequency | undefined): string {
+  if (!frequency) return "Once-off";
+  return TURNOVER_FREQUENCY_OPTIONS.find((o) => o.id === frequency)?.label ?? "Once-off";
+}
+
 export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] {
   const rows: ServiceScopeRow[] = [];
 
@@ -146,6 +153,12 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
       label: details.serviceType === "airbnb" ? "Property" : "Home",
       value: `${details.bedrooms ?? 3} bed · ${details.bathrooms ?? 2} bath`,
     });
+    if (details.serviceType === "airbnb" && details.frequency) {
+      rows.push({
+        label: "Frequency",
+        value: formatTurnoverFrequency(details.frequency),
+      });
+    }
   } else {
     const count = details.children ?? 1;
     const ages = (details.childAgeGroups ?? []).slice(0, count);
@@ -214,6 +227,10 @@ export function buildBookUrl(details: ServiceDetails): string {
     params.set("addons", details.addons.join(","));
   }
 
+  if (details.category === "cleaning" && details.serviceType === "airbnb" && details.frequency) {
+    params.set("frequency", details.frequency);
+  }
+
   return `/customer/book?${params.toString()}`;
 }
 
@@ -245,6 +262,20 @@ export function parseServiceDetailsFromParams(
   const addons = searchParams.get("addons");
   if (addons) base.addons = addons.split(",").filter(Boolean);
   base.addons = sanitizeAddons(category, base.serviceType, base.addons);
+
+  if (category === "cleaning" && base.serviceType === "airbnb") {
+    const frequency = searchParams.get("frequency");
+    if (
+      frequency === "once" ||
+      frequency === "per_checkout" ||
+      frequency === "weekly" ||
+      frequency === "every_2_weeks"
+    ) {
+      base.frequency = frequency;
+    } else {
+      base.frequency = "once";
+    }
+  }
 
   return base;
 }

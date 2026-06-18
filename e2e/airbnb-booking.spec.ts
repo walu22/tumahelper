@@ -52,6 +52,9 @@ test.describe("Between-guest clean booking end-to-end", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Book a between-guest clean" })).toBeVisible({
       timeout: 15_000,
     });
+    await expect(page.getByText("Between-guest clean for your property")).toBeVisible();
+    await expect(page.getByText("How often?")).toBeVisible();
+    await expect(page.getByText("Live estimate")).toBeVisible();
     await expect(page.getByText("What's included in this clean")).toBeVisible();
     await expect(page.getByText("Not included")).toBeVisible();
     await expect(page.getByText("Optional add-ons")).toBeVisible();
@@ -61,7 +64,7 @@ test.describe("Between-guest clean booking end-to-end", () => {
     await page.locator("#service-start-time").selectOption("09:00");
     await page.locator("#service-address").fill("Plot 10, Roma, Lusaka");
 
-    await page.getByRole("button", { name: "Choose worker" }).click();
+    await page.getByRole("button", { name: "Choose cleaner" }).click();
     await expect(page.getByText("Grace Phiri")).toBeVisible();
     await page.getByRole("button", { name: /Grace Phiri/i }).click();
 

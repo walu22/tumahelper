@@ -22,6 +22,7 @@ import { BookingStepShell } from '@/components/booking/booking-step-shell'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingPaymentTotals } from '@/components/booking/booking-payment-totals'
 import { BookingScheduleFields } from '@/components/booking/booking-schedule-fields'
+import { AirbnbBookingIntro } from '@/components/booking/airbnb-booking-intro'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
@@ -82,6 +83,12 @@ const PROGRESS_STEPS = [
   { num: STEP.DETAILS, label: 'Details' },
   { num: STEP.WORKER, label: 'Worker' },
   { num: STEP.PAYMENT, label: 'Payment' },
+]
+
+const AIRBNB_PROGRESS_STEPS = [
+  { num: STEP.DETAILS, label: 'Property' },
+  { num: STEP.WORKER, label: 'Cleaner' },
+  { num: STEP.PAYMENT, label: 'Confirm' },
 ]
 
 function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
@@ -458,8 +465,11 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         locationAddress,
         workerName: selectedWorker?.full_name,
         amount,
+        emphasizeEstimate: lockedAirbnb,
       }
     : null
+
+  const progressSteps = lockedAirbnb ? AIRBNB_PROGRESS_STEPS : PROGRESS_STEPS
 
   return (
     <div className="min-h-screen">
@@ -474,7 +484,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           </h1>
           {step >= STEP.DETAILS && (
             <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1">
-              {PROGRESS_STEPS.map((s, i) => (
+              {progressSteps.map((s, i) => (
                 <div key={s.num} className="flex items-center gap-2 shrink-0">
                   <div
                     className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium ${
@@ -492,7 +502,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                   >
                     {s.label}
                   </span>
-                  {i < PROGRESS_STEPS.length - 1 && <div className="h-0.5 w-6 bg-muted" />}
+                  {i < progressSteps.length - 1 && <div className="h-0.5 w-6 bg-muted" />}
                 </div>
               ))}
             </div>
@@ -513,6 +523,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
               summaryProps ? <BookingSummaryPanel {...summaryProps} /> : undefined
             }
           >
+            {lockedAirbnb && <AirbnbBookingIntro />}
             <Card>
               <CardContent className="p-6 space-y-6">
                 {deepLinkLoading ? (
@@ -525,7 +536,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       <h2 className="text-xl font-semibold">Booking details</h2>
                       <p className="text-sm text-muted-foreground mt-1">
                         {lockedAirbnb
-                          ? 'Confirm scope, property size, and schedule — then choose a cleaner.'
+                          ? 'Property size, frequency, and schedule — then choose your cleaner.'
                           : 'Review what’s included, set your scope, then when and where.'}
                       </p>
                     </div>
@@ -584,7 +595,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                         Back
                       </Button>
                       <Button onClick={() => goToStep(STEP.WORKER)} disabled={!canProceedDetails}>
-                        Choose worker
+                        {lockedAirbnb ? 'Choose cleaner' : 'Choose worker'}
                         <ChevronRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>

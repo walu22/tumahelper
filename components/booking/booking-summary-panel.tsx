@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock, MapPin, User } from "lucide-react";
+import { Calendar, Clock, MapPin, User, Timer } from "lucide-react";
 import { getServiceType } from "@/lib/services/catalog";
 import type { ServiceDetails } from "@/lib/services/catalog";
 import { getServiceScopeRows, suggestPrice } from "@/lib/services/utils";
@@ -17,6 +17,7 @@ interface BookingSummaryPanelProps {
   workerName?: string;
   amount?: string;
   hidePriceEstimate?: boolean;
+  emphasizeEstimate?: boolean;
   className?: string;
 }
 
@@ -39,6 +40,7 @@ export function BookingSummaryPanel({
   workerName,
   amount,
   hidePriceEstimate = false,
+  emphasizeEstimate = false,
   className = "",
 }: BookingSummaryPanelProps) {
   const type = getServiceType(details.category, details.serviceType);
@@ -59,6 +61,24 @@ export function BookingSummaryPanel({
       </div>
 
       <div className="px-5 py-4 space-y-4">
+        {!hidePriceEstimate && emphasizeEstimate && (
+          <div className="rounded-xl bg-primary text-primary-foreground px-4 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] opacity-90 mb-2">
+              Live estimate
+            </p>
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <p className="font-display text-2xl font-bold leading-none">
+                K{price.min} – K{price.max}
+              </p>
+            </div>
+            <p className="text-sm opacity-90 mt-2 flex items-center gap-1.5">
+              <Timer className="h-3.5 w-3.5 shrink-0" />
+              Est. {details.durationHours} hour{details.durationHours === 1 ? "" : "s"} · agree
+              final fee with your cleaner
+            </p>
+          </div>
+        )}
+
         {scopeRows.length > 0 && <ServiceScopeDetails rows={scopeRows} />}
 
         {(hasWhere || hasWhen || workerName) && (
@@ -92,7 +112,7 @@ export function BookingSummaryPanel({
           </div>
         )}
 
-        {!hidePriceEstimate && (
+        {!hidePriceEstimate && !emphasizeEstimate && (
           <div className="rounded-xl bg-primary/5 border border-primary/15 px-4 py-3 text-sm">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-1">
               Estimated price range
