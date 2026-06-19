@@ -2,167 +2,110 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AIRBNB_CLEAN_BOOK_HREF } from "@/lib/landing/content";
-import {
-  SERVICE_CATALOG,
-  defaultServiceDetails,
-  getResidentialCleaningTypes,
-  type ServiceCategoryKey,
-} from "@/lib/services/catalog";
-import { buildBookUrl } from "@/lib/services/utils";
-import { ServiceProjectCard } from "@/components/landing/service-project-card";
+import { useRouter } from "next/navigation";
+import { ChevronRight } from "lucide-react";
+import { HERO_CATEGORIES } from "@/lib/landing/content";
+import { ServiceIcon } from "@/components/brand/service-icons";
+import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
+import { getResidentialCleaningTypes } from "@/lib/services/catalog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type HeroTabId = "nanny" | "cleaning" | "airbnb";
-
-const HERO_TAB_ORDER: HeroTabId[] = ["nanny", "cleaning", "airbnb"];
-
-const TAB_META: Record<
-  HeroTabId,
-  { label: string; categoryKey?: ServiceCategoryKey }
-> = {
-  nanny: { label: "Nannies", categoryKey: "nanny" },
-  cleaning: { label: "Cleaning", categoryKey: "cleaning" },
-  airbnb: { label: "Airbnb clean" },
-};
-
-function bookHrefForType(category: ServiceCategoryKey, typeId: string): string {
-  return buildBookUrl({
-    ...defaultServiceDetails(category),
-    serviceType: typeId,
-    durationHours:
-      SERVICE_CATALOG[category].types.find((t) => t.id === typeId)?.defaultHours ??
-      defaultServiceDetails(category).durationHours,
-  });
-}
-
 export function CategoryScroller() {
-  const [activeTab, setActiveTab] = useState<HeroTabId>("cleaning");
-
+  const router = useRouter();
   const cleaningTypes = getResidentialCleaningTypes();
-  const nannyTypes = SERVICE_CATALOG.nanny.types;
-  const airbnbType = SERVICE_CATALOG.cleaning.types.find((t) => t.id === "airbnb");
+  const [cleaningExpanded, setCleaningExpanded] = useState(false);
+  const [cleaningType, setCleaningType] = useState(cleaningTypes[0]?.id ?? "standard");
 
-  const activeEntry =
-    activeTab === "nanny"
-      ? SERVICE_CATALOG.nanny
-      : activeTab === "cleaning"
-        ? SERVICE_CATALOG.cleaning
-        : null;
+  function handleCleaningClick() {
+    setCleaningExpanded((open) => !open);
+  }
+
+  function bookCleaning() {
+    router.push(`/customer/book?category=cleaning&type=${cleaningType}`);
+  }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <p className="text-sm font-semibold text-center text-muted-foreground mb-5">
+    <div>
+      <p className="text-sm font-semibold text-center text-muted-foreground mb-6">
         Choose the service you need
       </p>
+      <div className="flex gap-5 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide justify-start md:justify-center -mx-4 px-4 sm:mx-0 sm:px-0">
+        {HERO_CATEGORIES.map((cat) => {
+          const isCleaning = cat.icon === "indoor";
 
-      <div
-        role="tablist"
-        aria-label="Service categories"
-        className="flex gap-1 overflow-x-auto scrollbar-hide border-b border-border -mx-4 px-4 sm:mx-0 sm:px-0"
-      >
-        {HERO_TAB_ORDER.map((tabId) => {
-          const { label } = TAB_META[tabId];
-          const isActive = activeTab === tabId;
+          if (isCleaning) {
+            return (
+              <button
+                key={cat.label}
+                type="button"
+                onClick={handleCleaningClick}
+                aria-expanded={cleaningExpanded}
+                aria-controls="hero-cleaning-panel"
+                className={cn(
+                  "snap-start shrink-0 flex flex-col items-center gap-2 min-w-[5.5rem] group rounded-2xl p-1 -m-1 transition-colors",
+                  cleaningExpanded && "bg-primary/10"
+                )}
+              >
+                <div
+                  className={cn(
+                    "transition-transform",
+                    cleaningExpanded ? "scale-105" : "group-hover:scale-105"
+                  )}
+                >
+                  <ServiceIcon name={cat.icon} className="h-16 w-16" />
+                </div>
+                <span
+                  className={cn(
+                    "text-xs font-semibold transition-colors text-center max-w-[5.5rem]",
+                    cleaningExpanded ? "text-primary" : "text-foreground group-hover:text-primary"
+                  )}
+                >
+                  {cat.label}
+                </span>
+              </button>
+            );
+          }
 
           return (
-            <button
-              key={tabId}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              aria-controls={`hero-panel-${tabId}`}
-              id={`hero-tab-${tabId}`}
-              onClick={() => setActiveTab(tabId)}
-              className={cn(
-                "shrink-0 px-4 sm:px-5 py-3 text-sm font-semibold transition-colors border-b-2 -mb-px min-h-11",
-                isActive
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              )}
+            <Link
+              key={cat.label}
+              href={cat.href}
+              onClick={() => setCleaningExpanded(false)}
+              className="snap-start shrink-0 flex flex-col items-center gap-2 min-w-[5.5rem] group"
             >
-              {label}
-            </button>
+              <div className="transition-transform group-hover:scale-105">
+                <ServiceIcon name={cat.icon} className="h-16 w-16" />
+              </div>
+              <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors text-center max-w-[5.5rem]">
+                {cat.label}
+              </span>
+            </Link>
           );
         })}
       </div>
 
-      {activeTab === "airbnb" && airbnbType && (
+      {cleaningExpanded && (
         <div
-          id="hero-panel-airbnb"
-          role="tabpanel"
-          aria-labelledby="hero-tab-airbnb"
-          className="mt-8 animate-in fade-in slide-in-from-top-2 duration-300"
+          id="hero-cleaning-panel"
+          className="mt-8 max-w-xl mx-auto rounded-3xl border border-primary/20 bg-surface/80 p-5 sm:p-6 sweep-card-green animate-in fade-in slide-in-from-top-2 duration-300"
         >
-          <div className="text-center mb-6">
-            <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-              Airbnb &amp; short-stay cleaning
-            </h2>
-            <p className="text-muted-foreground mt-2 max-w-lg mx-auto leading-relaxed">
-              Between-guest cleans for Airbnb and short-stay properties — beds remade, kitchen
-              reset, and ready before the next guest arrives.
-            </p>
-          </div>
-
-          <div className="max-w-md mx-auto">
-            <ServiceProjectCard type={airbnbType} href={AIRBNB_CLEAN_BOOK_HREF} />
-          </div>
-
-          <div className="text-center mt-6">
-            <Button asChild className="rounded-full min-h-11 px-8">
-              <Link href={AIRBNB_CLEAN_BOOK_HREF}>Book Airbnb clean</Link>
-            </Button>
-          </div>
+          <p className="text-sm font-semibold text-foreground mb-3">What type of clean?</p>
+          <CleaningTypeTabs
+            value={cleaningType}
+            onChange={setCleaningType}
+            showDetails
+          />
+          <Button
+            type="button"
+            className="w-full mt-5 min-h-11 rounded-full"
+            onClick={bookCleaning}
+          >
+            Book this clean
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
         </div>
       )}
-
-      {activeEntry && activeTab !== "airbnb" && (
-        <div
-          id={`hero-panel-${activeTab}`}
-          role="tabpanel"
-          aria-labelledby={`hero-tab-${activeTab}`}
-          className="mt-8 animate-in fade-in slide-in-from-top-2 duration-300"
-        >
-          <div className="text-center mb-6">
-            <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-              {activeEntry.title}
-            </h2>
-            <p className="text-muted-foreground mt-2 max-w-xl mx-auto leading-relaxed">
-              {activeEntry.tagline}
-            </p>
-          </div>
-
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center sm:text-left">
-            Popular {activeTab === "cleaning" ? "cleans" : "visits"}
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {(activeTab === "cleaning" ? cleaningTypes : nannyTypes).map((type) => (
-              <ServiceProjectCard
-                key={type.id}
-                type={type}
-                href={bookHrefForType(activeEntry.key, type.id)}
-              />
-            ))}
-          </div>
-
-          <p className="text-center mt-6 text-sm text-muted-foreground">
-            Or{" "}
-            <Link
-              href={
-                activeTab === "cleaning"
-                  ? "/customer/book?category=cleaning"
-                  : "/customer/book?category=nanny"
-              }
-              className="font-semibold text-primary hover:underline"
-            >
-              browse all {activeTab === "cleaning" ? "cleaning" : "nanny"} options
-            </Link>
-          </p>
-        </div>
-      )}
-
     </div>
   );
 }
