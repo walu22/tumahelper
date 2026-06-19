@@ -11,7 +11,7 @@ export default function DevBookingUiTestPage() {
       <div>
         <h1 className="text-2xl font-bold">Booking UI test harness</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Development only — used by Playwright for worker actions and payment upload.
+          Development only. Used by Playwright for worker actions and payment upload.
         </p>
       </div>
       <DevBookingUiHarness />

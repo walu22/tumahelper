@@ -30,7 +30,7 @@ export function AirbnbBookingIntro() {
       </h2>
       <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl mb-6">
         Tell us about your property, pick add-ons if needed, and choose when the clean should
-        happen — then select a verified cleaner in Lusaka.
+        happen, then select a verified cleaner in Lusaka.
       </p>
       <ul className="grid sm:grid-cols-2 gap-3">
         {TRUST_POINTS.map(({ icon: Icon, text }) => (

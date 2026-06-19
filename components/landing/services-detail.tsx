@@ -15,7 +15,7 @@ export function ServicesDetailSection() {
             Two ways we help your home.
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            Start with house cleaning or childcare — then pick a specific service type
+            Start with house cleaning or childcare, then pick a specific service type
             when you&apos;re ready, or book straight away and fine-tune on the next step.
           </p>
         </div>

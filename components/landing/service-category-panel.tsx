@@ -112,7 +112,7 @@ export function ServiceCategoryPanel({ entry }: { entry: ServiceCatalogEntry }) 
             <>
               <p className="text-sm font-semibold mb-1">Optional add-ons</p>
               <p className="text-xs text-muted-foreground mb-2">
-                Varies by service type — add during booking
+                Varies by service type. Add during booking
               </p>
               <div className="flex flex-wrap gap-2">
                 {entry.addons.map((a) => (

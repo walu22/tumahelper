@@ -143,7 +143,7 @@ export function HousekeepingBookingFlow({
       <div className="mb-6">
         <ServiceScopeTeaser category="housekeeping" serviceType={serviceDetails.serviceType} />
         <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-          You are booking household help for a set time — choose duties in the next step, not a
+          You are booking household help for a set time. Choose duties in the next step, not a
           fixed clean package.
         </p>
       </div>
@@ -157,8 +157,8 @@ export function HousekeepingBookingFlow({
         {typePicker}
         {!lockServiceType && (
           <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-            Housekeeping is sold by visit length and duties — cleaning, laundry, dishes, and more —
-            not a fixed clean checklist.
+            Housekeeping is sold by visit length and duties, including cleaning, laundry, dishes,
+            and more. It is not a fixed clean checklist.
           </p>
         )}
         <AddressStepFields

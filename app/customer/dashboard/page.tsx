@@ -82,7 +82,7 @@ export default async function CustomerDashboard() {
   const avgRating =
     reviews && reviews.length > 0
       ? (reviews.reduce((s, r) => s + r.overall_rating, 0) / reviews.length).toFixed(1)
-      : "—";
+      : "N/A";
 
   const totalSpent = bookings
     .filter((b) => ["paid", "confirmed"].includes(b.payment_status))

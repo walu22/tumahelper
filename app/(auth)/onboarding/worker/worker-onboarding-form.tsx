@@ -193,7 +193,7 @@ export function WorkerOnboardingForm({ initialFullName }: WorkerOnboardingFormPr
             Complete your worker profile
           </h1>
           <p className="text-muted-foreground mt-2">
-            Step {step} of 3 — families see this after you finish
+            Step {step} of 3. Families see this after you finish
           </p>
         </div>
 

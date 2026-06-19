@@ -872,7 +872,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
     key: "housekeeping",
     title: "Housekeeping",
     tagline:
-      "Book household help by the visit — cleaning, laundry, dishes, and tidying for a set time",
+      "Book household help by the visit: cleaning, laundry, dishes, and tidying for a set time",
     bookParam: "housekeeping",
     scopeLabel: "home",
     types: [
@@ -881,7 +881,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Half-day help",
         tabLabel: "Half-day",
         description:
-          "Up to four hours of household help at your home. You choose the duties — cleaning, laundry, dishes, tidying, and more.",
+          "Up to four hours of household help at your home. You choose the duties: cleaning, laundry, dishes, tidying, and more.",
         pricingHint:
           "Price depends on visit length, duties selected, and whether this is a one-off or recurring booking.",
         included: [
@@ -907,7 +907,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Full-day help",
         tabLabel: "Full-day",
         description:
-          "A full day of household support — up to eight hours for cleaning, laundry, meal prep, and keeping the home running.",
+          "A full day of household support, up to eight hours for cleaning, laundry, meal prep, and keeping the home running.",
         pricingHint:
           "Full-day visits cost more than half-day help because of the longer time block and broader duties.",
         included: [
@@ -933,7 +933,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Weekly housekeeping",
         tabLabel: "Weekly",
         description:
-          "The same helper on a weekly schedule — regular cleaning, laundry, dishes, and household upkeep.",
+          "The same helper on a weekly schedule: regular cleaning, laundry, dishes, and household upkeep.",
         pricingHint:
           "Weekly housekeeping is priced per visit. Duties and visit length shape the guide price.",
         included: [
@@ -959,7 +959,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Monthly housekeeping",
         tabLabel: "Monthly",
         description:
-          "A longer monthly visit for households that want a thorough reset — cleaning, laundry, bedding, and organisation.",
+          "A longer monthly visit for households that want a thorough reset: cleaning, laundry, bedding, and organisation.",
         pricingHint:
           "Monthly visits are typically longer. Price depends on home size, duties, and how much needs doing.",
         included: [

@@ -158,7 +158,7 @@ export function getWorkerBookingNextStep(params: {
     return {
       title: "Job complete",
       description: paid
-        ? "Payment is confirmed. Great work — your profile stats will update."
+        ? "Payment is confirmed. Great work! Your profile stats will update."
         : "Waiting for customer payment to be confirmed.",
       tone: paid ? "success" : "info",
     };

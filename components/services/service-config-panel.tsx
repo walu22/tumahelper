@@ -287,7 +287,7 @@ export function ServiceConfigPanel({
         <div>
           <p className="text-sm font-medium mb-1">Optional add-ons</p>
           <p className="text-xs text-muted-foreground mb-3">
-            Beyond what&apos;s included above — only add what you need.
+            Beyond what&apos;s included above. Only add what you need.
           </p>
           <div className="grid sm:grid-cols-2 gap-2">
             {availableAddons.map((addon) => (

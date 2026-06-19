@@ -70,7 +70,7 @@ export const HERO_CATEGORIES: {
     id: "housekeeping",
     href: `/#${HERO_CATEGORY_PANEL_IDS.housekeeping}`,
     label: "Housekeeping",
-    subtitle: "Household help by the visit — cleaning, laundry, dishes.",
+    subtitle: "Household help by the visit: cleaning, laundry, dishes.",
     icon: "housekeeping",
     panelId: HERO_CATEGORY_PANEL_IDS.housekeeping,
   },
@@ -114,13 +114,13 @@ export const PRIMARY_NAV_LINKS = [
 ] as const;
 
 export const FOOTER_TAGLINE =
-  "Connecting Lusaka families with trusted, verified home help — nannies, cleaners, housekeepers, and short-stay turnover cleaning.";
+  "Connecting Lusaka families with trusted, verified home help: nannies, cleaners, housekeepers, and short-stay turnover cleaning.";
 
 export const PLATFORM_OFFERINGS_INTRO = {
   eyebrow: "What we do",
   headline: "Verified home help for Lusaka households.",
   subtitle:
-    "Book nannies, cleaning, housekeeping, and short-stay turnover cleaning — once or on a regular schedule — then hire permanently when you find the right person.",
+    "Book nannies, cleaning, housekeeping, and short-stay turnover cleaning, once or on a regular schedule. Hire permanently when you find the right person.",
 };
 
 export const PLATFORM_OFFERINGS = [
@@ -141,7 +141,7 @@ export const PLATFORM_OFFERINGS = [
   {
     title: "Housekeeping",
     description:
-      "Half-day or full-day household help — cleaning, laundry, dishes, tidying, and meal prep for a set visit.",
+      "Half-day or full-day household help: cleaning, laundry, dishes, tidying, and meal prep for a set visit.",
     href: HOUSEKEEPING_BOOK_HREF,
     variant: "teal" as const,
   },
@@ -206,6 +206,6 @@ export const FAQ_ITEMS = [
   },
   {
     q: "Do you clean short-stay rentals?",
-    a: "Yes. Short-stay cleaning covers Airbnbs, guesthouses, and furnished rentals — guest checkout, same-day turnaround, deep cleans, and linen setup.",
+    a: "Yes. Short-stay cleaning covers Airbnbs, guesthouses, and furnished rentals: guest checkout, same-day turnaround, deep cleans, and linen setup.",
   },
 ];
