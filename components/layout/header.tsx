@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/brand/logo'
 import { useState } from 'react'
-import { Menu, X, User, LogOut } from 'lucide-react'
+import { Menu, X, User, LogOut, Sun, Moon } from 'lucide-react'
+import { useTheme } from '@/components/theme-provider'
 import type { User as AppUser } from '@/types'
 import { ROLE_REDIRECTS } from '@/lib/auth/config'
 import { logoutAction } from '@/app/(auth)/login/actions'
@@ -12,6 +13,7 @@ import { GET_HELP_HREF, HEADER_NAV_LINKS } from '@/lib/landing/content'
 
 export function Header({ user }: { user: AppUser | null }) {
   const [isOpen, setIsOpen] = useState(false)
+  const { theme, toggleTheme } = useTheme()
   const dashboardHref = user ? ROLE_REDIRECTS[user.role] || '/dashboard' : '/login'
 
   return (
@@ -32,6 +34,15 @@ export function Header({ user }: { user: AppUser | null }) {
                 {link.label}
               </Link>
             ))}
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-surface transition-colors"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
 
             {user ? (
               <Link href={dashboardHref}>
@@ -56,6 +67,14 @@ export function Header({ user }: { user: AppUser | null }) {
           </div>
 
           <div className="flex md:hidden items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 min-h-11 min-w-11 flex items-center justify-center rounded-lg hover:bg-surface transition-colors"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
             <Link href={GET_HELP_HREF}>
               <Button size="sm" className="rounded-full px-4">
                 Get help
@@ -91,6 +110,14 @@ export function Header({ user }: { user: AppUser | null }) {
               Permanent hire
             </Link>
             <div className="flex flex-col gap-2 pt-4 border-t border-border mt-2">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="flex items-center gap-2 px-1 py-2 text-sm font-medium rounded-lg hover:bg-surface transition-colors"
+              >
+                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+              </button>
               {user ? (
                 <>
                   <Link href={dashboardHref} onClick={() => setIsOpen(false)}>
