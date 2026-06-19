@@ -17,8 +17,9 @@ import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { LusakaAddressInput } from "@/components/booking/lusaka-address-input";
 import { AirbnbFlowProgress } from "@/components/booking/airbnb-flow-progress";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
+import { AirbnbTypeTabs } from "@/components/booking/airbnb-type-tabs";
+import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
 import {
-  AIRBNB_EXTRA_TASKS,
   formatAirbnbAddress,
   formatTurnoverCadence,
   formatWhenPreference,
@@ -33,7 +34,10 @@ import {
   DURATION_OPTIONS,
   TURNOVER_FREQUENCY_OPTIONS,
   getAddon,
+  getAvailableAddons,
   getLinenPreferences,
+  getServiceType,
+  sanitizeAddons,
   type ServiceDetails,
   type TurnoverFrequency,
 } from "@/lib/services/catalog";
@@ -65,6 +69,7 @@ interface AirbnbBookingFlowProps {
   onTimeChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onFindWorker: () => void;
+  lockServiceType?: boolean;
 }
 
 function filterStartTimes(
@@ -101,13 +106,14 @@ export function AirbnbBookingFlow({
   onTimeChange,
   onDescriptionChange,
   onFindWorker,
+  lockServiceType = false,
 }: AirbnbBookingFlowProps) {
   const previewAddress = useMemo(
     () => formatAirbnbAddress(streetAddress, unitAddress),
     [streetAddress, unitAddress]
   );
   const canPreviewLocation = streetAddress.trim().length >= 5;
-  const allStartTimes = getStartTimeOptions("cleaning", "airbnb");
+  const allStartTimes = getStartTimeOptions("cleaning", serviceDetails.serviceType);
   const startTimes = useMemo(
     () => filterStartTimes(allStartTimes, serviceDate, serviceDetails.whenPreference),
     [allStartTimes, serviceDate, serviceDetails.whenPreference]
@@ -192,10 +198,45 @@ export function AirbnbBookingFlow({
     !!whenPreference &&
     linenPreferences.length > 0;
 
+  const selectedType = getServiceType("cleaning", serviceDetails.serviceType);
+  const availableAddons = getAvailableAddons("cleaning", serviceDetails.serviceType);
+
+  function setServiceType(serviceType: string, defaultHours: number) {
+    const addons = sanitizeAddons("cleaning", serviceType, serviceDetails.addons);
+    const next = { ...serviceDetails, serviceType, addons, durationHours: defaultHours };
+    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+  }
+
+  function handleAirbnbTypeChange(typeId: string) {
+    const type = getServiceType("cleaning", typeId);
+    if (type) setServiceType(typeId, type.defaultHours);
+  }
+
+  const airbnbTypePicker =
+    !lockServiceType && step === "address" ? (
+      <div className="mb-6">
+        <AirbnbTypeTabs
+          value={serviceDetails.serviceType}
+          onChange={handleAirbnbTypeChange}
+          showDetails
+          centered
+        />
+      </div>
+    ) : null;
+
+  const lockedTypeSummary =
+    lockServiceType && selectedType && step === "address" ? (
+      <div className="mb-6">
+        <ServiceScopeTeaser category="cleaning" serviceType={serviceDetails.serviceType} />
+      </div>
+    ) : null;
+
   if (step === "address") {
     return (
       <div className="space-y-6">
         <AirbnbFlowProgress current="address" />
+        {lockedTypeSummary}
+        {airbnbTypePicker}
         <div>
           <h2 className="text-2xl font-semibold">Where is your property?</h2>
           <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
@@ -409,6 +450,36 @@ export function AirbnbBookingFlow({
       </div>
 
       <div>
+        <h3 className="text-lg font-semibold mb-2">Property type</h3>
+        <p className="text-sm text-muted-foreground mb-3">
+          What type of short-stay property is this?
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {["Room", "Studio", "Apartment", "House", "Guesthouse unit"].map((label) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() =>
+                onDescriptionChange(
+                  [description.replace(/^Property type:.*\n?/m, "").trim(), `Property type: ${label}`]
+                    .filter(Boolean)
+                    .join("\n")
+                )
+              }
+              className={cn(
+                "rounded-xl border-2 p-3 text-left text-sm transition-colors",
+                description.includes(`Property type: ${label}`)
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/40"
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
         <h3 className="text-lg font-semibold mb-2">Property size</h3>
         <p className="text-sm text-muted-foreground mb-3">
           Bedrooms and bathrooms set our suggested visit length.
@@ -481,7 +552,7 @@ export function AirbnbBookingFlow({
           </p>
         )}
         <div className="grid sm:grid-cols-3 gap-3">
-          {AIRBNB_EXTRA_TASKS.map((task) => (
+          {availableAddons.map((task) => (
             <AirbnbOptionCard
               key={task.id}
               selected={serviceDetails.addons.includes(task.id)}
@@ -541,7 +612,7 @@ export function AirbnbBookingFlow({
         </label>
         <Textarea
           id="service-notes"
-          placeholder="Gate code, lockbox, where linen is kept, parking..."
+          placeholder="Gate code, lockbox, clean linen location, same-day check-in deadline, photo reporting, key access..."
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           rows={3}

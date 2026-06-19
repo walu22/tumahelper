@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test.describe("Mobile layout", () => {
   test("booking page has no horizontal overflow at 375px", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
-    await page.goto("/customer/book?category=nanny&type=babysitting");
+    await page.goto("/customer/book?category=nanny&type=babysitter");
 
     await expect(page.getByRole("heading", { name: "Book a nanny" })).toBeVisible({
       timeout: 15_000,

@@ -48,7 +48,7 @@ test.describe("Between-guest clean booking end-to-end", () => {
     });
 
     await loginAsCustomer(page, baseURL!);
-    await page.goto("/customer/book/airbnb");
+    await page.goto("/customer/book/airbnb?type=guest_checkout");
     await expect(page.getByRole("heading", { level: 1, name: "Book Airbnb cleaning" })).toBeVisible({
       timeout: 15_000,
     });
@@ -90,7 +90,7 @@ test.describe("Between-guest clean booking end-to-end", () => {
       locationAddress: expect.stringContaining("Plot 10, Roma"),
       serviceDetails: {
         category: "cleaning",
-        serviceType: "airbnb",
+        serviceType: "guest_checkout",
       },
     });
   });

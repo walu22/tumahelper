@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { BookingStepFooter } from "@/components/booking/booking-step-footer";
@@ -8,6 +8,14 @@ import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
+import { NannyTypeTabs } from "@/components/booking/nanny-type-tabs";
+import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
+import {
+  EMPTY_NANNY_CARE_ANSWERS,
+  formatNannyCareAnswers,
+  NannyCareQuestions,
+  type NannyCareAnswers,
+} from "@/components/booking/nanny-care-questions";
 import {
   formatVisitCadence,
   formatWhenPreference,
@@ -17,14 +25,13 @@ import {
 import {
   CHILD_AGE_GROUPS,
   DURATION_OPTIONS,
-  SERVICE_CATALOG,
   getAvailableAddons,
   sanitizeAddons,
   getServiceType,
   type ServiceDetails,
 } from "@/lib/services/catalog";
 import { nannyChildAgesComplete, suggestDuration } from "@/lib/services/utils";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface NannyBookingFlowProps {
   step: ServiceFlowStep;
@@ -67,6 +74,7 @@ export function NannyBookingFlow({
   onFindWorker,
   lockServiceType = false,
 }: NannyBookingFlowProps) {
+  const [careAnswers, setCareAnswers] = useState<NannyCareAnswers>(EMPTY_NANNY_CARE_ANSWERS);
   const flowSteps = getFlowSteps("nanny");
   const recommendedHours = suggestDuration(serviceDetails);
   const whenPreference = serviceDetails.whenPreference;
@@ -76,6 +84,7 @@ export function NannyBookingFlow({
   const repeatCadenceChosen =
     !isRepeat ||
     (serviceDetails.frequency !== "once" && !!serviceDetails.frequency);
+  const selectedType = getServiceType("nanny", serviceDetails.serviceType);
 
   function update(patch: Partial<ServiceDetails>) {
     onServiceDetailsChange({ ...serviceDetails, ...patch });
@@ -121,6 +130,13 @@ export function NannyBookingFlow({
     update({ durationHours: options[nextIdx] ?? current });
   }
 
+  function handleFindWorker() {
+    const careNotes = formatNannyCareAnswers(careAnswers);
+    const combined = [description.trim(), careNotes].filter(Boolean).join("\n\n");
+    onDescriptionChange(combined);
+    onFindWorker();
+  }
+
   const canContinuePlan =
     !!whenPreference &&
     repeatCadenceChosen &&
@@ -131,12 +147,39 @@ export function NannyBookingFlow({
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!whenPreference &&
-    nannyChildAgesComplete(serviceDetails);
+    nannyChildAgesComplete(serviceDetails) &&
+    !!careAnswers.emergencyContact.trim();
+
+  function handleCleaningTypeChange(typeId: string) {
+    const type = getServiceType("nanny", typeId);
+    if (type) setServiceType(typeId, type.defaultHours);
+  }
+
+  const nannyTypePicker =
+    !lockServiceType && step === "address" ? (
+      <div className="mb-6">
+        <NannyTypeTabs
+          value={serviceDetails.serviceType}
+          onChange={handleCleaningTypeChange}
+          showDetails
+          centered
+        />
+      </div>
+    ) : null;
+
+  const lockedTypeSummary =
+    lockServiceType && selectedType && step === "address" ? (
+      <div className="mb-6">
+        <ServiceScopeTeaser category="nanny" serviceType={serviceDetails.serviceType} />
+      </div>
+    ) : null;
 
   if (step === "address") {
     return (
       <div>
         <BookingFlowProgress steps={flowSteps} current="address" />
+        {lockedTypeSummary}
+        {nannyTypePicker}
         <AddressStepFields
           idPrefix="nanny"
           streetAddress={streetAddress}
@@ -175,8 +218,6 @@ export function NannyBookingFlow({
     );
   }
 
-  const selectedType = getServiceType("nanny", serviceDetails.serviceType);
-
   return (
     <div className="space-y-8">
       <BookingFlowProgress steps={flowSteps} current="scope" />
@@ -195,23 +236,6 @@ export function NannyBookingFlow({
         </p>
       </div>
 
-      {!lockServiceType && (
-        <div>
-          <h3 className="text-lg font-semibold mb-3">Type of care</h3>
-          <div className="grid gap-3">
-            {SERVICE_CATALOG.nanny.types.map((type) => (
-              <AirbnbOptionCard
-                key={type.id}
-                selected={serviceDetails.serviceType === type.id}
-                onClick={() => setServiceType(type.id, type.defaultHours)}
-                title={type.label}
-                description={type.description}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
       {lockServiceType && selectedType && (
         <div className="rounded-xl border border-border bg-card px-4 py-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
@@ -224,7 +248,7 @@ export function NannyBookingFlow({
       <div className="space-y-4">
         <div>
           <label htmlFor="nanny-children" className="text-sm font-medium mb-2 block">
-            Number of children
+            How many children need care?
           </label>
           <select
             id="nanny-children"
@@ -261,10 +285,13 @@ export function NannyBookingFlow({
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm font-medium">Children&apos;s ages</p>
+            <p className="text-sm font-medium">What are their ages?</p>
             {Array.from({ length: childCount }, (_, index) => (
               <div key={index}>
-                <label htmlFor={`nanny-child-age-${index}`} className="text-xs text-muted-foreground mb-1 block">
+                <label
+                  htmlFor={`nanny-child-age-${index}`}
+                  className="text-xs text-muted-foreground mb-1 block"
+                >
                   Child {index + 1}
                 </label>
                 <select
@@ -285,6 +312,8 @@ export function NannyBookingFlow({
           </div>
         )}
       </div>
+
+      <NannyCareQuestions value={careAnswers} onChange={setCareAnswers} />
 
       {availableAddons.length > 0 && (
         <div>
@@ -347,11 +376,11 @@ export function NannyBookingFlow({
 
       <div>
         <label htmlFor="nanny-notes" className="text-sm font-medium mb-2 block">
-          Notes for your nanny
+          Additional notes for your nanny
         </label>
         <Textarea
           id="nanny-notes"
-          placeholder="Allergies, routines, school pickup details, house rules..."
+          placeholder="Anything else the nanny should know before the visit..."
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           rows={3}
@@ -359,10 +388,18 @@ export function NannyBookingFlow({
         />
       </div>
 
+      <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm flex gap-3">
+        <Shield className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+        <p className="text-muted-foreground leading-relaxed">
+          For your child&apos;s safety, please provide accurate age, health, allergy, and emergency
+          contact information. Helpers are only expected to perform duties listed in your booking.
+        </p>
+      </div>
+
       <BookingStepFooter
         onBack={() => onStepChange("plan")}
         primaryLabel="Choose your nanny"
-        onPrimary={onFindWorker}
+        onPrimary={handleFindWorker}
         primaryDisabled={!canChooseWorker}
       />
     </div>

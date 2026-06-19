@@ -1,24 +1,22 @@
 "use client";
 
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
+import { NannyTypeTabs } from "@/components/booking/nanny-type-tabs";
+import { AirbnbTypeTabs } from "@/components/booking/airbnb-type-tabs";
 import {
-  catalogServiceTypeOptions,
   defaultServiceDetails,
+  getAirbnbCleaningTypes,
   getResidentialCleaningTypes,
-  type ServiceCategoryKey,
 } from "@/lib/services/catalog";
 import { buildBookUrl } from "@/lib/services/utils";
 
 interface ServiceTypePickerProps {
-  onSelect?: (categoryKey: ServiceCategoryKey, serviceTypeId: string) => void;
+  onSelect?: (categoryKey: "nanny" | "cleaning", serviceTypeId: string) => void;
 }
 
 export function ServiceTypePicker(_props: ServiceTypePickerProps) {
-  const options = catalogServiceTypeOptions();
-  const nannyOptions = options.filter((o) => o.categoryKey === "nanny");
   const cleaningTypes = getResidentialCleaningTypes();
+  const airbnbTypes = getAirbnbCleaningTypes();
 
   return (
     <div className="space-y-8">
@@ -43,37 +41,32 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         />
       </section>
 
-      {nannyOptions.length > 0 && (
-        <section>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
-            Nannies & childcare
-          </p>
-          <ul className="space-y-3">
-            {nannyOptions.map(({ categoryKey, type }) => (
-              <li key={type.id}>
-                <Link
-                  href={buildBookUrl({
-                    ...defaultServiceDetails(categoryKey),
-                    serviceType: type.id,
-                  })}
-                  className="w-full rounded-xl border border-border p-4 text-left flex items-start gap-3 hover:border-primary/40 hover:bg-primary/5 transition-colors group"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold group-hover:text-primary transition-colors">
-                      {type.label}
-                    </p>
-                    <p className="text-sm text-muted-foreground mt-1">{type.description}</p>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Typical K{type.priceHintMin} – K{type.priceHintMax} · ~{type.defaultHours}h
-                    </p>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary shrink-0 mt-0.5" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <section>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
+          Nannies & childcare
+        </p>
+        <NannyTypeTabs
+          value="day_nanny"
+          getHref={(typeId) =>
+            buildBookUrl({
+              ...defaultServiceDetails("nanny"),
+              serviceType: typeId,
+            })
+          }
+          showDetails={false}
+        />
+      </section>
+
+      <section>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
+          Airbnb clean
+        </p>
+        <AirbnbTypeTabs
+          value={airbnbTypes[0]?.id ?? "guest_checkout"}
+          getHref={(typeId) => `/customer/book/airbnb?type=${typeId}`}
+          showDetails={false}
+        />
+      </section>
     </div>
   );
 }

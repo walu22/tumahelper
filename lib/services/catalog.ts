@@ -8,6 +8,8 @@ export interface ServiceTypeOption {
   description: string;
   included: string[];
   notIncluded?: string[];
+  /** Customer-facing pricing copy shown in booking (overrides numeric range when set). */
+  pricingHint?: string;
   defaultHours: number;
   priceHintMin: number;
   priceHintMax: number;
@@ -102,13 +104,64 @@ export const RESIDENTIAL_CLEANING_TYPE_IDS = [
 
 const HOME_CLEAN_ADDON_TYPES = ["standard", "spring", "apartment", "deep"] as const;
 
+/** Airbnb / short-stay cleaning types (separate hero entry from residential cleaning). */
+export const AIRBNB_CLEANING_TYPE_IDS = [
+  "guest_checkout",
+  "same_day_turnaround",
+  "deep_airbnb",
+  "linen_setup",
+] as const;
+
+export const AIRBNB_ADDON_TYPES = [...AIRBNB_CLEANING_TYPE_IDS] as const;
+
+export const NANNY_TYPE_IDS = [
+  "day_nanny",
+  "babysitter",
+  "infant_care",
+  "after_school",
+  "weekend_nanny",
+] as const;
+
+export const LEGACY_SERVICE_TYPE_ALIASES: Record<string, string> = {
+  airbnb: "guest_checkout",
+  babysitting: "babysitter",
+  newborn: "infant_care",
+  regular: "day_nanny",
+};
+
+export function normalizeServiceType(_category: ServiceCategoryKey, typeId: string): string {
+  return LEGACY_SERVICE_TYPE_ALIASES[typeId] ?? typeId;
+}
+
+export function isAirbnbCleaningType(serviceType: string): boolean {
+  return (
+    AIRBNB_CLEANING_TYPE_IDS.includes(
+      serviceType as (typeof AIRBNB_CLEANING_TYPE_IDS)[number]
+    ) || serviceType === "airbnb"
+  );
+}
+
 export function getResidentialCleaningTypes(): ServiceTypeOption[] {
   const byId = new Map(
     SERVICE_CATALOG.cleaning.types
-      .filter((t) => t.id !== "airbnb")
+      .filter((t) => (RESIDENTIAL_CLEANING_TYPE_IDS as readonly string[]).includes(t.id))
       .map((t) => [t.id, t] as const)
   );
   return RESIDENTIAL_CLEANING_TYPE_IDS.map((id) => byId.get(id)).filter(
+    (t): t is ServiceTypeOption => t !== undefined
+  );
+}
+
+export function getAirbnbCleaningTypes(): ServiceTypeOption[] {
+  const byId = new Map(SERVICE_CATALOG.cleaning.types.map((t) => [t.id, t] as const));
+  return AIRBNB_CLEANING_TYPE_IDS.map((id) => byId.get(id)).filter(
+    (t): t is ServiceTypeOption => t !== undefined
+  );
+}
+
+export function getNannyTypes(): ServiceTypeOption[] {
+  const byId = new Map(SERVICE_CATALOG.nanny.types.map((t) => [t.id, t] as const));
+  return NANNY_TYPE_IDS.map((id) => byId.get(id)).filter(
     (t): t is ServiceTypeOption => t !== undefined
   );
 }
@@ -298,25 +351,131 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         priceHintMax: 400,
       },
       {
-        id: "airbnb",
-        label: "Airbnb cleaning",
+        id: "guest_checkout",
+        label: "Guest checkout clean",
+        tabLabel: "Guest checkout clean",
         description:
-          "Cleaning between guest stays for Airbnb and short-stay properties in Lusaka.",
+          "Cleaning an Airbnb, guesthouse room, or short-stay unit after a guest checks out and before the next guest arrives.",
+        pricingHint:
+          "Price depends on unit size, bedrooms and bathrooms, linen requirements, checkout condition, and whether restocking or photo reporting is needed.",
         included: [
-          "All bedrooms & living areas",
-          "Beds remade with linen left on site",
-          "Bathroom cleaned & towels reset (if provided)",
-          "Kitchen surfaces & dishes washed",
-          "Floors vacuumed/mopped & bins emptied",
+          "Bathroom cleaning",
+          "Kitchen surface cleaning",
+          "Floor sweeping and mopping",
+          "Bed setup with clean linen",
+          "Used linen removal",
+          "Bin emptying",
+          "Mirror cleaning",
+          "Light dusting",
+          "Forgotten item check",
+          "Damage or missing item reporting",
         ],
         notIncluded: [
-          "Toiletries, snacks, or welcome packs",
-          "Key exchange or guest messaging",
-          "Restocking supplies (you provide items if needed)",
+          "Laundry washing",
+          "Deep cleaning",
+          "Buying supplies",
+          "Repairs or maintenance",
+          "Pest control",
+          "Excessive mess or party cleanup",
+          "Outdoor or shared area cleaning",
         ],
         defaultHours: 4,
         priceHintMin: 400,
         priceHintMax: 650,
+      },
+      {
+        id: "same_day_turnaround",
+        label: "Same-day turnaround",
+        tabLabel: "Same-day turnaround",
+        description:
+          "Fast Airbnb cleaning for back-to-back bookings where one guest checks out and another checks in on the same day.",
+        pricingHint:
+          "Same-day turnaround costs more than normal guest checkout cleaning because it is urgent and time-sensitive.",
+        included: [
+          "Fast checkout clean",
+          "Bed and linen setup",
+          "Bathroom refresh",
+          "Kitchen refresh",
+          "Floor cleaning",
+          "Bin emptying",
+          "Readiness check",
+          "Urgent issue reporting",
+        ],
+        notIncluded: [
+          "Deep cleaning",
+          "Laundry washing unless selected",
+          "Repairs",
+          "Shopping or restocking",
+          "Guest waiting",
+          "Excessive mess cleanup",
+          "Key handover unless selected",
+        ],
+        defaultHours: 4,
+        priceHintMin: 500,
+        priceHintMax: 750,
+      },
+      {
+        id: "deep_airbnb",
+        label: "Deep Airbnb clean",
+        tabLabel: "Deep Airbnb clean",
+        description:
+          "A more detailed clean after multiple guest stays, long bookings, heavy use, or before improving the guest experience.",
+        pricingHint:
+          "Price depends on unit size, bedrooms and bathrooms, condition of the unit, and extras such as fridge, oven, microwave, windows, or laundry.",
+        included: [
+          "Detailed bathroom cleaning",
+          "Detailed kitchen cleaning",
+          "Tile and corner cleaning",
+          "Door, handle, and switch wiping",
+          "Skirting board dusting",
+          "Under-bed reachable cleaning",
+          "Mirror and glass cleaning",
+          "Cobweb removal",
+          "Damage and stain reporting",
+        ],
+        notIncluded: [
+          "Carpet machine cleaning",
+          "Upholstery cleaning",
+          "Pest control",
+          "Repairs",
+          "Painting",
+          "Laundry unless selected",
+          "Post-construction cleaning",
+        ],
+        defaultHours: 6,
+        priceHintMin: 550,
+        priceHintMax: 900,
+      },
+      {
+        id: "linen_setup",
+        label: "Linen change & setup",
+        tabLabel: "Linen change & setup",
+        description:
+          "Linen changed, beds prepared, towels replaced, and the unit quickly set up for the next guest.",
+        pricingHint:
+          "Price depends on number of beds, bedrooms, towel setup, and whether laundry or ironing is included.",
+        included: [
+          "Remove used linen",
+          "Remove used towels",
+          "Make beds",
+          "Place clean towels",
+          "Arrange pillows",
+          "Check visible linen condition",
+          "Report missing or damaged linen",
+          "Light bedroom setup",
+        ],
+        notIncluded: [
+          "Full unit cleaning",
+          "Bathroom cleaning",
+          "Kitchen cleaning",
+          "Laundry washing",
+          "Ironing",
+          "Buying linen",
+          "Deep mattress cleaning",
+        ],
+        defaultHours: 3,
+        priceHintMin: 250,
+        priceHintMax: 450,
       },
     ],
     addons: [
@@ -325,167 +484,335 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Laundry",
         description: "Wash, dry, and fold",
         priceHint: 80,
-        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "ironing",
         label: "Ironing",
         description: "Press clothes and linen",
         priceHint: 80,
-        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "dishes",
         label: "Dish washing",
         description: "Wash and tidy dishes in the sink",
         priceHint: 50,
-        allowedTypes: ["standard", "apartment", "airbnb"],
+        allowedTypes: ["standard", "apartment", ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "oven",
         label: "Inside oven",
         description: "Degrease and scrub oven interior",
         priceHint: 100,
-        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "fridge",
         label: "Inside fridge",
         description: "Clean shelves and interior",
         priceHint: 80,
-        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "windows",
         label: "Interior windows",
         description: "Glass and frames inside",
         priceHint: 100,
-        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "cabinets",
         label: "Inside cupboards",
         description: "Kitchen cupboards emptied first",
         priceHint: 100,
-        allowedTypes: ["standard", "spring", "apartment", "airbnb"],
+        allowedTypes: ["standard", "spring", "apartment", ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "bedding",
         label: "Bedding change",
         description: "Change bed linen you provide on site",
         priceHint: 60,
-        allowedTypes: ["standard", "spring", "apartment", "airbnb"],
+        allowedTypes: ["standard", "spring", "apartment", ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "balcony",
         label: "Balcony or verandah",
         description: "Sweep and tidy balcony, patio, or verandah",
         priceHint: 60,
-        allowedTypes: ["standard", "spring", "apartment", "airbnb"],
+        allowedTypes: ["standard", "spring", "apartment", ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "supplies",
         label: "Cleaning supplies",
         description: "Helper brings basic cleaning supplies",
         priceHint: 80,
-        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, ...AIRBNB_ADDON_TYPES],
       },
       {
         id: "appliances",
         label: "Clean appliances",
         description: "Microwave, kettle, toaster, and coffee machine",
         priceHint: 80,
-        allowedTypes: ["airbnb"],
+        allowedTypes: [...AIRBNB_ADDON_TYPES],
       },
       {
         id: "restock_supplies",
         label: "Restock supplies",
         description: "Kitchen consumables you keep on site",
         priceHint: 50,
-        allowedTypes: ["airbnb"],
+        allowedTypes: [...AIRBNB_ADDON_TYPES],
       },
       {
         id: "restock_toiletries",
         label: "Restock toiletries",
         description: "Soap, shampoo, and bathroom essentials on site",
         priceHint: 50,
-        allowedTypes: ["airbnb"],
+        allowedTypes: [...AIRBNB_ADDON_TYPES],
+      },
+      {
+        id: "photo_report",
+        label: "Photo report",
+        description: "Completion photos sent after the clean",
+        priceHint: 40,
+        allowedTypes: [...AIRBNB_ADDON_TYPES],
+      },
+      {
+        id: "damage_report",
+        label: "Damage report",
+        description: "Detailed report of visible damages or missing items",
+        priceHint: 40,
+        allowedTypes: [...AIRBNB_ADDON_TYPES],
+      },
+      {
+        id: "extra_bedroom",
+        label: "Extra bedroom",
+        description: "Additional bedroom beyond the base quote",
+        priceHint: 80,
+        allowedTypes: [...AIRBNB_ADDON_TYPES],
+      },
+      {
+        id: "extra_bathroom",
+        label: "Extra bathroom",
+        description: "Additional bathroom beyond the base quote",
+        priceHint: 60,
+        allowedTypes: [...AIRBNB_ADDON_TYPES],
+      },
+      {
+        id: "key_handover",
+        label: "Key pickup or drop-off",
+        description: "Helper collects or returns keys",
+        priceHint: 60,
+        allowedTypes: [...AIRBNB_ADDON_TYPES],
       },
     ],
   },
   nanny: {
     key: "nanny",
     title: "Nannies & childcare",
-    tagline: "Verified childcare for babysitting, after-school, or regular help",
+    tagline: "Verified childcare for day help, babysitting, infant care, and after-school support",
     bookParam: "nanny",
     scopeLabel: "children",
     types: [
       {
-        id: "babysitting",
-        label: "Babysitting",
-        description: "Date night, appointments, or occasional cover.",
+        id: "day_nanny",
+        label: "Day nanny",
+        tabLabel: "Day nanny",
+        description:
+          "For parents or guardians who need childcare support during the day while they are at work, running errands, or busy at home.",
+        pricingHint:
+          "Price depends on the number of children, their ages, duration of care, and whether extras such as bathing, meal prep, or homework help are required.",
         included: [
-          "Active supervision & safety",
-          "Age-appropriate play & activities",
-          "Snacks & basic meals (as agreed)",
-          "Bedtime routine (if within hours)",
-          "Updates to parents as needed",
+          "Child supervision",
+          "Feeding and snack support",
+          "Simple child meal preparation",
+          "Playtime and routine support",
+          "Nap support",
+          "Child-related tidying",
+          "Bottle or child dish washing",
+        ],
+        notIncluded: [
+          "Full house cleaning",
+          "Household laundry",
+          "Cooking for the whole family",
+          "Overnight care",
+          "School transport",
+          "Medical care",
+          "Caring for additional children not listed in the booking",
+        ],
+        defaultHours: 6,
+        priceHintMin: 300,
+        priceHintMax: 500,
+      },
+      {
+        id: "babysitter",
+        label: "Babysitter",
+        tabLabel: "Babysitter",
+        description:
+          "Short childcare bookings when parents need help for a few hours, such as errands, appointments, date nights, events, or temporary supervision.",
+        pricingHint:
+          "Price depends on the number of hours, number of children, their ages, and whether the booking is during the evening, weekend, or public holiday.",
+        included: [
+          "Short-term child supervision",
+          "Safe indoor play",
+          "Snacks or meals provided by parent",
+          "Bedtime support if requested",
+          "Light child-related tidying",
+        ],
+        notIncluded: [
+          "House cleaning",
+          "Full meal cooking",
+          "School pickup",
+          "Overnight care",
+          "Medical care",
+          "Caring for extra children not declared",
         ],
         defaultHours: 4,
         priceHintMin: 200,
         priceHintMax: 350,
       },
       {
+        id: "infant_care",
+        label: "Infant care",
+        tabLabel: "Infant care",
+        description:
+          "Support caring for babies and very young children who require more attention, feeding support, nappies, naps, and careful supervision.",
+        pricingHint:
+          "Infant care is priced higher than normal babysitting because it requires closer attention, more responsibility, and more hands-on care.",
+        included: [
+          "Infant supervision",
+          "Feeding support",
+          "Bottle preparation",
+          "Burping",
+          "Nappy changing",
+          "Nap support",
+          "Baby-related tidying",
+          "Cleaning bottles used during the booking",
+        ],
+        notIncluded: [
+          "Medical care",
+          "Sleep training",
+          "Full house cleaning",
+          "Family laundry",
+          "Overnight care",
+          "Caring for sick babies without prior notice",
+        ],
+        defaultHours: 4,
+        priceHintMin: 300,
+        priceHintMax: 450,
+      },
+      {
         id: "after_school",
         label: "After-school care",
-        description: "Pick-up window or afternoon supervision until parents return.",
+        tabLabel: "After-school care",
+        description:
+          "Support with children after school, including supervision, snacks, routines, homework support, and keeping the child safe until the parent is available.",
+        pricingHint:
+          "Price depends on the number of children, duration, whether homework support is needed, and whether the booking repeats on weekdays.",
         included: [
-          "Supervision after school hours",
-          "Homework support (basic)",
-          "Safe play & downtime",
-          "Light snack preparation",
-          "Handover notes to parents",
+          "After-school supervision",
+          "Snack support",
+          "Routine support",
+          "Basic homework supervision",
+          "Safe indoor play or reading",
+          "Child-related tidying",
+        ],
+        notIncluded: [
+          "Formal tutoring",
+          "School transport",
+          "Full meal cooking",
+          "House cleaning",
+          "Laundry",
+          "Overnight care",
         ],
         defaultHours: 4,
         priceHintMin: 250,
         priceHintMax: 400,
       },
       {
-        id: "regular",
-        label: "Regular part-time",
-        description: "Scheduled recurring help with the same nanny and a consistent routine.",
+        id: "weekend_nanny",
+        label: "Weekend nanny",
+        tabLabel: "Weekend nanny",
+        description:
+          "Childcare support over the weekend, whether for errands, events, work commitments, rest, or family support.",
+        pricingHint:
+          "Weekend bookings may cost more than weekday bookings depending on demand, duration, number of children, and whether the booking is late evening or public holiday.",
         included: [
-          "Consistent weekly schedule",
-          "Childcare routine you agree on",
-          "Meal & activity planning",
-          "Builds trust before permanent hire",
-          "Flexible hours per visit",
+          "Weekend child supervision",
+          "Feeding and snack support",
+          "Playtime",
+          "Nap support",
+          "Child-related tidying",
+          "Bathing if selected",
+        ],
+        notIncluded: [
+          "Full house cleaning",
+          "Family cooking",
+          "Laundry",
+          "Overnight care",
+          "Transport",
+          "Extra children not declared",
         ],
         defaultHours: 6,
-        priceHintMin: 350,
-        priceHintMax: 550,
-      },
-      {
-        id: "newborn",
-        label: "Newborn & infant care",
-        description: "Experienced help with babies 0–12 months.",
-        included: [
-          "Feeding & nappy support",
-          "Safe sleep practices",
-          "Soothing & settling",
-          "Light nursery tidying",
-          "Parent guidance & handover",
-        ],
-        defaultHours: 4,
         priceHintMin: 300,
-        priceHintMax: 450,
+        priceHintMax: 500,
       },
     ],
     addons: [
-      { id: "meal_prep", label: "Meal prep", description: "Prepare children's meals", priceHint: 60 },
-      { id: "homework", label: "Homework help", description: "Focused school support", priceHint: 60 },
-      { id: "light_tidying", label: "Light tidying", description: "Tidy play areas & kitchen", priceHint: 50 },
-      { id: "school_pickup", label: "School pickup", description: "Collect children from school", priceHint: 80 },
+      {
+        id: "bathing",
+        label: "Bathing support",
+        description: "Bathe the child during the visit",
+        priceHint: 50,
+      },
+      {
+        id: "homework",
+        label: "Homework supervision",
+        description: "Focused homework support",
+        priceHint: 60,
+      },
+      {
+        id: "meal_prep",
+        label: "Simple child meal preparation",
+        description: "Prepare children's meals or snacks",
+        priceHint: 60,
+      },
+      {
+        id: "extra_child",
+        label: "Extra child",
+        description: "Care for an additional child beyond the first",
+        priceHint: 80,
+      },
+      {
+        id: "evening",
+        label: "Evening booking",
+        description: "Care during evening hours",
+        priceHint: 60,
+      },
+      {
+        id: "public_holiday",
+        label: "Public holiday booking",
+        description: "Care on a public holiday",
+        priceHint: 80,
+      },
+      {
+        id: "baby_care",
+        label: "Baby care",
+        description: "Extra hands-on baby care support",
+        priceHint: 70,
+      },
+      {
+        id: "bottle_washing",
+        label: "Bottle washing",
+        description: "Wash bottles and child feeding items",
+        priceHint: 40,
+      },
+      {
+        id: "child_laundry",
+        label: "Child laundry",
+        description: "Wash or tidy child clothing",
+        priceHint: 60,
+      },
     ],
   },
 };
@@ -534,10 +861,11 @@ export function getLinenPreferences(details: ServiceDetails): LinenPreference[] 
 }
 
 export function defaultBetweenGuestServiceDetails(): ServiceDetails {
-  const type = getServiceType("cleaning", "airbnb");
+  const typeId = AIRBNB_CLEANING_TYPE_IDS[0];
+  const type = getServiceType("cleaning", typeId);
   return {
     category: "cleaning",
-    serviceType: "airbnb",
+    serviceType: typeId,
     durationHours: type?.defaultHours ?? 4,
     bedrooms: 2,
     bathrooms: 1,
@@ -548,7 +876,8 @@ export function defaultBetweenGuestServiceDetails(): ServiceDetails {
 }
 
 export function getServiceType(category: ServiceCategoryKey, typeId: string) {
-  return SERVICE_CATALOG[category].types.find((t) => t.id === typeId);
+  const normalized = normalizeServiceType(category, typeId);
+  return SERVICE_CATALOG[category].types.find((t) => t.id === normalized);
 }
 
 export function getAddon(category: ServiceCategoryKey, addonId: string) {
@@ -577,7 +906,7 @@ export function catalogServiceTypeOptions() {
     const entry = SERVICE_CATALOG[categoryKey];
     const types =
       categoryKey === "cleaning"
-        ? entry.types.filter((t) => t.id !== "airbnb")
+        ? entry.types.filter((t) => !isAirbnbCleaningType(t.id))
         : entry.types;
     return types.map((type) => ({
       categoryKey,

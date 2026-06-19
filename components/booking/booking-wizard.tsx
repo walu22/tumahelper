@@ -32,6 +32,8 @@ import {
   categorySlugToKey,
   defaultBetweenGuestServiceDetails,
   defaultServiceDetails,
+  isAirbnbCleaningType,
+  normalizeServiceType,
   sanitizeAddons,
   getServiceType,
   paramToCategoryKey,
@@ -45,7 +47,7 @@ import {
 } from '@/lib/services/utils'
 
 function guidePriceHint(details: ServiceDetails): string {
-  if (details.serviceType === "airbnb") {
+  if (isAirbnbCleaningType(details.serviceType)) {
     return "Based on property size, visit length, linen, and add-ons. You pay the total below via mobile money after the clean.";
   }
   if (details.category === "nanny") {
@@ -144,13 +146,15 @@ function initServiceDetailsFromParams(
   if (workerProfileId) return null
 
   const key = resolveCategoryFromParams(categoryParam, funnelParam)
-    ?? (searchParams.get('type') === 'airbnb' ? 'cleaning' : null)
+    ?? (searchParams.get('type') && isAirbnbCleaningType(normalizeServiceType('cleaning', searchParams.get('type')!))
+      ? 'cleaning'
+      : null)
   if (!key) return null
 
   const parsed = parseServiceDetailsFromParams(searchParams)
   const funnel = resolveFunnelParam(funnelParam)
   let details = parsed ?? defaultServiceDetails(key)
-  if (funnel?.type) details = { ...details, serviceType: funnel.type }
+  if (funnel?.type) details = { ...details, serviceType: normalizeServiceType(key, funnel.type) }
 
   const typeOption = getServiceType(key, details.serviceType)
   if (typeOption) details.durationHours = typeOption.defaultHours
@@ -170,7 +174,7 @@ function buildBookingDescription(
 ) {
   const parts: string[] = []
   if (description.trim()) parts.push(description.trim())
-  if (serviceType === 'airbnb') {
+  if (serviceType && isAirbnbCleaningType(serviceType)) {
     if (guestCheckoutTime) {
       parts.push(`Guest check-out: ${guestCheckoutTime}`)
     }
@@ -181,14 +185,19 @@ function buildBookingDescription(
   return parts.length > 0 ? parts.join('\n') : undefined
 }
 
+function usesAirbnbBookingFlow(details: ServiceDetails): boolean {
+  return details.category === 'cleaning' && isAirbnbCleaningType(details.serviceType)
+}
+
 function isLockedAirbnbFlow(
   airbnbEntry: boolean,
   typeParam: string | null,
   funnelParam: string | null
 ): boolean {
-  if (airbnbEntry) return true
-  if (typeParam === 'airbnb') return true
-  return resolveFunnelParam(funnelParam)?.type === 'airbnb'
+  if (typeParam && isAirbnbCleaningType(normalizeServiceType('cleaning', typeParam))) return true
+  if (airbnbEntry && typeParam) return true
+  const funnelType = resolveFunnelParam(funnelParam)?.type
+  return funnelType ? isAirbnbCleaningType(normalizeServiceType('cleaning', funnelType)) : false
 }
 
 function usesGuidedBookingFlow(details: ServiceDetails): boolean {
@@ -228,7 +237,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [serviceDetails, setServiceDetails] = useState<ServiceDetails | null>(() => {
-    if (airbnbEntry) return defaultBetweenGuestServiceDetails()
+    if (airbnbEntry) {
+      const normalized = typeParam
+        ? normalizeServiceType('cleaning', typeParam)
+        : defaultBetweenGuestServiceDetails().serviceType
+      return { ...defaultBetweenGuestServiceDetails(), serviceType: normalized }
+    }
     return initServiceDetailsFromParams(searchParams, categoryParam, funnelParam, workerProfileId)
   })
   const [workers, setWorkers] = useState<WorkerSummary[]>([])
@@ -315,9 +329,16 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   }, [serviceDetails, categories, selectedCategory])
 
   useEffect(() => {
+    if (airbnbEntry && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-airbnb-panel")
+      return
+    }
     if (airbnbEntry || lockedAirbnb) return
     if (categoryParam === "cleaning" && !typeParam && !funnelParam && !workerProfileId) {
       window.location.assign("/#hero-cleaning-panel")
+    }
+    if (categoryParam === "nanny" && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-nanny-panel")
     }
   }, [airbnbEntry, lockedAirbnb, categoryParam, typeParam, funnelParam, workerProfileId])
 
@@ -515,7 +536,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
   function renderGuidedSummary() {
     if (!serviceDetails) return null
-    if (lockedAirbnb) {
+    if (lockedAirbnb || (serviceDetails && usesAirbnbBookingFlow(serviceDetails))) {
       return (
         <AirbnbBookingSummary
           step={serviceSubStep}
@@ -564,8 +585,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       onFindWorker: () => goToStep(STEP.WORKER),
     }
 
-    if (lockedAirbnb) {
-      return <AirbnbBookingFlow {...shared} step={serviceSubStep as 'address' | 'plan' | 'scope'} onStepChange={setServiceSubStep as (s: 'address' | 'plan' | 'scope') => void} />
+    if (lockedAirbnb || (serviceDetails && usesAirbnbBookingFlow(serviceDetails))) {
+      return <AirbnbBookingFlow {...shared} step={serviceSubStep as 'address' | 'plan' | 'scope'} onStepChange={setServiceSubStep as (s: 'address' | 'plan' | 'scope') => void} lockServiceType={lockServiceType} />
     }
     if (serviceDetails.category === 'nanny') {
       return <NannyBookingFlow {...shared} lockServiceType={lockServiceType} />

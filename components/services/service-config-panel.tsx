@@ -12,6 +12,7 @@ import {
   type ServiceDetails,
   type TurnoverFrequency,
   getServiceType,
+  isAirbnbCleaningType,
 } from "@/lib/services/catalog";
 import { suggestDuration, suggestPrice } from "@/lib/services/utils";
 
@@ -42,7 +43,7 @@ export function ServiceConfigPanel({
   const recommendedHours = suggestDuration(value);
   const showHourSuggestion = recommendedHours !== value.durationHours;
   const availableAddons = getAvailableAddons(category, value.serviceType);
-  const isBetweenGuest = value.serviceType === "airbnb";
+  const isBetweenGuest = isAirbnbCleaningType(value.serviceType);
 
   function applyHomePreset(bedrooms: number, bathrooms: number) {
     const next = { ...value, bedrooms, bathrooms };

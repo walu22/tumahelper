@@ -2,7 +2,7 @@
 
 import { Calendar, MapPin, Sparkles, Timer } from "lucide-react";
 import type { ServiceDetails } from "@/lib/services/catalog";
-import { getServiceType } from "@/lib/services/catalog";
+import { getLinenPreferences, getServiceType, isAirbnbCleaningType } from "@/lib/services/catalog";
 import { suggestDuration, suggestPrice, getServiceScopeRows } from "@/lib/services/utils";
 import {
   formatVisitCadence,
@@ -11,7 +11,6 @@ import {
   type ServiceFlowStep,
 } from "@/lib/booking/shared-flow";
 import { formatLinenPreferences } from "@/lib/booking/airbnb-flow";
-import { getLinenPreferences } from "@/lib/services/catalog";
 import { ServiceScopeDetails } from "@/components/booking/service-scope-details";
 import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
 import { AirbnbScopeTeaser } from "@/components/booking/airbnb-scope-teaser";
@@ -54,7 +53,7 @@ export function ServiceBookingSummary({
   });
   const whenLabel = formatWhenPreference(details.whenPreference);
   const serviceType = getServiceType(details.category, details.serviceType);
-  const isAirbnb = details.serviceType === "airbnb";
+  const isAirbnb = isAirbnbCleaningType(details.serviceType);
   const scopeRows = getServiceScopeRows(details).filter((row) => row.label !== "Frequency");
   const linenLabel = isAirbnb ? formatLinenPreferences(getLinenPreferences(details)) : "";
 

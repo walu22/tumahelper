@@ -1,6 +1,6 @@
 import { finalizeLusakaAddress } from "@/lib/lusaka/places";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
-import { TURNOVER_FREQUENCY_OPTIONS } from "@/lib/services/catalog";
+import { isAirbnbCleaningType, TURNOVER_FREQUENCY_OPTIONS } from "@/lib/services/catalog";
 
 export type ServiceFlowStep = "address" | "plan" | "scope";
 
@@ -21,7 +21,7 @@ export function getFlowSteps(
       { id: "scope", label: "Care details" },
     ];
   }
-  if (serviceType === "airbnb") {
+  if (serviceType && isAirbnbCleaningType(serviceType)) {
     return [
       { id: "address", label: "Property" },
       { id: "plan", label: "Schedule" },
@@ -66,7 +66,9 @@ export function formatVisitCadence(
   frequency?: string,
   options?: { category?: ServiceCategoryKey; serviceType?: string }
 ): string {
-  const isAirbnbTurnover = options?.serviceType === "airbnb";
+  const isAirbnbTurnover = options?.serviceType
+    ? isAirbnbCleaningType(options.serviceType)
+    : false;
 
   if (isAirbnbTurnover) {
     return (
@@ -87,7 +89,7 @@ export function getBookingPageTitle(
   category: ServiceCategoryKey,
   serviceType?: string
 ): string {
-  if (serviceType === "airbnb") return "Book Airbnb cleaning";
+  if (serviceType && isAirbnbCleaningType(serviceType)) return "Book Airbnb cleaning";
   if (category === "nanny") return "Book a nanny";
   return "Book house cleaning";
 }

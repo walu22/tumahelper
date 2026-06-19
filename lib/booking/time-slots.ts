@@ -1,4 +1,5 @@
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
+import { isAirbnbCleaningType } from "@/lib/services/catalog";
 
 export interface StartTimeOption {
   /** Stored on the booking (HH:mm) */
@@ -42,7 +43,7 @@ const NANNY_START_TIMES = [
 
 export function getStartTimeOptions(category?: ServiceCategoryKey, serviceType?: string): StartTimeOption[] {
   if (category === "nanny") return NANNY_START_TIMES;
-  if (serviceType === "airbnb") return buildHalfHourSlots(7, 18);
+  if (serviceType && isAirbnbCleaningType(serviceType)) return buildHalfHourSlots(7, 18);
   return CLEANING_START_TIMES;
 }
 

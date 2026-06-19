@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { getStartTimeOptions } from "@/lib/booking/time-slots";
 import { LUSAKA_AREAS } from "@/lib/landing/content";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
+import { isAirbnbCleaningType } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
 
 interface BookingScheduleFieldsProps {
@@ -104,7 +105,7 @@ export function BookingScheduleFields({
 }: BookingScheduleFieldsProps) {
   const today = minDate ?? new Date().toISOString().split("T")[0];
   const startTimes = getStartTimeOptions(category, serviceType);
-  const isBetweenGuest = serviceType === "airbnb";
+  const isBetweenGuest = serviceType ? isAirbnbCleaningType(serviceType) : false;
   const showAddress = section === "all" || section === "address";
   const showSchedule = section === "all" || section === "schedule";
 

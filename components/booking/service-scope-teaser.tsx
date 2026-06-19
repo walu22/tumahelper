@@ -28,11 +28,19 @@ export function ServiceScopeTeaser({
   const includedHeading =
     category === "nanny" ? "What's included in this visit" : "What's included in this clean";
 
+  const pricingLine =
+    type.pricingHint ??
+    `Typical K${type.priceHintMin} – K${type.priceHintMax} · ~${type.defaultHours}h`;
+
   return (
     <>
       <div className={wrapperClass}>
-        <p className="text-sm font-semibold text-foreground mb-2">{includedHeading}</p>
-        <p className="text-sm text-muted-foreground leading-relaxed">{type.description}</p>
+        <p className="font-semibold text-foreground text-base">{type.label}</p>
+        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{type.description}</p>
+        <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+          <span className="font-semibold text-foreground">Pricing hint: </span>
+          {pricingLine}
+        </p>
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -42,11 +50,7 @@ export function ServiceScopeTeaser({
         </button>
       </div>
 
-      <SlideOverPanel
-        open={open}
-        onClose={() => setOpen(false)}
-        title={type.label}
-      >
+      <SlideOverPanel open={open} onClose={() => setOpen(false)} title={type.label}>
         <div className="space-y-6">
           <p className="text-sm text-muted-foreground leading-relaxed">{entry.title}</p>
           <div>

@@ -59,7 +59,7 @@ test.describe("Nanny booking end-to-end", () => {
 
     await loginAsCustomer(page, baseURL!);
 
-    await page.goto("/customer/book?category=nanny&type=babysitting");
+    await page.goto("/customer/book?category=nanny&type=babysitter");
     await expect(page.getByRole("heading", { name: "Book a nanny" })).toBeVisible({
       timeout: 15_000,
     });
@@ -73,6 +73,7 @@ test.describe("Nanny booking end-to-end", () => {
 
     await expect(page.getByText("Child's age range")).toBeVisible();
     await page.locator("#nanny-child-age").selectOption("3-5");
+    await page.locator("#nanny-emergency-contact").fill("Jane Mwanza · 0977 123 456");
 
     await page.getByRole("button", { name: "Choose your nanny" }).click();
     await expect(page.getByRole("heading", { name: "Choose your nanny" })).toBeVisible();
@@ -98,7 +99,7 @@ test.describe("Nanny booking end-to-end", () => {
       amount: 27500,
       serviceDetails: {
         category: "nanny",
-        serviceType: "babysitting",
+        serviceType: "babysitter",
         childAgeGroups: ["3-5"],
       },
     });
@@ -106,7 +107,7 @@ test.describe("Nanny booking end-to-end", () => {
 
   test("blocks progress without child age on care details step", async ({ page, baseURL }) => {
     await loginAsCustomer(page, baseURL!);
-    await page.goto("/customer/book?category=nanny&type=babysitting");
+    await page.goto("/customer/book?category=nanny&type=babysitter");
     await expect(page.getByRole("heading", { name: "Where do you need care?" })).toBeVisible({
       timeout: 15_000,
     });
@@ -119,12 +120,13 @@ test.describe("Nanny booking end-to-end", () => {
     await expect(continueBtn).toBeDisabled();
 
     await page.locator("#nanny-child-age").selectOption("6-12");
+    await page.locator("#nanny-emergency-contact").fill("Jane Mwanza · 0977 123 456");
     await expect(continueBtn).toBeEnabled();
   });
 
   test("single child shows one age dropdown, not multi-select chips", async ({ page, baseURL }) => {
     await loginAsCustomer(page, baseURL!);
-    await page.goto("/customer/book?category=nanny&type=babysitting");
+    await page.goto("/customer/book?category=nanny&type=babysitter");
     await expect(page.getByRole("heading", { name: "Where do you need care?" })).toBeVisible({
       timeout: 15_000,
     });

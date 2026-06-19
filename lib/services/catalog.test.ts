@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  getAirbnbCleaningTypes,
   getAvailableAddons,
+  getNannyTypes,
   getServiceType,
   getResidentialCleaningTypes,
+  isAirbnbCleaningType,
+  normalizeServiceType,
   sanitizeAddons,
 } from "./catalog";
 
@@ -18,10 +22,10 @@ describe("service catalog add-ons", () => {
     expect(deepAddons.some((a) => a.id === "oven")).toBe(true);
   });
 
-  it("includes turnover-relevant add-ons for between-guest clean", () => {
-    const airbnbAddons = getAvailableAddons("cleaning", "airbnb");
+  it("includes turnover-relevant add-ons for guest checkout clean", () => {
+    const airbnbAddons = getAvailableAddons("cleaning", "guest_checkout");
     expect(airbnbAddons.map((a) => a.id)).toContain("laundry");
-    expect(airbnbAddons.map((a) => a.id)).toContain("cabinets");
+    expect(airbnbAddons.map((a) => a.id)).toContain("photo_report");
   });
 
   it("strips invalid add-ons when service type changes to move", () => {
@@ -36,7 +40,10 @@ describe("service catalog add-ons", () => {
       "deep",
       "garage",
       "move",
-      "airbnb",
+      "guest_checkout",
+      "same_day_turnaround",
+      "deep_airbnb",
+      "linen_setup",
     ] as const) {
       const service = getServiceType("cleaning", type);
       expect(service?.notIncluded?.length).toBeGreaterThan(0);
@@ -55,5 +62,35 @@ describe("service catalog add-ons", () => {
       "garage",
     ]);
     expect(types[0]?.label).toBe("House cleaning");
+  });
+
+  it("lists four airbnb cleaning tabs for launch", () => {
+    const types = getAirbnbCleaningTypes();
+    expect(types).toHaveLength(4);
+    expect(types.map((t) => t.id)).toEqual([
+      "guest_checkout",
+      "same_day_turnaround",
+      "deep_airbnb",
+      "linen_setup",
+    ]);
+  });
+
+  it("lists five nanny tabs for launch", () => {
+    const types = getNannyTypes();
+    expect(types).toHaveLength(5);
+    expect(types.map((t) => t.id)).toEqual([
+      "day_nanny",
+      "babysitter",
+      "infant_care",
+      "after_school",
+      "weekend_nanny",
+    ]);
+  });
+
+  it("normalizes legacy service type ids", () => {
+    expect(normalizeServiceType("nanny", "babysitting")).toBe("babysitter");
+    expect(normalizeServiceType("cleaning", "airbnb")).toBe("guest_checkout");
+    expect(isAirbnbCleaningType("guest_checkout")).toBe(true);
+    expect(isAirbnbCleaningType("airbnb")).toBe(true);
   });
 });

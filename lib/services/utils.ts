@@ -7,6 +7,8 @@ import {
   getAddon,
   getLinenPreferences,
   getServiceType,
+  isAirbnbCleaningType,
+  normalizeServiceType,
   paramToCategoryKey,
   sanitizeAddons,
   type ServiceCategoryKey,
@@ -45,11 +47,12 @@ export const FUNNEL_ALIASES: Record<
   "garage-cleaning": { category: "cleaning", type: "garage" },
   "move-clean": { category: "cleaning", type: "move" },
   "move-out": { category: "cleaning", type: "move" },
-  "airbnb-turnover": { category: "cleaning", type: "airbnb" },
-  "between-guest-clean": { category: "cleaning", type: "airbnb" },
-  "between-guest": { category: "cleaning", type: "airbnb" },
-  "airbnb": { category: "cleaning", type: "airbnb" },
-  babysitting: { category: "nanny", type: "babysitting" },
+  "airbnb-turnover": { category: "cleaning", type: "guest_checkout" },
+  "between-guest-clean": { category: "cleaning", type: "guest_checkout" },
+  "between-guest": { category: "cleaning", type: "guest_checkout" },
+  airbnb: { category: "cleaning", type: "guest_checkout" },
+  babysitting: { category: "nanny", type: "babysitter" },
+  babysitter: { category: "nanny", type: "babysitter" },
   "after-school": { category: "nanny", type: "after_school" },
 };
 
@@ -163,17 +166,17 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
       rows.push({ label: "Space", value: "Garage & outside areas" });
     } else {
       rows.push({
-        label: details.serviceType === "airbnb" ? "Property" : "Home",
+        label: isAirbnbCleaningType(details.serviceType) ? "Property" : "Home",
         value: `${details.bedrooms ?? 3} bed · ${details.bathrooms ?? 2} bath`,
       });
     }
-    if (details.serviceType === "airbnb" && details.frequency) {
+    if (isAirbnbCleaningType(details.serviceType) && details.frequency) {
       rows.push({
         label: "Frequency",
         value: formatTurnoverFrequency(details.frequency),
       });
     }
-    if (details.serviceType === "airbnb") {
+    if (isAirbnbCleaningType(details.serviceType)) {
       const linen = formatLinenPreferences(getLinenPreferences(details));
       if (linen) {
         rows.push({ label: "Linen", value: linen });
@@ -247,7 +250,7 @@ export function buildBookUrl(details: ServiceDetails): string {
     params.set("addons", details.addons.join(","));
   }
 
-  if (details.category === "cleaning" && details.serviceType === "airbnb" && details.frequency) {
+  if (details.category === "cleaning" && isAirbnbCleaningType(details.serviceType) && details.frequency) {
     params.set("frequency", details.frequency);
   }
 
@@ -262,7 +265,7 @@ export function parseServiceDetailsFromParams(
 
   const base = defaultServiceDetails(category);
   const type = searchParams.get("type");
-  if (type) base.serviceType = type;
+  if (type) base.serviceType = normalizeServiceType(category, type);
 
   const hours = searchParams.get("hours");
   if (hours) base.durationHours = parseInt(hours, 10) || base.durationHours;
@@ -283,7 +286,7 @@ export function parseServiceDetailsFromParams(
   if (addons) base.addons = addons.split(",").filter(Boolean);
   base.addons = sanitizeAddons(category, base.serviceType, base.addons);
 
-  if (category === "cleaning" && base.serviceType === "airbnb") {
+  if (category === "cleaning" && isAirbnbCleaningType(base.serviceType)) {
     const frequency = searchParams.get("frequency");
     if (
       frequency === "once" ||
