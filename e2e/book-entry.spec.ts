@@ -26,6 +26,18 @@ test.describe("Booking entry points", () => {
     await expect(page).toHaveURL(/category=cleaning.*type=deep/);
   });
 
+  test("hero Housekeeping expands housekeeping pills", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("tab", { name: "Half-day" })).not.toBeVisible();
+    await page.getByRole("button", { name: "Housekeeping" }).click();
+    await expect(page.getByRole("tab", { name: "Half-day" })).toBeVisible();
+    await page.getByRole("tab", { name: "Full-day" }).click();
+    await expect(page).toHaveURL(/category=housekeeping.*type=full_day/);
+    await expect(page.getByRole("heading", { name: "Book housekeeping" })).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
   test("hero Short-Stay Cleaning expands short-stay pills", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("tab", { name: "Guest checkout clean" })).not.toBeVisible();
@@ -38,30 +50,13 @@ test.describe("Booking entry points", () => {
     });
   });
 
-  test("hero Laundry & Ironing expands laundry pills", async ({ page }) => {
-    await page.goto("/");
-    await page.getByRole("button", { name: "Laundry & Ironing" }).click();
-    await expect(page.getByRole("tab", { name: "Wash & fold" })).toBeVisible();
-    await page.getByRole("tab", { name: "Ironing" }).click();
-    await expect(page).toHaveURL(/category=laundry.*type=ironing/);
-  });
-
-  test("hero Garden & Yard Work expands garden pills", async ({ page }) => {
-    await page.goto("/");
-    await page.getByRole("button", { name: "Garden & Yard Work" }).click();
-    await expect(page.getByRole("tab", { name: "Lawn cutting" })).toBeVisible();
-    await page.getByRole("tab", { name: "Yard sweeping" }).click();
-    await expect(page).toHaveURL(/category=garden.*type=yard_sweeping/);
-  });
-
-  test("plain /customer/book shows all launch service pills", async ({ page }) => {
+  test("plain /customer/book shows launch service pills", async ({ page }) => {
     await page.goto("/customer/book");
     await expect(page.getByRole("heading", { name: "What do you need?" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Deep cleaning" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Day nanny" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Half-day" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Guest checkout clean" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Wash & fold" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Lawn cutting" })).toBeVisible();
   });
 
   test("book cleaning without type redirects to homepage pills", async ({ page }) => {
@@ -69,8 +64,8 @@ test.describe("Booking entry points", () => {
     await expect(page).toHaveURL(/#hero-cleaning-panel/);
   });
 
-  test("book laundry without type redirects to homepage pills", async ({ page }) => {
-    await page.goto("/customer/book?category=laundry");
-    await expect(page).toHaveURL(/#hero-laundry-panel/);
+  test("book housekeeping without type redirects to homepage pills", async ({ page }) => {
+    await page.goto("/customer/book?category=housekeeping");
+    await expect(page).toHaveURL(/#hero-housekeeping-panel/);
   });
 });

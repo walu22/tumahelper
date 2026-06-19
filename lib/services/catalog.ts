@@ -1,4 +1,9 @@
-export type ServiceCategoryKey = "cleaning" | "nanny" | "laundry" | "garden";
+export type ServiceCategoryKey =
+  | "cleaning"
+  | "nanny"
+  | "housekeeping"
+  | "laundry"
+  | "garden";
 
 export interface ServiceTypeOption {
   id: string;
@@ -138,6 +143,13 @@ export const GARDEN_TYPE_IDS = [
   "watering_plants",
 ] as const;
 
+export const HOUSEKEEPING_TYPE_IDS = [
+  "half_day",
+  "full_day",
+  "weekly",
+  "monthly",
+] as const;
+
 export const LEGACY_SERVICE_TYPE_ALIASES: Record<string, string> = {
   airbnb: "guest_checkout",
   babysitting: "babysitter",
@@ -194,6 +206,17 @@ export function getGardenTypes(): ServiceTypeOption[] {
   return GARDEN_TYPE_IDS.map((id) => byId.get(id)).filter(
     (t): t is ServiceTypeOption => t !== undefined
   );
+}
+
+export function getHousekeepingTypes(): ServiceTypeOption[] {
+  const byId = new Map(SERVICE_CATALOG.housekeeping.types.map((t) => [t.id, t] as const));
+  return HOUSEKEEPING_TYPE_IDS.map((id) => byId.get(id)).filter(
+    (t): t is ServiceTypeOption => t !== undefined
+  );
+}
+
+export function isRecurringHousekeepingType(serviceType: string): boolean {
+  return serviceType === "weekly" || serviceType === "monthly";
 }
 
 export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = {
@@ -845,6 +868,170 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       },
     ],
   },
+  housekeeping: {
+    key: "housekeeping",
+    title: "Housekeeping",
+    tagline:
+      "Book household help by the visit — cleaning, laundry, dishes, and tidying for a set time",
+    bookParam: "housekeeping",
+    scopeLabel: "home",
+    types: [
+      {
+        id: "half_day",
+        label: "Half-day help",
+        tabLabel: "Half-day",
+        description:
+          "Up to four hours of household help at your home. You choose the duties — cleaning, laundry, dishes, tidying, and more.",
+        pricingHint:
+          "Price depends on visit length, duties selected, and whether this is a one-off or recurring booking.",
+        included: [
+          "Up to 4 hours at your home",
+          "Your chosen household duties",
+          "Flexible task list for the visit",
+          "General tidying and organising",
+          "Kitchen and bathroom upkeep as needed",
+        ],
+        notIncluded: [
+          "Deep move-out or post-construction cleaning",
+          "Dedicated childcare (book nannies separately)",
+          "Garden landscaping or lawn mowing",
+          "Buying groceries or supplies unless agreed",
+          "Heavy lifting or furniture moving",
+        ],
+        defaultHours: 4,
+        priceHintMin: 250,
+        priceHintMax: 400,
+      },
+      {
+        id: "full_day",
+        label: "Full-day help",
+        tabLabel: "Full-day",
+        description:
+          "A full day of household support — up to eight hours for cleaning, laundry, meal prep, and keeping the home running.",
+        pricingHint:
+          "Full-day visits cost more than half-day help because of the longer time block and broader duties.",
+        included: [
+          "Up to 8 hours at your home",
+          "Multiple household duties in one visit",
+          "Cleaning, laundry, dishes, and tidying",
+          "Meal prep or ironing if selected",
+          "Flexible priorities you set on the day",
+        ],
+        notIncluded: [
+          "Live-in or overnight care",
+          "Childcare unless booked as nanny service",
+          "Major garden or outside landscaping",
+          "Repairs, painting, or maintenance",
+          "Running errands by car unless agreed",
+        ],
+        defaultHours: 8,
+        priceHintMin: 450,
+        priceHintMax: 700,
+      },
+      {
+        id: "weekly",
+        label: "Weekly housekeeping",
+        tabLabel: "Weekly",
+        description:
+          "The same helper on a weekly schedule — regular cleaning, laundry, dishes, and household upkeep.",
+        pricingHint:
+          "Weekly housekeeping is priced per visit. Duties and visit length shape the guide price.",
+        included: [
+          "Recurring weekly visit",
+          "Your chosen household duties each week",
+          "Consistent help for busy families",
+          "Cleaning, laundry, and tidying as needed",
+          "Same-day priorities you can adjust",
+        ],
+        notIncluded: [
+          "Live-in domestic work",
+          "Dedicated full-time placement",
+          "Deep spring cleans every visit (book cleaning separately)",
+          "Garden landscaping",
+          "Childcare",
+        ],
+        defaultHours: 4,
+        priceHintMin: 220,
+        priceHintMax: 380,
+      },
+      {
+        id: "monthly",
+        label: "Monthly housekeeping",
+        tabLabel: "Monthly",
+        description:
+          "A longer monthly visit for households that want a thorough reset — cleaning, laundry, bedding, and organisation.",
+        pricingHint:
+          "Monthly visits are typically longer. Price depends on home size, duties, and how much needs doing.",
+        included: [
+          "Scheduled monthly visit",
+          "Broader household duties in one session",
+          "Deep tidying and organisation time",
+          "Laundry, bedding, and kitchen catch-up",
+          "Flexible task list for the day",
+        ],
+        notIncluded: [
+          "Weekly or daily live-in help",
+          "Move-in/move-out deep cleaning",
+          "Major garden work",
+          "Childcare",
+          "Buying supplies unless agreed",
+        ],
+        defaultHours: 8,
+        priceHintMin: 500,
+        priceHintMax: 800,
+      },
+    ],
+    addons: [
+      {
+        id: "cleaning",
+        label: "General cleaning",
+        description: "Sweeping, mopping, dusting, and bathroom refresh",
+        priceHint: 0,
+      },
+      {
+        id: "dishes",
+        label: "Washing dishes",
+        description: "Wash, dry, and tidy kitchen dishes",
+        priceHint: 0,
+      },
+      {
+        id: "laundry",
+        label: "Laundry",
+        description: "Wash, fold, and organise household laundry",
+        priceHint: 40,
+      },
+      {
+        id: "ironing",
+        label: "Ironing",
+        description: "Iron clothes, uniforms, and household linen",
+        priceHint: 50,
+      },
+      {
+        id: "bedding",
+        label: "Bedding & linen",
+        description: "Change beds, refresh towels, and tidy linen cupboards",
+        priceHint: 40,
+      },
+      {
+        id: "meal_prep",
+        label: "Simple meal prep",
+        description: "Basic cooking or meal preparation for the household",
+        priceHint: 60,
+      },
+      {
+        id: "tidying",
+        label: "Tidying & organising",
+        description: "Organise visible clutter, cupboards, and living areas",
+        priceHint: 0,
+      },
+      {
+        id: "outside_sweep",
+        label: "Outside sweep",
+        description: "Sweep verandah, patio, or paved outside areas",
+        priceHint: 40,
+      },
+    ],
+  },
   laundry: {
     key: "laundry",
     title: "Laundry & ironing",
@@ -1152,6 +1339,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
 
 export function categorySlugToKey(slug: string): ServiceCategoryKey | null {
   if (slug.includes("nanny")) return "nanny";
+  if (slug.includes("housekeep")) return "housekeeping";
   if (slug.includes("laundry")) return "laundry";
   if (slug.includes("garden")) return "garden";
   if (slug.includes("clean") || slug.includes("house")) return "cleaning";
@@ -1160,6 +1348,7 @@ export function categorySlugToKey(slug: string): ServiceCategoryKey | null {
 
 export function paramToCategoryKey(param: string | null): ServiceCategoryKey | null {
   if (param === "nanny") return "nanny";
+  if (param === "housekeeping") return "housekeeping";
   if (param === "laundry") return "laundry";
   if (param === "garden") return "garden";
   if (param === "cleaning" || param === "house-cleaner") return "cleaning";
@@ -1178,6 +1367,16 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
       childAgeGroups: [],
       addons: [],
       frequency: "once",
+    };
+  }
+  if (category === "housekeeping") {
+    const serviceType = firstType.id;
+    return {
+      category,
+      serviceType,
+      durationHours: firstType.defaultHours,
+      addons: [],
+      frequency: serviceType === "weekly" ? "weekly" : "once",
     };
   }
   return {
@@ -1238,7 +1437,13 @@ export function sanitizeAddons(
 
 /** Flat list for booking entry (category inferred from service type). */
 export function catalogServiceTypeOptions() {
-  const order: ServiceCategoryKey[] = ["nanny", "cleaning", "laundry", "garden"];
+  const order: ServiceCategoryKey[] = [
+    "nanny",
+    "cleaning",
+    "housekeeping",
+    "laundry",
+    "garden",
+  ];
   return order.flatMap((categoryKey) => {
     const entry = SERVICE_CATALOG[categoryKey];
     const types =

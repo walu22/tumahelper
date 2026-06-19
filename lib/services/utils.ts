@@ -33,6 +33,8 @@ const ADDON_HOUR_INCREMENT: Record<string, number> = {
   bedding: 0.5,
   balcony: 0.5,
   supplies: 0,
+  outside_sweep: 0.5,
+  tidying: 0.25,
 };
 
 /** Marketing-friendly funnel aliases → book query params */
@@ -77,6 +79,8 @@ export function suggestDuration(details: ServiceDetails): number {
     hours += Math.max(0, baths - 1) * 0.5;
   } else if (details.category === "nanny") {
     hours += Math.max(0, (details.children ?? 1) - 1) * 0.5;
+  } else if (details.category === "housekeeping") {
+    hours += Math.max(0, details.addons.length - 2) * 0.25;
   }
 
   for (const addonId of details.addons) {
@@ -112,6 +116,10 @@ export function suggestPrice(details: ServiceDetails): {
     const extraChildren = Math.max(0, (details.children ?? 1) - 1);
     min += extraChildren * 60;
     max += extraChildren * 100;
+  } else if (details.category === "housekeeping") {
+    const dutyCount = details.addons.length;
+    min += dutyCount * 25;
+    max += dutyCount * 45;
   }
 
   const hourFactor = details.durationHours / type.defaultHours;
@@ -193,6 +201,11 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
     if (ageSummary) {
       rows.push({ label: "Ages", value: ageSummary });
     }
+  } else if (details.category === "housekeeping") {
+    const type = getServiceType(details.category, details.serviceType);
+    if (type) {
+      rows.push({ label: "Visit", value: type.label });
+    }
   } else {
     const type = getServiceType(details.category, details.serviceType);
     if (type) {
@@ -206,10 +219,11 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
   });
 
   if (details.addons.length > 0) {
+    const addonLabel = details.category === "housekeeping" ? "Duties" : "Add-ons";
     const labels = details.addons
       .map((id) => getAddon(details.category, id)?.label ?? id)
       .join(", ");
-    rows.push({ label: "Add-ons", value: labels });
+    rows.push({ label: addonLabel, value: labels });
   }
 
   return rows;

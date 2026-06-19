@@ -28,11 +28,13 @@ export function ServiceScopeTeaser({
   const includedHeading =
     category === "nanny"
       ? "What's included in this visit"
-      : category === "laundry"
-        ? "What's included in this laundry visit"
-        : category === "garden"
-          ? "What's included in this garden visit"
-          : "What's included in this clean";
+      : category === "housekeeping"
+        ? "What's included in this housekeeping visit"
+        : category === "laundry"
+          ? "What's included in this laundry visit"
+          : category === "garden"
+            ? "What's included in this garden visit"
+            : "What's included in this clean";
 
   const pricingLine =
     type.pricingHint ??

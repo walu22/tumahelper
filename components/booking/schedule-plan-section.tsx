@@ -33,6 +33,7 @@ interface SchedulePlanSectionProps {
   frequencyDescription?: string;
   timingHeading?: string;
   timingDescription?: string;
+  hideFrequency?: boolean;
 }
 
 function filterStartTimes(
@@ -67,6 +68,7 @@ export function SchedulePlanSection({
   frequencyDescription = "Is this a one-off visit, or something you want on a regular schedule?",
   timingHeading = "When should the visit happen?",
   timingDescription = "Pick how soon you need help, then choose your arrival window.",
+  hideFrequency = false,
 }: SchedulePlanSectionProps) {
   const allStartTimes = getStartTimeOptions(category, serviceType);
   const whenPreference = serviceDetails.whenPreference;
@@ -100,48 +102,64 @@ export function SchedulePlanSection({
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-semibold">{frequencyHeading}</h2>
-        <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{frequencyDescription}</p>
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-3">
-        <AirbnbOptionCard
-          selected={!isRepeat}
-          onClick={() => setFrequencyMode(false)}
-          title="One-time visit"
-          description="A single booking for the date you choose"
-        />
-        <AirbnbOptionCard
-          selected={isRepeat}
-          onClick={() => setFrequencyMode(true)}
-          title="Regular visits"
-          description="The same help on a repeating schedule"
-          icon={Repeat}
-        />
-      </div>
-
-      {isRepeat && (
-        <div className="space-y-2">
-          <p className="text-sm font-medium">How often should we return?</p>
-          <div className="grid sm:grid-cols-2 gap-2">
-            {REGULAR_FREQUENCY_OPTIONS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => update({ frequency: option.id as TurnoverFrequency })}
-                className={cn(
-                  "rounded-xl border-2 p-3 text-left text-sm transition-colors",
-                  serviceDetails.frequency === option.id
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/40"
-                )}
-              >
-                <p className="font-semibold">{option.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{option.description}</p>
-              </button>
-            ))}
+      {!hideFrequency ? (
+        <>
+          <div>
+            <h2 className="text-2xl font-semibold">{frequencyHeading}</h2>
+            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+              {frequencyDescription}
+            </p>
           </div>
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            <AirbnbOptionCard
+              selected={!isRepeat}
+              onClick={() => setFrequencyMode(false)}
+              title="One-time visit"
+              description="A single booking for the date you choose"
+            />
+            <AirbnbOptionCard
+              selected={isRepeat}
+              onClick={() => setFrequencyMode(true)}
+              title="Regular visits"
+              description="The same help on a repeating schedule"
+              icon={Repeat}
+            />
+          </div>
+
+          {isRepeat && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium">How often should we return?</p>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {REGULAR_FREQUENCY_OPTIONS.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => update({ frequency: option.id as TurnoverFrequency })}
+                    className={cn(
+                      "rounded-xl border-2 p-3 text-left text-sm transition-colors",
+                      serviceDetails.frequency === option.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/40"
+                    )}
+                  >
+                    <p className="font-semibold">{option.label}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{option.description}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="rounded-2xl border border-border bg-surface/40 px-4 py-3 text-sm">
+          <p className="font-semibold text-foreground">
+            {formatVisitCadence(serviceDetails.frequency, {
+              category,
+              serviceType,
+            })}
+          </p>
+          <p className="text-muted-foreground mt-1 leading-relaxed">{frequencyDescription}</p>
         </div>
       )}
 

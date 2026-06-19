@@ -3,6 +3,7 @@ import {
   getAirbnbCleaningTypes,
   getAvailableAddons,
   getGardenTypes,
+  getHousekeepingTypes,
   getLaundryTypes,
   getNannyTypes,
   getServiceType,
@@ -80,6 +81,33 @@ describe("service catalog add-ons", () => {
   it("lists five nanny tabs for launch", () => {
     const types = getNannyTypes();
     expect(types).toHaveLength(5);
+  });
+
+  it("lists four housekeeping tabs for launch", () => {
+    const types = getHousekeepingTypes();
+    expect(types).toHaveLength(4);
+    expect(types.map((t) => t.id)).toEqual([
+      "half_day",
+      "full_day",
+      "weekly",
+      "monthly",
+    ]);
+    expect(types[0]?.defaultHours).toBe(4);
+    expect(types[1]?.defaultHours).toBe(8);
+  });
+
+  it("offers duty add-ons for housekeeping visits", () => {
+    const duties = getAvailableAddons("housekeeping", "half_day");
+    expect(duties.map((d) => d.id)).toEqual([
+      "cleaning",
+      "dishes",
+      "laundry",
+      "ironing",
+      "bedding",
+      "meal_prep",
+      "tidying",
+      "outside_sweep",
+    ]);
   });
 
   it("lists five laundry tabs for launch", () => {

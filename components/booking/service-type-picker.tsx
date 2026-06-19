@@ -3,24 +3,28 @@
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
 import { NannyTypeTabs } from "@/components/booking/nanny-type-tabs";
 import { AirbnbTypeTabs } from "@/components/booking/airbnb-type-tabs";
+import { HousekeepingTypeTabs } from "@/components/booking/housekeeping-type-tabs";
 import { LaundryTypeTabs } from "@/components/booking/laundry-type-tabs";
 import { GardenTypeTabs } from "@/components/booking/garden-type-tabs";
 import {
   defaultServiceDetails,
   getAirbnbCleaningTypes,
   getGardenTypes,
+  getHousekeepingTypes,
   getLaundryTypes,
   getResidentialCleaningTypes,
+  type ServiceCategoryKey,
 } from "@/lib/services/catalog";
 import { buildBookUrl } from "@/lib/services/utils";
 
 interface ServiceTypePickerProps {
-  onSelect?: (categoryKey: "nanny" | "cleaning" | "laundry" | "garden", serviceTypeId: string) => void;
+  onSelect?: (categoryKey: ServiceCategoryKey, serviceTypeId: string) => void;
 }
 
 export function ServiceTypePicker(_props: ServiceTypePickerProps) {
   const cleaningTypes = getResidentialCleaningTypes();
   const airbnbTypes = getAirbnbCleaningTypes();
+  const housekeepingTypes = getHousekeepingTypes();
   const laundryTypes = getLaundryTypes();
   const gardenTypes = getGardenTypes();
 
@@ -56,6 +60,22 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
           getHref={(typeId) =>
             buildBookUrl({
               ...defaultServiceDetails("nanny"),
+              serviceType: typeId,
+            })
+          }
+          showDetails={false}
+        />
+      </section>
+
+      <section>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
+          Housekeeping
+        </p>
+        <HousekeepingTypeTabs
+          value={housekeepingTypes[0]?.id ?? "half_day"}
+          getHref={(typeId) =>
+            buildBookUrl({
+              ...defaultServiceDetails("housekeeping"),
               serviceType: typeId,
             })
           }
