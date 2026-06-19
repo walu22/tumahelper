@@ -43,9 +43,17 @@ describe("service catalog add-ons", () => {
     }
   });
 
-  it("lists six residential cleaning tabs excluding airbnb", () => {
+  it("lists six residential cleaning tabs in market order excluding airbnb", () => {
     const types = getResidentialCleaningTypes();
     expect(types).toHaveLength(6);
-    expect(types.map((t) => t.id)).not.toContain("airbnb");
+    expect(types.map((t) => t.id)).toEqual([
+      "standard",
+      "apartment",
+      "deep",
+      "spring",
+      "move",
+      "garage",
+    ]);
+    expect(types[0]?.label).toBe("House cleaning");
   });
 });
