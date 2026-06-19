@@ -27,11 +27,11 @@ test.describe("Booking entry points", () => {
     await expect(page.getByText("What type of clean?")).not.toBeVisible();
   });
 
-  test("FAQ Book cleaning shows pills only on booking page", async ({ page }) => {
+  test("FAQ Book cleaning scrolls to homepage pills", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: "Book cleaning" }).click();
-    await expect(page).toHaveURL(/category=cleaning/);
-    await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible({ timeout: 15_000 });
+    await expect(page).toHaveURL(/\/(#hero-cleaning-panel)?$/);
+    await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible();
     await expect(page.getByText("What type of clean?")).not.toBeVisible();
     await expect(page.getByText("Book this clean")).not.toBeVisible();
   });
@@ -42,5 +42,11 @@ test.describe("Booking entry points", () => {
     await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible();
     await expect(page.getByText("Book this clean")).not.toBeVisible();
     await expect(page.getByText("Babysitting")).toBeVisible();
+  });
+
+  test("book cleaning without type redirects to homepage pills", async ({ page }) => {
+    await page.goto("/customer/book?category=cleaning");
+    await expect(page).toHaveURL(/\/(#hero-cleaning-panel)?$/);
+    await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible();
   });
 });

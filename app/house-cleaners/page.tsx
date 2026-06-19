@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
 
 export default function HouseCleanersPage() {
-  redirect('/customer/book?category=cleaning')
+  redirect("/#hero-cleaning-panel");
 }

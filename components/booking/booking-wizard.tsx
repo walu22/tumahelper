@@ -315,6 +315,13 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   }, [serviceDetails, categories, selectedCategory])
 
   useEffect(() => {
+    if (airbnbEntry || lockedAirbnb) return
+    if (categoryParam === "cleaning" && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-cleaning-panel")
+    }
+  }, [airbnbEntry, lockedAirbnb, categoryParam, typeParam, funnelParam, workerProfileId])
+
+  useEffect(() => {
     if (urlInitDone.current || !workerProfileId || categoriesLoading || categories.length === 0) return
 
     setDeepLinkLoading(true)

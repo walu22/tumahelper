@@ -22,20 +22,20 @@ export const LUSAKA_AREAS = [
 /** Launch categories only: nannies + cleaning */
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
   { href: "/customer/book?category=nanny&type=babysitting", label: "Nannies", icon: "nanny" },
-  { href: "/customer/book?category=cleaning", label: "Cleaning", icon: "indoor" },
+  { href: "/#hero-cleaning-panel", label: "Cleaning", icon: "indoor" },
   { href: "/customer/book/airbnb", label: "Airbnb clean", icon: "airbnb" },
 ];
 
 /** Deep links that skip the service picker and open booking details */
 export const NANNY_BOOK_HREF = "/customer/book?category=nanny&type=babysitting";
-export const CLEANING_BOOK_HREF = "/customer/book?category=cleaning";
+export const CLEANING_BOOK_HREF = "/#hero-cleaning-panel";
 export const AIRBNB_CLEAN_BOOK_HREF = "/customer/book/airbnb";
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
 export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
 export const PRIMARY_NAV_LINKS = [
   { href: "/customer/book?category=nanny", label: "Nannies" },
-  { href: "/customer/book?category=cleaning", label: "Cleaning" },
+  { href: "/#hero-cleaning-panel", label: "Cleaning" },
   { href: AIRBNB_CLEAN_BOOK_HREF, label: "Airbnb clean" },
   { href: "/hire", label: "Permanent hire" },
   { href: "/workers", label: "Find workers" },
@@ -63,7 +63,7 @@ export const PLATFORM_OFFERINGS = [
     title: "House cleaning",
     description:
       "Standard, deep, spring, apartment, garage, and move-out cleans for homes across Lusaka. Book once or set up regular visits.",
-    href: "/customer/book?category=cleaning",
+    href: "/#hero-cleaning-panel",
     variant: "green" as const,
   },
   {

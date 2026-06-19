@@ -14,6 +14,8 @@ interface CleaningTypeTabsProps {
   getHref?: (typeId: string) => string;
   showDetails?: boolean;
   centered?: boolean;
+  /** When false, no pill appears selected (useful for homepage link rows). */
+  showSelection?: boolean;
 }
 
 export function CleaningTypeTabs({
@@ -22,6 +24,7 @@ export function CleaningTypeTabs({
   getHref,
   showDetails = true,
   centered = false,
+  showSelection = true,
 }: CleaningTypeTabsProps) {
   const types = getResidentialCleaningTypes();
   const selected: ServiceTypeOption | undefined =
@@ -42,11 +45,11 @@ export function CleaningTypeTabs({
         aria-label="Type of clean"
         className={cn(
           "flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1",
-          centered && "justify-center"
+          centered && "justify-start sm:justify-center"
         )}
       >
         {types.map((type) => {
-          const active = value === type.id;
+          const active = showSelection && value === type.id;
           const href = getHref?.(type.id);
 
           if (href) {

@@ -6,6 +6,8 @@ import { ServiceIcon } from "@/components/brand/service-icons";
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
 import { getResidentialCleaningTypes } from "@/lib/services/catalog";
 
+const CLEANING_PILLS_ID = "hero-cleaning-panel";
+
 export function CategoryScroller() {
   const cleaningTypes = getResidentialCleaningTypes();
 
@@ -20,9 +22,10 @@ export function CategoryScroller() {
 
           if (isCleaning) {
             return (
-              <div
+              <a
                 key={cat.label}
-                className="snap-start shrink-0 flex flex-col items-center gap-2 min-w-[5.5rem] rounded-2xl p-1 -m-1 bg-primary/10"
+                href={`#${CLEANING_PILLS_ID}`}
+                className="snap-start shrink-0 flex flex-col items-center gap-2 min-w-[5.5rem] rounded-2xl p-1 -m-1 bg-primary/10 scroll-mt-28"
               >
                 <div className="scale-105">
                   <ServiceIcon name={cat.icon} className="h-16 w-16" />
@@ -30,7 +33,7 @@ export function CategoryScroller() {
                 <span className="text-xs font-semibold text-primary text-center max-w-[5.5rem]">
                   {cat.label}
                 </span>
-              </div>
+              </a>
             );
           }
 
@@ -51,11 +54,15 @@ export function CategoryScroller() {
         })}
       </div>
 
-      <div id="hero-cleaning-panel" className="mt-8 max-w-2xl mx-auto px-2">
+      <div
+        id={CLEANING_PILLS_ID}
+        className="mt-8 max-w-2xl mx-auto px-2 scroll-mt-28"
+      >
         <CleaningTypeTabs
           value={cleaningTypes[0]?.id ?? "standard"}
           getHref={(typeId) => `/customer/book?category=cleaning&type=${typeId}`}
           showDetails={false}
+          showSelection={false}
           centered
         />
       </div>
