@@ -20,7 +20,7 @@ test.describe("Booking entry points", () => {
 
   test("hero shows cleaning options after tapping Cleaning", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Cleaning", exact: true }).click();
+    await page.locator('button[aria-controls="hero-cleaning-panel"]').click();
     await expect(page.getByRole("tab", { name: "House cleaning" })).toBeVisible();
     await page.getByRole("tab", { name: "Deep cleaning" }).click();
     await expect(page).toHaveURL(/category=cleaning.*type=deep/);

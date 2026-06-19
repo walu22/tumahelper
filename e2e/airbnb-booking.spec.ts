@@ -53,7 +53,7 @@ test.describe("Between-guest clean booking end-to-end", () => {
       timeout: 15_000,
     });
     await expect(page.getByRole("heading", { name: "Where is your property?" })).toBeVisible();
-    await expect(page.getByText("Your booking")).toBeVisible();
+    await expect(page.getByText("Your booking", { exact: true })).toBeVisible();
 
     await page.locator("#airbnb-street").fill("Plot 10, Roma");
     await page.getByText("Confirm this address").click();

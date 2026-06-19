@@ -113,6 +113,10 @@ test.describe("Cleaning booking end-to-end", () => {
 
     await page.getByRole("button", { name: "One-time visit" }).click();
     await page.getByRole("button", { name: "Pick a date" }).click();
+    await expect(continueBtn).toBeEnabled();
+
+    await page.locator("#service-date").fill("");
+    await page.locator("#service-start-time").selectOption("");
     await expect(continueBtn).toBeDisabled();
 
     await page.locator("#service-date").fill(tomorrowIsoDate());

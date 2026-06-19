@@ -22,5 +22,12 @@ export default defineConfig({
         url: "http://localhost:3002",
         reuseExistingServer: false,
         timeout: 120_000,
+        env: {
+          ...process.env,
+          DEV_AUTH_BYPASS: "true",
+          NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
+          NEXT_PUBLIC_SUPABASE_ANON_KEY:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.test",
+        },
       },
 });
