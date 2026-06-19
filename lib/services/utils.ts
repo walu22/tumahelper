@@ -27,6 +27,10 @@ const ADDON_HOUR_INCREMENT: Record<string, number> = {
   homework: 0.5,
   light_tidying: 0.5,
   school_pickup: 0.5,
+  dishes: 0.5,
+  bedding: 0.5,
+  balcony: 0.5,
+  supplies: 0,
 };
 
 /** Marketing-friendly funnel aliases → book query params */
@@ -156,7 +160,7 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
 
   if (details.category === "cleaning") {
     if (details.serviceType === "garage") {
-      rows.push({ label: "Space", value: "Garage or store room" });
+      rows.push({ label: "Space", value: "Garage & outside areas" });
     } else {
       rows.push({
         label: details.serviceType === "airbnb" ? "Property" : "Home",

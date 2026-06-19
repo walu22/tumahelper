@@ -16,12 +16,12 @@ test.describe("Booking entry points", () => {
     await expect(page.getByRole("heading", { name: "Where do you need care?" })).toBeVisible();
   });
 
-  test("hero shows cleaning pills after tapping Cleaning", async ({ page }) => {
+  test("hero shows cleaning options after tapping Cleaning", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("tab", { name: "Spring cleaning" })).not.toBeVisible();
+    await expect(page.getByRole("tab", { name: "House cleaning" })).not.toBeVisible();
     await page.getByRole("button", { name: "Cleaning" }).click();
-    await expect(page.getByRole("tab", { name: "Spring cleaning" })).toBeVisible();
-    await page.getByRole("tab", { name: "Deep clean" }).click();
+    await expect(page.getByRole("tab", { name: "House cleaning" })).toBeVisible();
+    await page.getByRole("tab", { name: "Deep cleaning" }).click();
     await expect(page).toHaveURL(/category=cleaning.*type=deep/);
     await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
       timeout: 15_000,
@@ -33,7 +33,7 @@ test.describe("Booking entry points", () => {
     await page.goto("/");
     await page.getByRole("link", { name: "Book cleaning" }).click();
     await expect(page).toHaveURL(/#hero-cleaning-panel/);
-    await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Deep cleaning" })).toBeVisible();
     await expect(page.getByText("What type of clean?")).not.toBeVisible();
     await expect(page.getByText("Book this clean")).not.toBeVisible();
   });
@@ -41,7 +41,7 @@ test.describe("Booking entry points", () => {
   test("plain /customer/book shows cleaning pills and nanny options", async ({ page }) => {
     await page.goto("/customer/book");
     await expect(page.getByRole("heading", { name: "What do you need?" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Deep cleaning" })).toBeVisible();
     await expect(page.getByText("Book this clean")).not.toBeVisible();
     await expect(page.getByText("Babysitting")).toBeVisible();
   });
@@ -50,6 +50,6 @@ test.describe("Booking entry points", () => {
     await page.goto("/customer/book?category=cleaning");
     await expect(page).toHaveURL(/#hero-cleaning-panel/);
     await page.getByRole("button", { name: "Cleaning" }).click();
-    await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Deep cleaning" })).toBeVisible();
   });
 });
