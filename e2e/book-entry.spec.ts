@@ -6,9 +6,10 @@ test.describe("Booking entry points", () => {
     await loginAsCustomer(page, baseURL!);
   });
 
-  test("hero Nannies icon opens babysitting flow", async ({ page }) => {
+  test("hero Nannies tab opens babysitting flow from project card", async ({ page }) => {
     await page.goto("/");
-    await page.locator('a[href="/customer/book?category=nanny&type=babysitting"]').first().click();
+    await page.getByRole("tab", { name: "Nannies" }).click();
+    await page.getByRole("link", { name: /Babysitting/i }).click();
     await expect(page).toHaveURL(/category=nanny.*type=babysitting/);
     await expect(page.getByRole("heading", { name: "Book a nanny" })).toBeVisible({
       timeout: 15_000,
@@ -16,13 +17,11 @@ test.describe("Booking entry points", () => {
     await expect(page.getByRole("heading", { name: "Where do you need care?" })).toBeVisible();
   });
 
-  test("hero Cleaning expands type tabs then books", async ({ page }) => {
+  test("hero Cleaning tab shows project cards and books deep clean", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Cleaning" }).click();
-    await expect(page.getByText("What type of clean?")).toBeVisible();
-    await expect(page.getByRole("tab", { name: "Spring cleaning" })).toBeVisible();
-    await page.getByRole("tab", { name: "Deep clean" }).click();
-    await page.getByRole("button", { name: "Book this clean" }).click();
+    await page.getByRole("tab", { name: "Cleaning" }).click();
+    await expect(page.getByText("Popular cleans")).toBeVisible();
+    await page.getByRole("link", { name: /Deep clean/i }).click();
     await expect(page).toHaveURL(/category=cleaning.*type=deep/);
     await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
       timeout: 15_000,
