@@ -8,6 +8,7 @@ import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
+import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
   formatVisitCadence,
@@ -144,9 +145,16 @@ export function CleaningBookingFlow({
         <CleaningTypeTabs
           value={serviceDetails.serviceType}
           onChange={handleCleaningTypeChange}
-          showDetails={false}
+          showDetails
           centered
         />
+      </div>
+    ) : null;
+
+  const lockedTypeSummary =
+    lockServiceType && selectedType && step === "address" ? (
+      <div className="mb-6">
+        <ServiceScopeTeaser category="cleaning" serviceType={serviceDetails.serviceType} />
       </div>
     ) : null;
 
@@ -154,6 +162,7 @@ export function CleaningBookingFlow({
     return (
       <div>
         <BookingFlowProgress steps={flowSteps} current="address" />
+        {lockedTypeSummary}
         {cleaningTypePicker}
         <AddressStepFields
           idPrefix="cleaning"

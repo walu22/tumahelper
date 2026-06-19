@@ -93,7 +93,6 @@ export function CategoryScroller() {
             showSelection={false}
             edgeToEdge
             centered
-            variant="descriptive"
           />
         </div>
       )}
