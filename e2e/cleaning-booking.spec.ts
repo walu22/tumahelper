@@ -60,6 +60,7 @@ test.describe("Cleaning booking end-to-end", () => {
     await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
       timeout: 15_000,
     });
+    await expect(page.getByText("What type of clean?")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Where should we clean?" })).toBeVisible();
 
     await page.locator("#cleaning-street").fill("Plot 8, Woodlands");

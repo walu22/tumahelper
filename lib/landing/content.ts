@@ -22,13 +22,13 @@ export const LUSAKA_AREAS = [
 /** Launch categories only: nannies + cleaning */
 export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
   { href: "/customer/book?category=nanny&type=babysitting", label: "Nannies", icon: "nanny" },
-  { href: "/customer/book?category=cleaning&type=standard", label: "Cleaning", icon: "indoor" },
+  { href: "/customer/book?category=cleaning", label: "Cleaning", icon: "indoor" },
   { href: "/customer/book/airbnb", label: "Airbnb clean", icon: "airbnb" },
 ];
 
 /** Deep links that skip the service picker and open booking details */
 export const NANNY_BOOK_HREF = "/customer/book?category=nanny&type=babysitting";
-export const CLEANING_BOOK_HREF = "/customer/book?category=cleaning&type=standard";
+export const CLEANING_BOOK_HREF = "/customer/book?category=cleaning";
 export const AIRBNB_CLEAN_BOOK_HREF = "/customer/book/airbnb";
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
 export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;

@@ -22,5 +22,6 @@ test.describe("Mobile layout", () => {
     await page.goto("/customer/book?category=cleaning&type=standard");
 
     await expect(page.getByText(/Step 1 of 3/)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("tab", { name: "Garage cleaning" })).toBeVisible();
   });
 });

@@ -6,43 +6,39 @@ test.describe("Booking entry points", () => {
     await loginAsCustomer(page, baseURL!);
   });
 
-  test("hero Nannies icon opens babysitting details", async ({ page }) => {
+  test("hero Nannies icon opens babysitting flow", async ({ page }) => {
     await page.goto("/");
     await page.locator('a[href="/customer/book?category=nanny&type=babysitting"]').first().click();
     await expect(page).toHaveURL(/category=nanny.*type=babysitting/);
-    await expect(page.getByRole("heading", { name: "Book a service" })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
+    await expect(page.getByRole("heading", { name: "Book a nanny" })).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.locator("#service-date")).toBeVisible();
-    await expect(page.getByText("Nanny Services")).toHaveCount(0);
-    await expect(page.getByText("House Cleaning")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Where do you need care?" })).toBeVisible();
   });
 
-  test("hero Cleaning icon opens standard clean details", async ({ page }) => {
+  test("hero Cleaning icon opens cleaning flow with type tabs", async ({ page }) => {
     await page.goto("/");
-    await page.locator('a[href="/customer/book?category=cleaning&type=standard"]').first().click();
-    await expect(page).toHaveURL(/category=cleaning.*type=standard/);
-    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
+    await page.locator('a[href="/customer/book?category=cleaning"]').first().click();
+    await expect(page).toHaveURL(/category=cleaning/);
+    await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.locator("#service-date")).toBeVisible();
+    await expect(page.getByText("What type of clean?")).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Spring cleaning" })).toBeVisible();
   });
 
-  test("FAQ Book cleaning uses standard clean deep link", async ({ page }) => {
+  test("FAQ Book cleaning opens cleaning flow with type tabs", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: "Book cleaning" }).click();
-    await expect(page).toHaveURL(/category=cleaning.*type=standard/);
-    await expect(page.getByRole("heading", { level: 2, name: "Booking details" })).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(page).toHaveURL(/category=cleaning/);
+    await expect(page.getByText("What type of clean?")).toBeVisible({ timeout: 15_000 });
   });
 
-  test("plain /customer/book shows service types not category cards", async ({ page }) => {
+  test("plain /customer/book shows cleaning tabs and nanny options", async ({ page }) => {
     await page.goto("/customer/book");
     await expect(page.getByRole("heading", { name: "What do you need?" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Book this clean" })).toBeVisible();
     await expect(page.getByText("Babysitting")).toBeVisible();
-    await expect(page.getByText("Standard home clean")).toBeVisible();
-    await expect(page.getByText("Nanny Services")).toHaveCount(0);
   });
 });
