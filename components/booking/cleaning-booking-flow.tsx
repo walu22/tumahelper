@@ -49,6 +49,7 @@ interface CleaningBookingFlowProps {
   onTimeChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onFindWorker: () => void;
+  lockServiceType?: boolean;
 }
 
 export function CleaningBookingFlow({
@@ -69,6 +70,7 @@ export function CleaningBookingFlow({
   onTimeChange,
   onDescriptionChange,
   onFindWorker,
+  lockServiceType = false,
 }: CleaningBookingFlowProps) {
   const flowSteps = getFlowSteps("cleaning", serviceDetails.serviceType);
   const recommendedHours = suggestDuration(serviceDetails);
@@ -134,16 +136,19 @@ export function CleaningBookingFlow({
     if (type) setServiceType(typeId, type.defaultHours);
   }
 
-  const cleaningTypePicker = (
-    <div className="mb-6">
-      <p className="text-sm font-medium text-foreground mb-3">What type of clean?</p>
-      <CleaningTypeTabs
-        value={serviceDetails.serviceType}
-        onChange={handleCleaningTypeChange}
-        showDetails={step === "address"}
-      />
-    </div>
-  );
+  const selectedType = getServiceType("cleaning", serviceDetails.serviceType);
+
+  const cleaningTypePicker =
+    !lockServiceType && step === "address" ? (
+      <div className="mb-6">
+        <CleaningTypeTabs
+          value={serviceDetails.serviceType}
+          onChange={handleCleaningTypeChange}
+          showDetails={false}
+          centered
+        />
+      </div>
+    ) : null;
 
   if (step === "address") {
     return (
@@ -168,14 +173,6 @@ export function CleaningBookingFlow({
     return (
       <div>
         <BookingFlowProgress steps={flowSteps} current="plan" />
-        <div className="mb-6">
-          <p className="text-sm font-medium text-foreground mb-3">What type of clean?</p>
-          <CleaningTypeTabs
-            value={serviceDetails.serviceType}
-            onChange={handleCleaningTypeChange}
-            showDetails={false}
-          />
-        </div>
         <SchedulePlanSection
           category="cleaning"
           serviceType={serviceDetails.serviceType}
@@ -200,14 +197,14 @@ export function CleaningBookingFlow({
     <div className="space-y-8">
       <BookingFlowProgress steps={flowSteps} current="scope" />
 
-      <div>
-        <p className="text-sm font-medium text-foreground mb-3">What type of clean?</p>
-        <CleaningTypeTabs
-          value={serviceDetails.serviceType}
-          onChange={handleCleaningTypeChange}
-          showDetails={false}
-        />
-      </div>
+      {lockServiceType && selectedType && (
+        <div className="rounded-xl border border-border bg-card px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+            Clean type
+          </p>
+          <p className="font-semibold text-foreground">{selectedType.label}</p>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-border bg-surface/40 px-4 py-3 text-sm">
         <p className="font-semibold text-foreground">

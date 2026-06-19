@@ -16,7 +16,7 @@ test.describe("Booking entry points", () => {
     await expect(page.getByRole("heading", { name: "Where do you need care?" })).toBeVisible();
   });
 
-  test("hero Cleaning expands type tabs then books deep clean", async ({ page }) => {
+  test("hero Cleaning expands pills and deep clean opens booking", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Cleaning" }).click();
     await expect(page.getByRole("tab", { name: "Spring cleaning" })).toBeVisible();
@@ -25,20 +25,23 @@ test.describe("Booking entry points", () => {
     await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
       timeout: 15_000,
     });
+    await expect(page.getByText("What type of clean?")).not.toBeVisible();
   });
 
-  test("FAQ Book cleaning opens cleaning flow with type tabs", async ({ page }) => {
+  test("FAQ Book cleaning shows pills only on booking page", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: "Book cleaning" }).click();
     await expect(page).toHaveURL(/category=cleaning/);
-    await expect(page.getByText("What type of clean?")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText("What type of clean?")).not.toBeVisible();
+    await expect(page.getByText("Book this clean")).not.toBeVisible();
   });
 
-  test("plain /customer/book shows cleaning tabs and nanny options", async ({ page }) => {
+  test("plain /customer/book shows cleaning pills and nanny options", async ({ page }) => {
     await page.goto("/customer/book");
     await expect(page.getByRole("heading", { name: "What do you need?" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Deep clean" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Book this clean" })).toBeVisible();
+    await expect(page.getByText("Book this clean")).not.toBeVisible();
     await expect(page.getByText("Babysitting")).toBeVisible();
   });
 });

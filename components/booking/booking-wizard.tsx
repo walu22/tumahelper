@@ -566,6 +566,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     return (
       <CleaningBookingFlow
         {...shared}
+        lockServiceType={lockServiceType}
       />
     )
   }
