@@ -92,6 +92,7 @@ export function CategoryScroller() {
             showDetails={false}
             showSelection={false}
             edgeToEdge
+            centered
           />
         </div>
       )}
