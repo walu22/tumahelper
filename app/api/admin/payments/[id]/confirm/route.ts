@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { getAdminClient } from "@/lib/supabase";
-import { requireAdmin, successResponse, errorResponse } from "@/lib/auth";
+import { requireAdmin, successResponse, errorResponse, createNotification } from "@/lib/auth";
 import { confirmPaymentSchema } from "@/lib/validations";
 
 export async function PATCH(
@@ -49,6 +49,24 @@ export async function PATCH(
       entity_id: id,
       new_value: { payment_status: "confirmed" },
     });
+
+    await createNotification({
+      userId: data.customer_id,
+      type: "payment_confirmed",
+      title: "Payment confirmed",
+      message: `Your payment for booking ${data.booking_code} has been confirmed.`,
+      data: { bookingId: id },
+    });
+
+    if (data.worker_id) {
+      await createNotification({
+        userId: data.worker_id,
+        type: "payment_received",
+        title: "Payment confirmed",
+        message: `Payment for booking ${data.booking_code} was confirmed. You can proceed with the visit.`,
+        data: { bookingId: id },
+      });
+    }
 
     return successResponse(data);
   } catch (error) {

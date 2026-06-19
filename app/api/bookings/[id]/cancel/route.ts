@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { createAuthenticatedRouteHandlerClient } from "@/lib/supabase-server";
-import { requireAuth, successResponse, errorResponse } from "@/lib/auth";
+import { requireAuth, successResponse, errorResponse, createNotification } from "@/lib/auth";
 import { z } from "zod";
 
 const cancelSchema = z.object({
@@ -51,6 +51,19 @@ export async function POST(
     if (error) {
       return errorResponse("UPDATE_FAILED", error.message, 500);
     }
+
+    const notifyUserId =
+      user.id === booking.customer_id ? booking.worker_id : booking.customer_id;
+    const cancelledBy =
+      user.id === booking.customer_id ? "The customer" : "Your worker";
+
+    await createNotification({
+      userId: notifyUserId,
+      type: "booking_cancelled",
+      title: "Booking cancelled",
+      message: `${cancelledBy} cancelled the booking scheduled for ${booking.service_date}.`,
+      data: { bookingId: id },
+    });
 
     return successResponse(data);
   } catch (error) {

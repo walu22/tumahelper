@@ -10,6 +10,7 @@ import type { User as AppUser } from '@/types'
 import { ROLE_REDIRECTS } from '@/lib/auth/config'
 import { logoutAction } from '@/app/(auth)/login/actions'
 import { GET_HELP_HREF, HEADER_NAV_LINKS } from '@/lib/landing/content'
+import { NotificationBell } from '@/components/layout/notification-bell'
 
 export function Header({ user }: { user: AppUser | null }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -45,12 +46,15 @@ export function Header({ user }: { user: AppUser | null }) {
             </button>
 
             {user ? (
-              <Link href={dashboardHref}>
+              <>
+                <NotificationBell userId={user.id} />
+                <Link href={dashboardHref}>
                 <Button variant="ghost" size="sm" className="rounded-full">
                   <User className="h-4 w-4 mr-2" />
                   Account
                 </Button>
-              </Link>
+                </Link>
+              </>
             ) : (
               <Link href="/login">
                 <Button variant="ghost" size="sm" className="rounded-full">
@@ -120,6 +124,7 @@ export function Header({ user }: { user: AppUser | null }) {
               </button>
               {user ? (
                 <>
+                  <NotificationBell userId={user.id} />
                   <Link href={dashboardHref} onClick={() => setIsOpen(false)}>
                     <Button variant="outline" className="w-full rounded-full">
                       Account

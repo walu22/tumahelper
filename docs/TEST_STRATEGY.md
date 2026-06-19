@@ -109,6 +109,18 @@ Without category loading, **Confirm booking** fails silently because `selectedCa
 - Production data or live payment providers in CI.
 - Admin/dashboard pages that require `SUPABASE_SERVICE_ROLE_KEY` (server errors in dev logs are expected in CI).
 
+## Post-booking loop (implemented)
+
+| Step | Behaviour |
+|------|-----------|
+| Sign in to pay | Booking wizard redirects to `/login?redirect=…` before payment step or on 401 |
+| Payment proof | Customer uploads proof; worker + admins notified |
+| Admin confirm | Customer and worker notified when payment is confirmed |
+| Cancel | Other party notified |
+| In-app alerts | Notification bell in header (`/api/notifications`) |
+
+Configure production MoMo numbers via `NEXT_PUBLIC_MTN_MOMO_NUMBER`, `NEXT_PUBLIC_AIRTEL_MONEY_NUMBER`, `NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME`.
+
 ## File map
 
 | Path | Role |

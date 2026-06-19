@@ -70,7 +70,14 @@ export default function LoginPage({
 
         <p className="text-center text-sm text-muted-foreground mt-6">
           No account?{" "}
-          <Link href="/register" className="text-primary hover:underline">
+          <Link
+            href={
+              searchParams.redirect
+                ? `/register?redirect=${encodeURIComponent(searchParams.redirect)}`
+                : "/register"
+            }
+            className="text-primary hover:underline"
+          >
             Register
           </Link>
         </p>

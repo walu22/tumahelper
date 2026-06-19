@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createAuthenticatedRouteHandlerClient } from '@/lib/supabase-server'
-import { requireUser } from '@/lib/auth'
+import { requireUser, createNotification } from '@/lib/auth'
+import { getAdminClient } from '@/lib/supabase'
 
 export async function POST(
   request: Request,
@@ -45,7 +46,7 @@ export async function POST(
 
     const { data: booking } = await supabase
       .from('bookings')
-      .select('amount')
+      .select('amount, worker_id, booking_code')
       .eq('id', params.id)
       .single()
 
@@ -78,6 +79,28 @@ export async function POST(
       payment_proof_url: uploadData?.path || '',
       status: 'pending',
     })
+
+    if (booking.worker_id) {
+      await createNotification({
+        userId: booking.worker_id,
+        type: 'payment_proof_submitted',
+        title: 'Payment proof uploaded',
+        message: `The customer uploaded payment proof for booking ${booking.booking_code}.`,
+        data: { bookingId: params.id },
+      })
+    }
+
+    const adminClient = getAdminClient()
+    const { data: admins } = await adminClient.from('users').select('id').eq('role', 'admin')
+    for (const admin of admins ?? []) {
+      await createNotification({
+        userId: admin.id,
+        type: 'payment_review',
+        title: 'Payment needs review',
+        message: `Review payment proof for booking ${booking.booking_code}.`,
+        data: { bookingId: params.id },
+      })
+    }
 
     return NextResponse.json({ success: true, data: { signedUrl: signedUrlData?.signedUrl } })
   } catch (error: any) {

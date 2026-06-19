@@ -422,6 +422,19 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [serviceDetails, locationAddress])
 
+  const ensureSignedInForBooking = useCallback(async () => {
+    try {
+      const res = await fetch('/api/auth/me')
+      if (res.ok) return true
+    } catch {
+      // fall through to login redirect
+    }
+    const returnTo = `${window.location.pathname}${window.location.search}`
+    router.push(`/login?redirect=${encodeURIComponent(returnTo)}`)
+    toast.message('Sign in to complete your booking')
+    return false
+  }, [router])
+
   const selectServiceType = useCallback(
     (categoryKey: ServiceCategoryKey, serviceTypeId: string) => {
       const typeOption = getServiceType(categoryKey, serviceTypeId)
@@ -443,16 +456,18 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   const guidedFlow = serviceDetails ? usesGuidedBookingFlow(serviceDetails) : false
 
   const selectWorker = useCallback(
-    (worker: WorkerSummary) => {
+    async (worker: WorkerSummary) => {
       if (!serviceDate || !serviceTime || locationAddress.length < 5) {
         toast.error('Please choose a date, time, and address first')
         goToStep(STEP.DETAILS)
         return
       }
+      const signedIn = await ensureSignedInForBooking()
+      if (!signedIn) return
       setSelectedWorker(worker)
       goToStep(STEP.PAYMENT)
     },
-    [goToStep, serviceDate, serviceTime, locationAddress]
+    [goToStep, serviceDate, serviceTime, locationAddress, ensureSignedInForBooking]
   )
 
   const hasScheduleDetails =
@@ -492,6 +507,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       return
     }
 
+    const signedIn = await ensureSignedInForBooking()
+    if (!signedIn) return
+
     setSubmitting(true)
     try {
       const res = await fetch('/api/bookings', {
@@ -515,6 +533,13 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       })
 
       const data = await res.json()
+
+      if (res.status === 401 || data.error?.code === 'UNAUTHORIZED') {
+        const returnTo = `${window.location.pathname}${window.location.search}`
+        router.push(`/login?redirect=${encodeURIComponent(returnTo)}`)
+        toast.message('Sign in to complete your booking')
+        return
+      }
 
       if (!res.ok || !data.success) {
         throw new Error(data.error?.message || 'Failed to create booking')
@@ -837,12 +862,14 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                   </Button>
                   {selectedWorker && (
                     <Button
-                      onClick={() => {
+                      onClick={async () => {
                         if (!hasScheduleDetails) {
                           toast.error('Please choose a date, time, and address first')
                           goToStep(STEP.DETAILS)
                           return
                         }
+                        const signedIn = await ensureSignedInForBooking()
+                        if (!signedIn) return
                         goToStep(STEP.PAYMENT)
                       }}
                       className="w-full sm:w-auto min-h-11"

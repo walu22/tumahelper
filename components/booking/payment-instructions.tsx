@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/formatters";
 import { Smartphone, Banknote, Upload, CheckCircle2, Loader2 } from "lucide-react";
+import { getPaymentAccountDetails } from "@/lib/payments/config";
 import { toast } from "sonner";
 
 interface PaymentInstructionsProps {
@@ -40,6 +41,7 @@ export function PaymentInstructions({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const isPaid = localStatus === "paid" || localStatus === "confirmed";
+  const paymentDetails = getPaymentAccountDetails();
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -102,14 +104,18 @@ export function PaymentInstructions({
       </p>
 
       <div className="rounded-xl bg-surface border border-border p-4 mb-5 space-y-2 text-sm">
-        <p className="font-medium">Payment details (demo)</p>
+        <p className="font-medium">
+          Payment details{paymentDetails.isDemo ? " (demo)" : ""}
+        </p>
         <p>
           <span className="text-muted-foreground">MTN MoMo:</span>{" "}
-          <span className="font-mono">097 000 0000</span> · TumaHelper Ltd
+          <span className="font-mono">{paymentDetails.mtnNumber}</span> ·{" "}
+          {paymentDetails.accountName}
         </p>
         <p>
           <span className="text-muted-foreground">Airtel Money:</span>{" "}
-          <span className="font-mono">097 000 0001</span> · TumaHelper Ltd
+          <span className="font-mono">{paymentDetails.airtelNumber}</span> ·{" "}
+          {paymentDetails.accountName}
         </p>
         <p className="text-muted-foreground text-xs pt-1">
           Cash on arrival is also fine. Agree with your worker before the visit.
