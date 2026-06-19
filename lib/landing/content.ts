@@ -93,6 +93,14 @@ export const GARDEN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.garden}`;
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
 export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
+export const GET_HELP_HREF = "/#choose-service";
+
+/** Minimal header links (Option B — services live on homepage hero). */
+export const HEADER_NAV_LINKS = [
+  { href: "/workers", label: "Find workers" },
+] as const;
+
+/** @deprecated Services are chosen on the homepage hero; use HEADER_NAV_LINKS in the header. */
 export const PRIMARY_NAV_LINKS = [
   { href: NANNY_BOOK_HREF, label: "Nannies" },
   { href: CLEANING_BOOK_HREF, label: "Cleaning" },

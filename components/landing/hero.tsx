@@ -28,7 +28,7 @@ export function LandingHero() {
           </p>
         </div>
 
-        <div className="mb-10">
+        <div id="choose-service" className="mb-10 scroll-mt-24">
           <CategoryScroller />
         </div>
 
