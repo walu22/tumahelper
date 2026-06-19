@@ -1,6 +1,8 @@
 # TumaHelper Test Cases
 
-Master test catalog for TumaHelper (Lusaka nanny + cleaning marketplace).
+Master test catalog for TumaHelper (Lusaka home-help marketplace).
+
+**Strategy & CI tiers:** see [TEST_STRATEGY.md](./TEST_STRATEGY.md).
 
 **Legend**
 
@@ -21,7 +23,7 @@ Master test catalog for TumaHelper (Lusaka nanny + cleaning marketplace).
 | Admin | `admin@tumahelper.dev` |
 | Employer | `employer@tumahelper.dev` |
 
-Run automated tests: `npm run test:e2e` · Unit tests: `npm run test:unit`
+Run automated tests: `npm run test:ci` (PR smoke) · `npm run test:e2e` (full) · Unit: `npm run test:unit`
 
 ---
 

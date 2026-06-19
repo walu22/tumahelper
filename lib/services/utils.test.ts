@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultBetweenGuestServiceDetails } from "./catalog";
+import { defaultBetweenGuestServiceDetails, defaultServiceDetails } from "./catalog";
 import { formatTurnoverFrequency, getServiceScopeRows } from "./utils";
 
 describe("turnover frequency", () => {
@@ -30,5 +30,38 @@ describe("turnover frequency", () => {
     expect(rows.some((r) => r.label === "Linen")).toBe(true);
     expect(rows.find((r) => r.label === "Linen")?.value).toContain("Remake beds only");
     expect(rows.find((r) => r.label === "Linen")?.value).toContain("Collect for laundry basket");
+  });
+});
+
+describe("housekeeping scope summary", () => {
+  it("labels selected duties as Duties, not Add-ons", () => {
+    const details = {
+      ...defaultServiceDetails("housekeeping"),
+      serviceType: "full_day",
+      addons: ["laundry", "dishes"],
+    };
+    const rows = getServiceScopeRows(details);
+    expect(rows.some((r) => r.label === "Duties" && r.value.includes("Laundry"))).toBe(true);
+    expect(rows.some((r) => r.label === "Add-ons")).toBe(false);
+  });
+
+  it("shows visit type instead of bedroom count", () => {
+    const details = defaultServiceDetails("housekeeping");
+    const rows = getServiceScopeRows(details);
+    expect(rows.some((r) => r.label === "Visit")).toBe(true);
+    expect(rows.some((r) => r.label === "Home")).toBe(false);
+  });
+});
+
+describe("cleaning scope summary", () => {
+  it("labels cleaning extras as Add-ons", () => {
+    const details = {
+      ...defaultServiceDetails("cleaning"),
+      serviceType: "standard",
+      addons: ["oven"],
+    };
+    const rows = getServiceScopeRows(details);
+    expect(rows.some((r) => r.label === "Add-ons")).toBe(true);
+    expect(rows.some((r) => r.label === "Duties")).toBe(false);
   });
 });

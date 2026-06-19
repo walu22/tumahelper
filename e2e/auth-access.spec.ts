@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { loginAs, loginAsCustomer, loginAsWorker } from "./helpers/auth";
 
-test.describe("Auth & route access", () => {
+test.describe("Auth & route access", { tag: "@smoke" }, () => {
   test("unauthenticated customer route redirects to login", async ({ page }) => {
     await page.goto("/customer/dashboard");
     await expect(page).toHaveURL(/\/login\?redirect=/);

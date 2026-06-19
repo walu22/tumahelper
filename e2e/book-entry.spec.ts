@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { loginAsCustomer } from "./helpers/auth";
 
-test.describe("Booking entry points", () => {
+test.describe("Booking entry points", { tag: "@smoke" }, () => {
   test.beforeEach(async ({ page, baseURL }) => {
     await loginAsCustomer(page, baseURL!);
   });
