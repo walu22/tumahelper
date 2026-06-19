@@ -23,6 +23,7 @@ import { AirbnbBookingFlow } from '@/components/booking/airbnb-booking-flow'
 import { AirbnbBookingSummary } from '@/components/booking/airbnb-booking-summary'
 import { CleaningBookingFlow } from '@/components/booking/cleaning-booking-flow'
 import { NannyBookingFlow } from '@/components/booking/nanny-booking-flow'
+import { TaskServiceBookingFlow } from '@/components/booking/task-service-booking-flow'
 import { ServiceBookingSummary } from '@/components/booking/service-booking-summary'
 import type { ServiceFlowStep } from '@/lib/booking/shared-flow'
 import { getBookingPageTitle } from '@/lib/booking/shared-flow'
@@ -52,6 +53,12 @@ function guidePriceHint(details: ServiceDetails): string {
   }
   if (details.category === "nanny") {
     return "Based on children, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+  }
+  if (details.category === "laundry") {
+    return "Based on load size, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+  }
+  if (details.category === "garden") {
+    return "Based on yard size, visit length, and add-ons. You pay the total below via mobile money after the visit.";
   }
   return "Based on home size, visit length, and add-ons. You pay the total below via mobile money after the clean.";
 }
@@ -201,7 +208,12 @@ function isLockedAirbnbFlow(
 }
 
 function usesGuidedBookingFlow(details: ServiceDetails): boolean {
-  return details.category === 'nanny' || details.category === 'cleaning'
+  return (
+    details.category === 'nanny' ||
+    details.category === 'cleaning' ||
+    details.category === 'laundry' ||
+    details.category === 'garden'
+  )
 }
 
 function isServiceTypeLocked(
@@ -330,7 +342,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
   useEffect(() => {
     if (airbnbEntry && !typeParam && !funnelParam && !workerProfileId) {
-      window.location.assign("/#hero-airbnb-panel")
+      window.location.assign("/#hero-short-stay-panel")
       return
     }
     if (airbnbEntry || lockedAirbnb) return
@@ -339,6 +351,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     }
     if (categoryParam === "nanny" && !typeParam && !funnelParam && !workerProfileId) {
       window.location.assign("/#hero-nanny-panel")
+    }
+    if (categoryParam === "laundry" && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-laundry-panel")
+    }
+    if (categoryParam === "garden" && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-garden-panel")
     }
   }, [airbnbEntry, lockedAirbnb, categoryParam, typeParam, funnelParam, workerProfileId])
 
@@ -590,6 +608,15 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     }
     if (serviceDetails.category === 'nanny') {
       return <NannyBookingFlow {...shared} lockServiceType={lockServiceType} />
+    }
+    if (serviceDetails.category === 'laundry' || serviceDetails.category === 'garden') {
+      return (
+        <TaskServiceBookingFlow
+          {...shared}
+          category={serviceDetails.category}
+          lockServiceType={lockServiceType}
+        />
+      )
     }
     return (
       <CleaningBookingFlow

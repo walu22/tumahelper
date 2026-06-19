@@ -97,7 +97,7 @@ export function AirbnbBookingSummary({
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
             Service
           </p>
-          <p className="font-medium text-foreground">Airbnb cleaning</p>
+          <p className="font-medium text-foreground">Short-stay cleaning</p>
         </div>
 
         {(step === "plan" || step === "scope") && (

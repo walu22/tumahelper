@@ -1,4 +1,6 @@
-export type ServiceIconKey = "indoor" | "nanny" | "airbnb";
+export type ServiceIconKey = "indoor" | "nanny" | "short_stay" | "laundry" | "garden";
+
+export type HeroCategoryId = "nanny" | "cleaning" | "short_stay" | "laundry" | "garden";
 
 export const LUSAKA_AREAS = [
   "Kabulonga",
@@ -19,59 +21,133 @@ export const LUSAKA_AREAS = [
   "Sunningdale",
 ] as const;
 
-/** Launch categories only: nannies + cleaning */
-export const HERO_CATEGORIES: { href: string; label: string; icon: ServiceIconKey }[] = [
-  { href: "/#hero-nanny-panel", label: "Nannies", icon: "nanny" },
-  { href: "/#hero-cleaning-panel", label: "Cleaning", icon: "indoor" },
-  { href: "/#hero-airbnb-panel", label: "Airbnb clean", icon: "airbnb" },
+export const HERO_CATEGORY_PANEL_IDS = {
+  nanny: "hero-nanny-panel",
+  cleaning: "hero-cleaning-panel",
+  short_stay: "hero-short-stay-panel",
+  laundry: "hero-laundry-panel",
+  garden: "hero-garden-panel",
+} as const;
+
+/** @deprecated Use HERO_CATEGORY_PANEL_IDS.short_stay */
+export const LEGACY_SHORT_STAY_PANEL_ID = "hero-airbnb-panel";
+
+/** Launch homepage services for the Zambian market */
+export const HERO_CATEGORIES: {
+  id: HeroCategoryId;
+  href: string;
+  label: string;
+  subtitle: string;
+  icon: ServiceIconKey;
+  panelId: string;
+}[] = [
+  {
+    id: "nanny",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.nanny}`,
+    label: "Nannies",
+    subtitle: "Childcare support for families.",
+    icon: "nanny",
+    panelId: HERO_CATEGORY_PANEL_IDS.nanny,
+  },
+  {
+    id: "cleaning",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.cleaning}`,
+    label: "Cleaning",
+    subtitle: "Household cleaning for homes and apartments.",
+    icon: "indoor",
+    panelId: HERO_CATEGORY_PANEL_IDS.cleaning,
+  },
+  {
+    id: "short_stay",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.short_stay}`,
+    label: "Short-Stay Cleaning",
+    subtitle: "Airbnbs, guesthouses, and furnished rentals.",
+    icon: "short_stay",
+    panelId: HERO_CATEGORY_PANEL_IDS.short_stay,
+  },
+  {
+    id: "laundry",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.laundry}`,
+    label: "Laundry & Ironing",
+    subtitle: "Washing, folding, bedding, and ironing support.",
+    icon: "laundry",
+    panelId: HERO_CATEGORY_PANEL_IDS.laundry,
+  },
+  {
+    id: "garden",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.garden}`,
+    label: "Garden & Yard Work",
+    subtitle: "Lawn, yard, verandah, and outside area help.",
+    icon: "garden",
+    panelId: HERO_CATEGORY_PANEL_IDS.garden,
+  },
 ];
 
-/** Deep links that skip the service picker and open booking details */
-export const NANNY_BOOK_HREF = "/#hero-nanny-panel";
-export const CLEANING_BOOK_HREF = "/#hero-cleaning-panel";
-export const AIRBNB_CLEAN_BOOK_HREF = "/#hero-airbnb-panel";
+export const NANNY_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.nanny}`;
+export const CLEANING_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.cleaning}`;
+export const SHORT_STAY_CLEAN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.short_stay}`;
+/** @deprecated Use SHORT_STAY_CLEAN_BOOK_HREF */
+export const AIRBNB_CLEAN_BOOK_HREF = SHORT_STAY_CLEAN_BOOK_HREF;
+export const LAUNDRY_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.laundry}`;
+export const GARDEN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.garden}`;
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
 export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
 export const PRIMARY_NAV_LINKS = [
-  { href: "/customer/book?category=nanny", label: "Nannies" },
-  { href: "/#hero-cleaning-panel", label: "Cleaning" },
-  { href: AIRBNB_CLEAN_BOOK_HREF, label: "Airbnb clean" },
+  { href: NANNY_BOOK_HREF, label: "Nannies" },
+  { href: CLEANING_BOOK_HREF, label: "Cleaning" },
+  { href: SHORT_STAY_CLEAN_BOOK_HREF, label: "Short-stay cleaning" },
+  { href: LAUNDRY_BOOK_HREF, label: "Laundry & ironing" },
+  { href: GARDEN_BOOK_HREF, label: "Garden & yard work" },
   { href: "/hire", label: "Permanent hire" },
   { href: "/workers", label: "Find workers" },
 ] as const;
 
 export const FOOTER_TAGLINE =
-  "Connecting Lusaka families with trusted, verified nannies and house cleaners — including between-guest cleans for Airbnb and short-stay properties.";
+  "Connecting Lusaka families with trusted, verified home help — nannies, cleaners, short-stay turnover cleaning, laundry, and garden support.";
 
 export const PLATFORM_OFFERINGS_INTRO = {
   eyebrow: "What we do",
-  headline: "Nannies and house cleaners, verified for Lusaka homes.",
+  headline: "Verified home help for Lusaka households.",
   subtitle:
-    "Book for a single visit or set up regular help — including between-guest cleans for Airbnb and short-stay properties — then hire permanently when you find the right person.",
+    "Book nannies, cleaning, short-stay turnover cleaning, laundry, and garden support — once or on a regular schedule — then hire permanently when you find the right person.",
 };
 
 export const PLATFORM_OFFERINGS = [
   {
     title: "Nannies & childcare",
     description:
-      "Babysitting, after-school help, or regular childcare. Book a verified nanny for the times you need.",
-    href: "/customer/book?category=nanny",
+      "Day nanny, babysitting, infant care, after-school, and weekend support. Book verified childcare for the times you need.",
+    href: NANNY_BOOK_HREF,
     variant: "pink" as const,
   },
   {
     title: "House cleaning",
     description:
-      "Standard, house, apartment, deep, spring, move-in/out, and garage & outside cleans for homes across Lusaka. Book once or set up regular visits.",
-    href: "/#hero-cleaning-panel",
+      "House, apartment, deep, spring, move-in/out, and garage cleans for homes across Lusaka.",
+    href: CLEANING_BOOK_HREF,
     variant: "green" as const,
   },
   {
-    title: "Airbnb cleaning",
+    title: "Short-stay cleaning",
     description:
-      "Between-guest cleans for Airbnb and short-stay properties. Book after check-out, ready before the next guest arrives.",
-    href: AIRBNB_CLEAN_BOOK_HREF,
+      "Guest checkout, same-day turnaround, deep cleans, and linen setup for Airbnbs, guesthouses, and furnished rentals.",
+    href: SHORT_STAY_CLEAN_BOOK_HREF,
     variant: "blue" as const,
+  },
+  {
+    title: "Laundry & ironing",
+    description:
+      "Wash and fold, ironing, bedding, curtains, and pickup support for busy households.",
+    href: LAUNDRY_BOOK_HREF,
+    variant: "teal" as const,
+  },
+  {
+    title: "Garden & yard work",
+    description:
+      "Lawn cutting, yard sweeping, hedge trimming, garden clean-up, and plant watering.",
+    href: GARDEN_BOOK_HREF,
+    variant: "green" as const,
   },
   {
     title: "Verified profiles",
@@ -126,7 +202,7 @@ export const FAQ_ITEMS = [
     a: "We serve households across Lusaka, including Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, Chelstone, and surrounding areas.",
   },
   {
-    q: "Do you clean Airbnb properties?",
-    a: "Yes. Between-guest cleaning is one of our house cleaning options — book a verified cleaner after check-out and before the next guest arrives.",
+    q: "Do you clean short-stay rentals?",
+    a: "Yes. Short-stay cleaning covers Airbnbs, guesthouses, and furnished rentals — guest checkout, same-day turnaround, deep cleans, and linen setup.",
   },
 ];

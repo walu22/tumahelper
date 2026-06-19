@@ -3,20 +3,26 @@
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
 import { NannyTypeTabs } from "@/components/booking/nanny-type-tabs";
 import { AirbnbTypeTabs } from "@/components/booking/airbnb-type-tabs";
+import { LaundryTypeTabs } from "@/components/booking/laundry-type-tabs";
+import { GardenTypeTabs } from "@/components/booking/garden-type-tabs";
 import {
   defaultServiceDetails,
   getAirbnbCleaningTypes,
+  getGardenTypes,
+  getLaundryTypes,
   getResidentialCleaningTypes,
 } from "@/lib/services/catalog";
 import { buildBookUrl } from "@/lib/services/utils";
 
 interface ServiceTypePickerProps {
-  onSelect?: (categoryKey: "nanny" | "cleaning", serviceTypeId: string) => void;
+  onSelect?: (categoryKey: "nanny" | "cleaning" | "laundry" | "garden", serviceTypeId: string) => void;
 }
 
 export function ServiceTypePicker(_props: ServiceTypePickerProps) {
   const cleaningTypes = getResidentialCleaningTypes();
   const airbnbTypes = getAirbnbCleaningTypes();
+  const laundryTypes = getLaundryTypes();
+  const gardenTypes = getGardenTypes();
 
   return (
     <div className="space-y-8">
@@ -59,11 +65,43 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
 
       <section>
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
-          Airbnb clean
+          Short-stay cleaning
         </p>
         <AirbnbTypeTabs
           value={airbnbTypes[0]?.id ?? "guest_checkout"}
           getHref={(typeId) => `/customer/book/airbnb?type=${typeId}`}
+          showDetails={false}
+        />
+      </section>
+
+      <section>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
+          Laundry & ironing
+        </p>
+        <LaundryTypeTabs
+          value={laundryTypes[0]?.id ?? "wash_fold"}
+          getHref={(typeId) =>
+            buildBookUrl({
+              ...defaultServiceDetails("laundry"),
+              serviceType: typeId,
+            })
+          }
+          showDetails={false}
+        />
+      </section>
+
+      <section>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
+          Garden & yard work
+        </p>
+        <GardenTypeTabs
+          value={gardenTypes[0]?.id ?? "lawn_cutting"}
+          getHref={(typeId) =>
+            buildBookUrl({
+              ...defaultServiceDetails("garden"),
+              serviceType: typeId,
+            })
+          }
           showDetails={false}
         />
       </section>

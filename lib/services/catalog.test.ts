@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   getAirbnbCleaningTypes,
   getAvailableAddons,
+  getGardenTypes,
+  getLaundryTypes,
   getNannyTypes,
   getServiceType,
   getResidentialCleaningTypes,
@@ -78,12 +80,29 @@ describe("service catalog add-ons", () => {
   it("lists five nanny tabs for launch", () => {
     const types = getNannyTypes();
     expect(types).toHaveLength(5);
+  });
+
+  it("lists five laundry tabs for launch", () => {
+    const types = getLaundryTypes();
+    expect(types).toHaveLength(5);
     expect(types.map((t) => t.id)).toEqual([
-      "day_nanny",
-      "babysitter",
-      "infant_care",
-      "after_school",
-      "weekend_nanny",
+      "wash_fold",
+      "ironing",
+      "bedding_laundry",
+      "curtain_laundry",
+      "pickup_dropoff",
+    ]);
+  });
+
+  it("lists five garden tabs for launch", () => {
+    const types = getGardenTypes();
+    expect(types).toHaveLength(5);
+    expect(types.map((t) => t.id)).toEqual([
+      "lawn_cutting",
+      "yard_sweeping",
+      "hedge_trimming",
+      "garden_cleanup",
+      "watering_plants",
     ]);
   });
 

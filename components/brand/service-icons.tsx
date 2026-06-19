@@ -35,14 +35,40 @@ export function NannyIcon({ className }: ServiceIconProps) {
   );
 }
 
-export function AirbnbIcon({ className }: ServiceIconProps) {
+export function ShortStayIcon({ className }: ServiceIconProps) {
   return (
     <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
-      <circle cx="32" cy="32" r="30" fill="#FFF0F0" />
-      <path d="M18 44V28l14-10 14 10v16H18Z" fill="#FF5A5F" />
-      <path d="M18 28l14-10 14 10-14-8-14 8Z" fill="#FF787C" />
-      <circle cx="32" cy="32" r="4" fill="white" />
-      <path d="M32 36v8h3v-2.5h2v-2.5h-5Z" fill="white" />
+      <circle cx="32" cy="32" r="30" fill="#E8F0FF" />
+      <path d="M18 44V28l14-10 14 10v16H18Z" fill="#2563EB" />
+      <path d="M18 28l14-10 14 10-14-8-14 8Z" fill="#3B82F6" />
+      <rect x="27" y="34" width="10" height="10" rx="1.5" fill="white" />
+      <path d="M30 38h4M32 36v4" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="46" cy="20" r="7" fill="#FE80C9" opacity="0.9" />
+      <path d="M43 20h6" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function LaundryIcon({ className }: ServiceIconProps) {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
+      <circle cx="32" cy="32" r="30" fill="#E8F4FF" />
+      <rect x="20" y="18" width="24" height="28" rx="4" fill="#60A5FA" />
+      <circle cx="32" cy="36" r="8" stroke="white" strokeWidth="2.5" />
+      <path d="M26 24h12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="36" cy="24" r="1.5" fill="white" />
+    </svg>
+  );
+}
+
+export function GardenIcon({ className }: ServiceIconProps) {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
+      <circle cx="32" cy="32" r="30" fill="#EAF7EA" />
+      <path d="M32 44V24" stroke="#166534" strokeWidth="3" strokeLinecap="round" />
+      <path d="M32 30c-6-4-10-1-10 4s4 8 10 4" fill="#22C55E" />
+      <path d="M32 26c6-4 10-1 10 4s-4 8-10 4" fill="#16A34A" />
+      <path d="M18 44h28" stroke="#854D0E" strokeWidth="3" strokeLinecap="round" />
     </svg>
   );
 }
@@ -50,7 +76,9 @@ export function AirbnbIcon({ className }: ServiceIconProps) {
 const ICON_MAP: Record<ServiceIconKey, ComponentType<ServiceIconProps>> = {
   indoor: IndoorCleaningIcon,
   nanny: NannyIcon,
-  airbnb: AirbnbIcon,
+  short_stay: ShortStayIcon,
+  laundry: LaundryIcon,
+  garden: GardenIcon,
 };
 
 export function ServiceIcon({ name, className }: { name: ServiceIconKey; className?: string }) {

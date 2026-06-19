@@ -1,4 +1,4 @@
-export type ServiceCategoryKey = "cleaning" | "nanny";
+export type ServiceCategoryKey = "cleaning" | "nanny" | "laundry" | "garden";
 
 export interface ServiceTypeOption {
   id: string;
@@ -30,7 +30,7 @@ export interface ServiceCatalogEntry {
   bookParam: string;
   types: ServiceTypeOption[];
   addons: ServiceAddonOption[];
-  scopeLabel: "home" | "children";
+  scopeLabel: "home" | "children" | "yard" | "laundry_load";
 }
 
 export interface ServiceDetails {
@@ -122,6 +122,22 @@ export const NANNY_TYPE_IDS = [
   "weekend_nanny",
 ] as const;
 
+export const LAUNDRY_TYPE_IDS = [
+  "wash_fold",
+  "ironing",
+  "bedding_laundry",
+  "curtain_laundry",
+  "pickup_dropoff",
+] as const;
+
+export const GARDEN_TYPE_IDS = [
+  "lawn_cutting",
+  "yard_sweeping",
+  "hedge_trimming",
+  "garden_cleanup",
+  "watering_plants",
+] as const;
+
 export const LEGACY_SERVICE_TYPE_ALIASES: Record<string, string> = {
   airbnb: "guest_checkout",
   babysitting: "babysitter",
@@ -162,6 +178,20 @@ export function getAirbnbCleaningTypes(): ServiceTypeOption[] {
 export function getNannyTypes(): ServiceTypeOption[] {
   const byId = new Map(SERVICE_CATALOG.nanny.types.map((t) => [t.id, t] as const));
   return NANNY_TYPE_IDS.map((id) => byId.get(id)).filter(
+    (t): t is ServiceTypeOption => t !== undefined
+  );
+}
+
+export function getLaundryTypes(): ServiceTypeOption[] {
+  const byId = new Map(SERVICE_CATALOG.laundry.types.map((t) => [t.id, t] as const));
+  return LAUNDRY_TYPE_IDS.map((id) => byId.get(id)).filter(
+    (t): t is ServiceTypeOption => t !== undefined
+  );
+}
+
+export function getGardenTypes(): ServiceTypeOption[] {
+  const byId = new Map(SERVICE_CATALOG.garden.types.map((t) => [t.id, t] as const));
+  return GARDEN_TYPE_IDS.map((id) => byId.get(id)).filter(
     (t): t is ServiceTypeOption => t !== undefined
   );
 }
@@ -416,8 +446,8 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       },
       {
         id: "deep_airbnb",
-        label: "Deep Airbnb clean",
-        tabLabel: "Deep Airbnb clean",
+        label: "Deep short-stay clean",
+        tabLabel: "Deep short-stay clean",
         description:
           "A more detailed clean after multiple guest stays, long bookings, heavy use, or before improving the guest experience.",
         pricingHint:
@@ -815,16 +845,323 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       },
     ],
   },
+  laundry: {
+    key: "laundry",
+    title: "Laundry & ironing",
+    tagline: "Washing, folding, bedding, curtains, and ironing support for Lusaka homes",
+    bookParam: "laundry",
+    scopeLabel: "laundry_load",
+    types: [
+      {
+        id: "wash_fold",
+        label: "Wash & fold",
+        tabLabel: "Wash & fold",
+        description:
+          "Help washing, drying, folding, and organising everyday clothing and household linen you provide.",
+        pricingHint:
+          "Price depends on load size, whether you need drying or folding only, and whether bedding or towels are included.",
+        included: [
+          "Sorting laundry you provide",
+          "Washing clothes and household linen",
+          "Drying where facilities allow",
+          "Folding and neat stacking",
+          "Basic laundry area tidy-up",
+        ],
+        notIncluded: [
+          "Buying detergent or supplies unless agreed",
+          "Dry cleaning",
+          "Repairs or stain treatment beyond normal washing",
+          "Ironing unless selected",
+          "Pickup and drop-off unless selected",
+        ],
+        defaultHours: 4,
+        priceHintMin: 200,
+        priceHintMax: 400,
+      },
+      {
+        id: "ironing",
+        label: "Ironing",
+        tabLabel: "Ironing",
+        description:
+          "Pressing and folding clothes, uniforms, and household linen you have already washed or had cleaned.",
+        pricingHint:
+          "Price depends on the number of items, type of clothing, and whether school uniforms or work shirts are included.",
+        included: [
+          "Ironing clothes you provide",
+          "Folding pressed items",
+          "Hanging or stacking finished laundry",
+          "Light laundry-area tidy-up",
+        ],
+        notIncluded: [
+          "Washing unless selected",
+          "Dry cleaning",
+          "Alterations or repairs",
+          "Pickup and drop-off unless selected",
+        ],
+        defaultHours: 3,
+        priceHintMin: 180,
+        priceHintMax: 350,
+      },
+      {
+        id: "bedding_laundry",
+        label: "Bedding laundry",
+        tabLabel: "Bedding laundry",
+        description:
+          "Washing, drying, and remaking beds with bedding and towels you provide on site.",
+        pricingHint:
+          "Price depends on the number of beds, amount of bedding and towels, and whether ironing is needed.",
+        included: [
+          "Stripping used bedding",
+          "Washing bedding and towels",
+          "Drying where facilities allow",
+          "Remaking beds",
+          "Folding spare linen",
+        ],
+        notIncluded: [
+          "Mattress deep cleaning",
+          "Buying bedding or towels",
+          "Curtain laundry unless selected",
+          "Ironing unless selected",
+        ],
+        defaultHours: 4,
+        priceHintMin: 220,
+        priceHintMax: 420,
+      },
+      {
+        id: "curtain_laundry",
+        label: "Curtain laundry",
+        tabLabel: "Curtain laundry",
+        description:
+          "Help taking down, washing, drying, and rehanging curtains or drapes you provide.",
+        pricingHint:
+          "Price depends on the number of curtains, fabric type, height, and whether ironing or pressing is needed.",
+        included: [
+          "Taking down curtains where reachable",
+          "Washing curtains you provide",
+          "Drying where facilities allow",
+          "Rehanging curtains",
+          "Light tidying of affected rooms",
+        ],
+        notIncluded: [
+          "Dry cleaning",
+          "High ladders or risky height work",
+          "Curtain repairs or alterations",
+          "Buying new curtains",
+        ],
+        defaultHours: 4,
+        priceHintMin: 250,
+        priceHintMax: 450,
+      },
+      {
+        id: "pickup_dropoff",
+        label: "Pickup & drop-off",
+        tabLabel: "Pickup & drop-off",
+        description:
+          "Collect laundry from your home, coordinate washing and return, or drop off at your chosen laundry point.",
+        pricingHint:
+          "Price depends on load size, distance within Lusaka, turnaround time, and whether washing or ironing is included.",
+        included: [
+          "Collecting laundry from your home",
+          "Returning cleaned laundry",
+          "Basic sorting and bagging",
+          "Status updates during the booking window",
+        ],
+        notIncluded: [
+          "Third-party laundry shop fees unless agreed upfront",
+          "Dry cleaning",
+          "Express same-hour turnaround unless agreed",
+          "Washing at your home unless selected",
+        ],
+        defaultHours: 3,
+        priceHintMin: 200,
+        priceHintMax: 400,
+      },
+    ],
+    addons: [
+      {
+        id: "ironing_addon",
+        label: "Ironing add-on",
+        description: "Press clothes after washing",
+        priceHint: 60,
+      },
+      {
+        id: "express_turnaround",
+        label: "Same-day turnaround",
+        description: "Priority return within the same day",
+        priceHint: 80,
+      },
+      {
+        id: "delicate_care",
+        label: "Delicate care",
+        description: "Hand-wash or gentle care for delicate items",
+        priceHint: 50,
+      },
+    ],
+  },
+  garden: {
+    key: "garden",
+    title: "Garden & yard work",
+    tagline: "Lawn, yard, verandah, and outside area help for Lusaka homes",
+    bookParam: "garden",
+    scopeLabel: "yard",
+    types: [
+      {
+        id: "lawn_cutting",
+        label: "Lawn cutting",
+        tabLabel: "Lawn cutting",
+        description:
+          "Cutting grass and tidying lawns, paved edges, and reachable yard areas around your home.",
+        pricingHint:
+          "Price depends on lawn size, grass height, access, and whether clipping collection is needed.",
+        included: [
+          "Cutting reachable lawn areas",
+          "Trimming lawn edges where possible",
+          "Collecting clippings into bags or a pile",
+          "Basic yard tidy after cutting",
+        ],
+        notIncluded: [
+          "Tree cutting or large branch removal",
+          "Landscaping or planting design",
+          "Pest control",
+          "Supplying fuel or equipment beyond basic tools",
+        ],
+        defaultHours: 3,
+        priceHintMin: 200,
+        priceHintMax: 400,
+      },
+      {
+        id: "yard_sweeping",
+        label: "Yard sweeping",
+        tabLabel: "Yard sweeping",
+        description:
+          "Sweeping yards, verandahs, paved areas, and outside walkways to clear dust, leaves, and debris.",
+        pricingHint:
+          "Price depends on yard size, paved area coverage, and how much debris needs clearing.",
+        included: [
+          "Sweeping paved yards and verandahs",
+          "Clearing visible leaves and debris",
+          "Bagging or piling rubbish for disposal",
+          "Light outside area tidy-up",
+        ],
+        notIncluded: [
+          "Rubbish removal off-site",
+          "Pressure washing",
+          "Drain or septic cleaning",
+          "Roof or gutter cleaning",
+        ],
+        defaultHours: 3,
+        priceHintMin: 180,
+        priceHintMax: 350,
+      },
+      {
+        id: "hedge_trimming",
+        label: "Hedge trimming",
+        tabLabel: "Hedge trimming",
+        description:
+          "Trimming hedges, shrubs, and reachable boundary plants to keep your yard neat and manageable.",
+        pricingHint:
+          "Price depends on hedge length, height, thickness, and how much clipping removal is needed.",
+        included: [
+          "Trimming reachable hedges and shrubs",
+          "Shaping visible plant lines",
+          "Collecting clippings",
+          "Basic tidy of trimmed areas",
+        ],
+        notIncluded: [
+          "Tree felling",
+          "Poison or chemical weed treatment",
+          "High ladder work beyond safe reach",
+          "Garden design or planting",
+        ],
+        defaultHours: 4,
+        priceHintMin: 220,
+        priceHintMax: 420,
+      },
+      {
+        id: "garden_cleanup",
+        label: "Garden clean-up",
+        tabLabel: "Garden clean-up",
+        description:
+          "A fuller outside tidy-up including sweeping, weeding reachable beds, and clearing overgrowth in the yard.",
+        pricingHint:
+          "Price depends on yard size, level of overgrowth, and whether green waste needs bagging or removal.",
+        included: [
+          "Sweeping yards and outside areas",
+          "Weeding reachable beds and borders",
+          "Clearing light overgrowth",
+          "Bagging garden waste",
+          "General outside tidy-up",
+        ],
+        notIncluded: [
+          "Heavy rubble or construction waste",
+          "Tree cutting",
+          "Pest or fumigation work",
+          "Full landscaping projects",
+        ],
+        defaultHours: 4,
+        priceHintMin: 250,
+        priceHintMax: 450,
+      },
+      {
+        id: "watering_plants",
+        label: "Watering plants",
+        tabLabel: "Watering plants",
+        description:
+          "Watering garden beds, pots, lawns, and plants according to your instructions while you are away or busy.",
+        pricingHint:
+          "Price depends on garden size, number of plants, water access, and visit frequency.",
+        included: [
+          "Watering plants and beds as instructed",
+          "Checking visible plant condition",
+          "Light pot and bed tidy where needed",
+          "Reporting obvious issues",
+        ],
+        notIncluded: [
+          "Planting new plants",
+          "Fertiliser or chemical treatment",
+          "Lawn cutting unless selected",
+          "Pest control",
+        ],
+        defaultHours: 3,
+        priceHintMin: 150,
+        priceHintMax: 300,
+      },
+    ],
+    addons: [
+      {
+        id: "green_waste_bags",
+        label: "Green waste bagging",
+        description: "Extra bagging and stacking of clippings or leaves",
+        priceHint: 50,
+      },
+      {
+        id: "verandah_sweep",
+        label: "Verandah sweep",
+        description: "Detailed sweep of verandahs and outside sitting areas",
+        priceHint: 40,
+      },
+      {
+        id: "outside_toilet",
+        label: "Outside toilet area",
+        description: "Basic tidy of outside toilet or wash area",
+        priceHint: 60,
+      },
+    ],
+  },
 };
 
 export function categorySlugToKey(slug: string): ServiceCategoryKey | null {
   if (slug.includes("nanny")) return "nanny";
+  if (slug.includes("laundry")) return "laundry";
+  if (slug.includes("garden")) return "garden";
   if (slug.includes("clean") || slug.includes("house")) return "cleaning";
   return null;
 }
 
 export function paramToCategoryKey(param: string | null): ServiceCategoryKey | null {
   if (param === "nanny") return "nanny";
+  if (param === "laundry") return "laundry";
+  if (param === "garden") return "garden";
   if (param === "cleaning" || param === "house-cleaner") return "cleaning";
   return null;
 }
@@ -832,13 +1169,13 @@ export function paramToCategoryKey(param: string | null): ServiceCategoryKey | n
 export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDetails {
   const entry = SERVICE_CATALOG[category];
   const firstType = entry.types[0];
-  if (category === "cleaning") {
+  if (category === "nanny") {
     return {
       category,
       serviceType: firstType.id,
       durationHours: firstType.defaultHours,
-      bedrooms: 3,
-      bathrooms: 2,
+      children: 1,
+      childAgeGroups: [],
       addons: [],
       frequency: "once",
     };
@@ -847,8 +1184,8 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
     category,
     serviceType: firstType.id,
     durationHours: firstType.defaultHours,
-    children: 1,
-    childAgeGroups: [],
+    bedrooms: category === "garden" ? 0 : 3,
+    bathrooms: category === "garden" ? 0 : 2,
     addons: [],
     frequency: "once",
   };
@@ -901,7 +1238,7 @@ export function sanitizeAddons(
 
 /** Flat list for booking entry (category inferred from service type). */
 export function catalogServiceTypeOptions() {
-  const order: ServiceCategoryKey[] = ["nanny", "cleaning"];
+  const order: ServiceCategoryKey[] = ["nanny", "cleaning", "laundry", "garden"];
   return order.flatMap((categoryKey) => {
     const entry = SERVICE_CATALOG[categoryKey];
     const types =
@@ -917,5 +1254,6 @@ export function catalogServiceTypeOptions() {
 }
 
 export function categoryKeyToDbSlug(categoryKey: ServiceCategoryKey) {
-  return categoryKey === "nanny" ? "nanny-services" : "house-cleaning";
+  if (categoryKey === "nanny") return "nanny-services";
+  return "house-cleaning";
 }

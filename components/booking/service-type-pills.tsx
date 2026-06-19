@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import {
-  getAirbnbCleaningTypes,
-  getServiceType,
-  type ServiceTypeOption,
-} from "@/lib/services/catalog";
+import { getServiceType, type ServiceCategoryKey, type ServiceTypeOption } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
 
-interface AirbnbTypeTabsProps {
+interface ServiceTypePillsProps {
+  category: ServiceCategoryKey;
+  types: ServiceTypeOption[];
   value: string;
   onChange?: (typeId: string) => void;
   getHref?: (typeId: string) => string;
@@ -16,9 +14,12 @@ interface AirbnbTypeTabsProps {
   centered?: boolean;
   edgeToEdge?: boolean;
   showSelection?: boolean;
+  tablistLabel: string;
 }
 
-export function AirbnbTypeTabs({
+export function ServiceTypePills({
+  category,
+  types,
   value,
   onChange,
   getHref,
@@ -26,10 +27,10 @@ export function AirbnbTypeTabs({
   centered = false,
   edgeToEdge = false,
   showSelection = true,
-}: AirbnbTypeTabsProps) {
-  const types = getAirbnbCleaningTypes();
+  tablistLabel,
+}: ServiceTypePillsProps) {
   const selected: ServiceTypeOption | undefined =
-    getServiceType("cleaning", value) ?? types[0];
+    getServiceType(category, value) ?? types[0];
 
   function renderTab(type: ServiceTypeOption) {
     const active = showSelection && value === type.id;
@@ -89,7 +90,7 @@ export function AirbnbTypeTabs({
         >
           <div
             role="tablist"
-            aria-label="Type of short-stay clean"
+            aria-label={tablistLabel}
             className="mx-auto flex w-max min-w-full flex-nowrap justify-center gap-2 py-1"
           >
             {tabs}
@@ -98,7 +99,7 @@ export function AirbnbTypeTabs({
       ) : (
         <div
           role="tablist"
-          aria-label="Type of short-stay clean"
+          aria-label={tablistLabel}
           className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 scroll-px-4"
         >
           {tabs}

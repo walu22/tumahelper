@@ -26,7 +26,13 @@ export function ServiceScopeTeaser({
     : "rounded-2xl border border-border bg-surface/40 p-5 sm:p-6";
 
   const includedHeading =
-    category === "nanny" ? "What's included in this visit" : "What's included in this clean";
+    category === "nanny"
+      ? "What's included in this visit"
+      : category === "laundry"
+        ? "What's included in this laundry visit"
+        : category === "garden"
+          ? "What's included in this garden visit"
+          : "What's included in this clean";
 
   const pricingLine =
     type.pricingHint ??

@@ -21,6 +21,20 @@ export function getFlowSteps(
       { id: "scope", label: "Care details" },
     ];
   }
+  if (category === "laundry") {
+    return [
+      { id: "address", label: "Your home" },
+      { id: "plan", label: "Schedule" },
+      { id: "scope", label: "Laundry details" },
+    ];
+  }
+  if (category === "garden") {
+    return [
+      { id: "address", label: "Your home" },
+      { id: "plan", label: "Schedule" },
+      { id: "scope", label: "Garden details" },
+    ];
+  }
   if (serviceType && isAirbnbCleaningType(serviceType)) {
     return [
       { id: "address", label: "Property" },
@@ -89,7 +103,9 @@ export function getBookingPageTitle(
   category: ServiceCategoryKey,
   serviceType?: string
 ): string {
-  if (serviceType && isAirbnbCleaningType(serviceType)) return "Book Airbnb cleaning";
+  if (serviceType && isAirbnbCleaningType(serviceType)) return "Book short-stay cleaning";
   if (category === "nanny") return "Book a nanny";
+  if (category === "laundry") return "Book laundry & ironing";
+  if (category === "garden") return "Book garden & yard work";
   return "Book house cleaning";
 }

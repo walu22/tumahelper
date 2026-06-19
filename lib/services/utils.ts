@@ -75,7 +75,7 @@ export function suggestDuration(details: ServiceDetails): number {
     const baths = details.bathrooms ?? 2;
     hours += Math.max(0, beds - 2) * 0.5;
     hours += Math.max(0, baths - 1) * 0.5;
-  } else {
+  } else if (details.category === "nanny") {
     hours += Math.max(0, (details.children ?? 1) - 1) * 0.5;
   }
 
@@ -108,7 +108,7 @@ export function suggestPrice(details: ServiceDetails): {
     const extraBaths = Math.max(0, (details.bathrooms ?? 2) - 1);
     min += extraBaths * 40;
     max += extraBaths * 60;
-  } else {
+  } else if (details.category === "nanny") {
     const extraChildren = Math.max(0, (details.children ?? 1) - 1);
     min += extraChildren * 60;
     max += extraChildren * 100;
@@ -182,7 +182,7 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
         rows.push({ label: "Linen", value: linen });
       }
     }
-  } else {
+  } else if (details.category === "nanny") {
     const count = details.children ?? 1;
     const ages = (details.childAgeGroups ?? []).slice(0, count);
     const ageSummary = formatAgeGroupsSummary(ages);
@@ -192,6 +192,11 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
     });
     if (ageSummary) {
       rows.push({ label: "Ages", value: ageSummary });
+    }
+  } else {
+    const type = getServiceType(details.category, details.serviceType);
+    if (type) {
+      rows.push({ label: "Service", value: type.label });
     }
   }
 
