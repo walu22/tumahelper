@@ -3,26 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronRight } from "lucide-react";
 import { HERO_CATEGORIES } from "@/lib/landing/content";
 import { ServiceIcon } from "@/components/brand/service-icons";
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
 import { getResidentialCleaningTypes } from "@/lib/services/catalog";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function CategoryScroller() {
   const router = useRouter();
   const cleaningTypes = getResidentialCleaningTypes();
   const [cleaningExpanded, setCleaningExpanded] = useState(false);
-  const [cleaningType, setCleaningType] = useState(cleaningTypes[0]?.id ?? "standard");
 
   function handleCleaningClick() {
     setCleaningExpanded((open) => !open);
   }
 
-  function bookCleaning() {
-    router.push(`/customer/book?category=cleaning&type=${cleaningType}`);
+  function handleCleaningTypeSelect(typeId: string) {
+    router.push(`/customer/book?category=cleaning&type=${typeId}`);
   }
 
   return (
@@ -91,19 +88,11 @@ export function CategoryScroller() {
           className="mt-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-top-2 duration-300"
         >
           <CleaningTypeTabs
-            value={cleaningType}
-            onChange={setCleaningType}
+            value={cleaningTypes[0]?.id ?? "standard"}
+            onChange={handleCleaningTypeSelect}
             showDetails={false}
             centered
           />
-          <Button
-            type="button"
-            className="w-full sm:w-auto sm:min-w-[12rem] mt-5 min-h-11 rounded-full mx-auto flex"
-            onClick={bookCleaning}
-          >
-            Book this clean
-            <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
         </div>
       )}
     </div>

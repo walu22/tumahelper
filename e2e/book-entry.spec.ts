@@ -16,12 +16,11 @@ test.describe("Booking entry points", () => {
     await expect(page.getByRole("heading", { name: "Where do you need care?" })).toBeVisible();
   });
 
-  test("hero Cleaning expands type tabs then books", async ({ page }) => {
+  test("hero Cleaning expands type tabs then books deep clean", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Cleaning" }).click();
     await expect(page.getByRole("tab", { name: "Spring cleaning" })).toBeVisible();
     await page.getByRole("tab", { name: "Deep clean" }).click();
-    await page.getByRole("button", { name: "Book this clean" }).click();
     await expect(page).toHaveURL(/category=cleaning.*type=deep/);
     await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
       timeout: 15_000,
