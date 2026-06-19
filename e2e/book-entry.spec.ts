@@ -16,9 +16,8 @@ test.describe("Booking entry points", () => {
     await expect(page.getByRole("heading", { name: "Where do you need care?" })).toBeVisible();
   });
 
-  test("hero Cleaning expands pills and deep clean opens booking", async ({ page }) => {
+  test("hero shows cleaning pills and deep clean opens booking", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: "Cleaning" }).click();
     await expect(page.getByRole("tab", { name: "Spring cleaning" })).toBeVisible();
     await page.getByRole("tab", { name: "Deep clean" }).click();
     await expect(page).toHaveURL(/category=cleaning.*type=deep/);
