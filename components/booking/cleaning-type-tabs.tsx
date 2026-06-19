@@ -11,12 +11,14 @@ interface CleaningTypeTabsProps {
   value: string;
   onChange: (typeId: string) => void;
   showDetails?: boolean;
+  centered?: boolean;
 }
 
 export function CleaningTypeTabs({
   value,
   onChange,
   showDetails = true,
+  centered = false,
 }: CleaningTypeTabsProps) {
   const types = getResidentialCleaningTypes();
   const selected: ServiceTypeOption | undefined =
@@ -27,7 +29,10 @@ export function CleaningTypeTabs({
       <div
         role="tablist"
         aria-label="Type of clean"
-        className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1"
+        className={cn(
+          "flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1",
+          centered && "justify-center"
+        )}
       >
         {types.map((type) => (
           <button

@@ -88,17 +88,17 @@ export function CategoryScroller() {
       {cleaningExpanded && (
         <div
           id="hero-cleaning-panel"
-          className="mt-8 max-w-xl mx-auto rounded-3xl border border-primary/20 bg-surface/80 p-5 sm:p-6 sweep-card-green animate-in fade-in slide-in-from-top-2 duration-300"
+          className="mt-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-top-2 duration-300"
         >
-          <p className="text-sm font-semibold text-foreground mb-3">What type of clean?</p>
           <CleaningTypeTabs
             value={cleaningType}
             onChange={setCleaningType}
-            showDetails
+            showDetails={false}
+            centered
           />
           <Button
             type="button"
-            className="w-full mt-5 min-h-11 rounded-full"
+            className="w-full sm:w-auto sm:min-w-[12rem] mt-5 min-h-11 rounded-full mx-auto flex"
             onClick={bookCleaning}
           >
             Book this clean

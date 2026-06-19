@@ -19,7 +19,6 @@ test.describe("Booking entry points", () => {
   test("hero Cleaning expands type tabs then books", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Cleaning" }).click();
-    await expect(page.getByText("What type of clean?")).toBeVisible();
     await expect(page.getByRole("tab", { name: "Spring cleaning" })).toBeVisible();
     await page.getByRole("tab", { name: "Deep clean" }).click();
     await page.getByRole("button", { name: "Book this clean" }).click();
