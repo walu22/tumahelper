@@ -10,12 +10,12 @@ import { PUBLIC_WORKER_AVAILABILITY, WORKER_STUB_AREA } from "@/lib/workers/publ
 import type { PublicWorkerProfile } from "@/types";
 
 export default async function HomePage() {
-  const supabase = getServerClient();
-
   let featuredWorkers: PublicWorkerProfile[] | null = null;
   let availableCount: number | null = null;
 
   try {
+    const supabase = getServerClient();
+
     const { count } = await supabase
       .from("worker_profiles")
       .select("*", { count: "exact", head: true })

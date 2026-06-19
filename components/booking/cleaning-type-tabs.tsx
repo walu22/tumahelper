@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   getResidentialCleaningTypes,
   getServiceType,
@@ -9,7 +10,8 @@ import { cn } from "@/lib/utils";
 
 interface CleaningTypeTabsProps {
   value: string;
-  onChange: (typeId: string) => void;
+  onChange?: (typeId: string) => void;
+  getHref?: (typeId: string) => string;
   showDetails?: boolean;
   centered?: boolean;
 }
@@ -17,12 +19,21 @@ interface CleaningTypeTabsProps {
 export function CleaningTypeTabs({
   value,
   onChange,
+  getHref,
   showDetails = true,
   centered = false,
 }: CleaningTypeTabsProps) {
   const types = getResidentialCleaningTypes();
   const selected: ServiceTypeOption | undefined =
     getServiceType("cleaning", value) ?? types[0];
+
+  const tabClassName = (active: boolean) =>
+    cn(
+      "shrink-0 rounded-full border-2 px-4 py-2.5 text-sm font-semibold transition-colors min-h-11 whitespace-nowrap inline-flex items-center",
+      active
+        ? "border-primary bg-primary text-primary-foreground"
+        : "border-border bg-background text-foreground hover:border-primary/40"
+    );
 
   return (
     <div className="space-y-4">
@@ -34,23 +45,37 @@ export function CleaningTypeTabs({
           centered && "justify-center"
         )}
       >
-        {types.map((type) => (
-          <button
-            key={type.id}
-            type="button"
-            role="tab"
-            aria-selected={value === type.id}
-            onClick={() => onChange(type.id)}
-            className={cn(
-              "shrink-0 rounded-full border-2 px-4 py-2.5 text-sm font-semibold transition-colors min-h-11 whitespace-nowrap",
-              value === type.id
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-background text-foreground hover:border-primary/40"
-            )}
-          >
-            {type.tabLabel ?? type.label}
-          </button>
-        ))}
+        {types.map((type) => {
+          const active = value === type.id;
+          const href = getHref?.(type.id);
+
+          if (href) {
+            return (
+              <Link
+                key={type.id}
+                href={href}
+                role="tab"
+                aria-selected={active}
+                className={tabClassName(active)}
+              >
+                {type.tabLabel ?? type.label}
+              </Link>
+            );
+          }
+
+          return (
+            <button
+              key={type.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange?.(type.id)}
+              className={tabClassName(active)}
+            >
+              {type.tabLabel ?? type.label}
+            </button>
+          );
+        })}
       </div>
 
       {showDetails && selected && (

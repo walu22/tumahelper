@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { HERO_CATEGORIES } from "@/lib/landing/content";
 import { ServiceIcon } from "@/components/brand/service-icons";
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
@@ -10,16 +9,11 @@ import { getResidentialCleaningTypes } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
 
 export function CategoryScroller() {
-  const router = useRouter();
   const cleaningTypes = getResidentialCleaningTypes();
   const [cleaningExpanded, setCleaningExpanded] = useState(false);
 
   function handleCleaningClick() {
     setCleaningExpanded((open) => !open);
-  }
-
-  function handleCleaningTypeSelect(typeId: string) {
-    router.push(`/customer/book?category=cleaning&type=${typeId}`);
   }
 
   return (
@@ -89,7 +83,7 @@ export function CategoryScroller() {
         >
           <CleaningTypeTabs
             value={cleaningTypes[0]?.id ?? "standard"}
-            onChange={handleCleaningTypeSelect}
+            getHref={(typeId) => `/customer/book?category=cleaning&type=${typeId}`}
             showDetails={false}
             centered
           />
