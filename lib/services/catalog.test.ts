@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   getAvailableAddons,
   getServiceType,
+  getResidentialCleaningTypes,
   sanitizeAddons,
 } from "./catalog";
 
@@ -28,9 +29,23 @@ describe("service catalog add-ons", () => {
   });
 
   it("defines not-included boundaries for every cleaning type", () => {
-    for (const type of ["standard", "deep", "move", "airbnb"] as const) {
+    for (const type of [
+      "standard",
+      "spring",
+      "apartment",
+      "deep",
+      "garage",
+      "move",
+      "airbnb",
+    ] as const) {
       const service = getServiceType("cleaning", type);
       expect(service?.notIncluded?.length).toBeGreaterThan(0);
     }
+  });
+
+  it("lists six residential cleaning tabs excluding airbnb", () => {
+    const types = getResidentialCleaningTypes();
+    expect(types).toHaveLength(6);
+    expect(types.map((t) => t.id)).not.toContain("airbnb");
   });
 });

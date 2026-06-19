@@ -3,6 +3,8 @@ export type ServiceCategoryKey = "cleaning" | "nanny";
 export interface ServiceTypeOption {
   id: string;
   label: string;
+  /** Shorter label for horizontal service tabs on mobile */
+  tabLabel?: string;
   description: string;
   included: string[];
   notIncluded?: string[];
@@ -88,17 +90,34 @@ export const CHILD_AGE_GROUPS = [
 
 export const DURATION_OPTIONS = [3, 4, 6, 8] as const;
 
+/** Home cleaning types shown in tab picker (excludes Airbnb — separate entry). */
+export const RESIDENTIAL_CLEANING_TYPE_IDS = [
+  "standard",
+  "spring",
+  "apartment",
+  "deep",
+  "garage",
+  "move",
+] as const;
+
+const HOME_CLEAN_ADDON_TYPES = ["standard", "spring", "apartment", "deep"] as const;
+
+export function getResidentialCleaningTypes(): ServiceTypeOption[] {
+  return SERVICE_CATALOG.cleaning.types.filter((t) => t.id !== "airbnb");
+}
+
 export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = {
   cleaning: {
     key: "cleaning",
     title: "House cleaning",
-    tagline: "Standard, deep, move-in/out, and between-guest cleans for Lusaka homes",
+    tagline: "Cleaning, deep, spring, apartment, garage, and move-out cleans for Lusaka homes",
     bookParam: "cleaning",
     scopeLabel: "home",
     types: [
       {
         id: "standard",
-        label: "Standard home clean",
+        label: "Cleaning",
+        tabLabel: "Cleaning",
         description: "Regular maintenance clean for occupied homes.",
         included: [
           "All bedrooms & living areas",
@@ -118,9 +137,54 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         priceHintMax: 550,
       },
       {
+        id: "spring",
+        label: "Spring cleaning",
+        tabLabel: "Spring cleaning",
+        description: "Seasonal reset: detailed clean of the whole home after dust build-up or before guests.",
+        included: [
+          "Everything in a standard clean",
+          "Skirting boards & door frames",
+          "Fans and reachable vents",
+          "Inside cupboards (if cleared)",
+          "Extra attention to windowsills & corners",
+        ],
+        notIncluded: [
+          "Exterior windows",
+          "Wall washing throughout",
+          "Laundry or ironing (unless add-on)",
+          "Moving heavy furniture",
+        ],
+        defaultHours: 6,
+        priceHintMin: 500,
+        priceHintMax: 750,
+      },
+      {
+        id: "apartment",
+        label: "Apartment cleaning",
+        tabLabel: "Apartment cleaning",
+        description: "Sized for flats and smaller homes — living areas, kitchen, bathroom, and bedroom.",
+        included: [
+          "Living & dining areas",
+          "Kitchen surfaces & appliances (exterior)",
+          "Bathroom clean",
+          "Bedroom tidy & beds made",
+          "Sweep, mop & vacuum",
+        ],
+        notIncluded: [
+          "Inside oven, fridge, or cabinets",
+          "Interior window glass",
+          "Laundry or ironing",
+          "Common-area hallways outside your unit",
+        ],
+        defaultHours: 3,
+        priceHintMin: 280,
+        priceHintMax: 420,
+      },
+      {
         id: "deep",
         label: "Deep clean",
-        description: "Thorough top-to-bottom clean, ideal for first visits or seasonal refreshes.",
+        tabLabel: "Deep clean",
+        description: "Thorough top-to-bottom clean, ideal for first visits or when the home needs extra attention.",
         included: [
           "Everything in a standard clean",
           "Detailed bathroom scrubbing",
@@ -139,15 +203,37 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         priceHintMax: 800,
       },
       {
+        id: "garage",
+        label: "Garage cleaning",
+        tabLabel: "Garage cleaning",
+        description: "Sweep, organise, and wipe down your garage, store room, or parking bay.",
+        included: [
+          "Sweep floors & clear loose debris",
+          "Wipe shelves & reachable surfaces",
+          "Bins emptied",
+          "Basic tidy of stored items (no heavy lifting)",
+        ],
+        notIncluded: [
+          "Hazardous waste removal",
+          "Moving vehicles or heavy equipment",
+          "Full home cleaning",
+          "Exterior pressure washing",
+        ],
+        defaultHours: 3,
+        priceHintMin: 250,
+        priceHintMax: 400,
+      },
+      {
         id: "move",
-        label: "Move-in / move-out",
-        description: "Empty or nearly empty home: walls, cupboards, and all rooms.",
+        label: "Move-out clean",
+        tabLabel: "Move-out clean",
+        description: "Empty or nearly empty home ready for handover, new tenants, or keys return.",
         included: [
           "Full deep clean of all rooms",
           "Inside empty cupboards & wardrobes",
           "Appliances inside & out (as agreed)",
           "Windows (interior)",
-          "Ready for handover or new tenants",
+          "Ready for handover or inspection",
         ],
         notIncluded: [
           "Packing or moving boxes",
@@ -187,42 +273,42 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Laundry",
         description: "Wash, dry & fold",
         priceHint: 80,
-        allowedTypes: ["standard", "deep", "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
       },
       {
         id: "ironing",
         label: "Ironing",
         description: "Press clothes & linen",
         priceHint: 80,
-        allowedTypes: ["standard", "deep", "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
       },
       {
         id: "oven",
         label: "Inside oven",
         description: "Degrease & scrub oven interior",
         priceHint: 100,
-        allowedTypes: ["standard", "deep", "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
       },
       {
         id: "fridge",
         label: "Inside fridge",
         description: "Clean shelves & interior",
         priceHint: 80,
-        allowedTypes: ["standard", "deep", "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
       },
       {
         id: "windows",
         label: "Interior windows",
         description: "Glass & frames inside",
         priceHint: 100,
-        allowedTypes: ["standard", "deep", "airbnb"],
+        allowedTypes: [...HOME_CLEAN_ADDON_TYPES, "airbnb"],
       },
       {
         id: "cabinets",
         label: "Inside cabinets",
         description: "Kitchen cabinets (emptied first)",
         priceHint: 100,
-        allowedTypes: ["standard", "airbnb"],
+        allowedTypes: ["standard", "spring", "apartment", "airbnb"],
       },
       {
         id: "appliances",
@@ -409,7 +495,11 @@ export function catalogServiceTypeOptions() {
   const order: ServiceCategoryKey[] = ["nanny", "cleaning"];
   return order.flatMap((categoryKey) => {
     const entry = SERVICE_CATALOG[categoryKey];
-    return entry.types.map((type) => ({
+    const types =
+      categoryKey === "cleaning"
+        ? entry.types.filter((t) => t.id !== "airbnb")
+        : entry.types;
+    return types.map((type) => ({
       categoryKey,
       categoryTitle: entry.title,
       type,

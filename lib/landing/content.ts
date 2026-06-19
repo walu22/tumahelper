@@ -62,7 +62,7 @@ export const PLATFORM_OFFERINGS = [
   {
     title: "House cleaning",
     description:
-      "Standard, deep, or move-out cleans for homes across Lusaka. Book once or set up regular visits.",
+      "Standard, deep, spring, apartment, garage, and move-out cleans for homes across Lusaka. Book once or set up regular visits.",
     href: "/customer/book?category=cleaning",
     variant: "green" as const,
   },

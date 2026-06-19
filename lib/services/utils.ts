@@ -35,8 +35,12 @@ export const FUNNEL_ALIASES: Record<
   { category: ServiceCategoryKey; type?: string }
 > = {
   "indoor-cleaning": { category: "cleaning", type: "standard" },
+  "spring-cleaning": { category: "cleaning", type: "spring" },
+  "apartment-cleaning": { category: "cleaning", type: "apartment" },
   "deep-clean": { category: "cleaning", type: "deep" },
+  "garage-cleaning": { category: "cleaning", type: "garage" },
   "move-clean": { category: "cleaning", type: "move" },
+  "move-out": { category: "cleaning", type: "move" },
   "airbnb-turnover": { category: "cleaning", type: "airbnb" },
   "between-guest-clean": { category: "cleaning", type: "airbnb" },
   "between-guest": { category: "cleaning", type: "airbnb" },
@@ -59,7 +63,7 @@ export function suggestDuration(details: ServiceDetails): number {
 
   let hours = type.defaultHours;
 
-  if (details.category === "cleaning") {
+  if (details.category === "cleaning" && details.serviceType !== "garage") {
     const beds = details.bedrooms ?? 3;
     const baths = details.bathrooms ?? 2;
     hours += Math.max(0, beds - 2) * 0.5;
@@ -90,7 +94,7 @@ export function suggestPrice(details: ServiceDetails): {
   let min = type.priceHintMin;
   let max = type.priceHintMax;
 
-  if (details.category === "cleaning") {
+  if (details.category === "cleaning" && details.serviceType !== "garage") {
     const extraBeds = Math.max(0, (details.bedrooms ?? 3) - 2);
     min += extraBeds * 50;
     max += extraBeds * 80;
@@ -151,10 +155,14 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
   const rows: ServiceScopeRow[] = [];
 
   if (details.category === "cleaning") {
-    rows.push({
-      label: details.serviceType === "airbnb" ? "Property" : "Home",
-      value: `${details.bedrooms ?? 3} bed · ${details.bathrooms ?? 2} bath`,
-    });
+    if (details.serviceType === "garage") {
+      rows.push({ label: "Space", value: "Garage or store room" });
+    } else {
+      rows.push({
+        label: details.serviceType === "airbnb" ? "Property" : "Home",
+        value: `${details.bedrooms ?? 3} bed · ${details.bathrooms ?? 2} bath`,
+      });
+    }
     if (details.serviceType === "airbnb" && details.frequency) {
       rows.push({
         label: "Frequency",

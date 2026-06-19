@@ -7,6 +7,7 @@ import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
+import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
   formatVisitCadence,
@@ -16,7 +17,6 @@ import {
 } from "@/lib/booking/shared-flow";
 import {
   DURATION_OPTIONS,
-  SERVICE_CATALOG,
   getAvailableAddons,
   sanitizeAddons,
   getServiceType,
@@ -87,7 +87,15 @@ export function CleaningBookingFlow({
 
   function setServiceType(serviceType: string, defaultHours: number) {
     const addons = sanitizeAddons("cleaning", serviceType, serviceDetails.addons);
-    const next = { ...serviceDetails, serviceType, addons, durationHours: defaultHours };
+    let next: ServiceDetails = {
+      ...serviceDetails,
+      serviceType,
+      addons,
+      durationHours: defaultHours,
+    };
+    if (serviceType === "apartment") {
+      next = { ...next, bedrooms: 2, bathrooms: 1 };
+    }
     onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
   }
 
@@ -188,19 +196,13 @@ export function CleaningBookingFlow({
       {!lockServiceType && (
         <div>
           <h3 className="text-lg font-semibold mb-3">Type of clean</h3>
-          <div className="grid gap-3">
-            {SERVICE_CATALOG.cleaning.types
-              .filter((t) => t.id !== "airbnb")
-              .map((type) => (
-                <AirbnbOptionCard
-                  key={type.id}
-                  selected={serviceDetails.serviceType === type.id}
-                  onClick={() => setServiceType(type.id, type.defaultHours)}
-                  title={type.label}
-                  description={type.description}
-                />
-              ))}
-          </div>
+          <CleaningTypeTabs
+            value={serviceDetails.serviceType}
+            onChange={(typeId) => {
+              const type = getServiceType("cleaning", typeId);
+              if (type) setServiceType(typeId, type.defaultHours);
+            }}
+          />
         </div>
       )}
 
@@ -213,6 +215,7 @@ export function CleaningBookingFlow({
         </div>
       )}
 
+      {serviceDetails.serviceType !== "garage" && (
       <div>
         <h3 className="text-lg font-semibold mb-2">Home size</h3>
         <p className="text-sm text-muted-foreground mb-3">
@@ -240,6 +243,7 @@ export function CleaningBookingFlow({
           })}
         </div>
       </div>
+      )}
 
       {availableAddons.length > 0 && (
         <div>
