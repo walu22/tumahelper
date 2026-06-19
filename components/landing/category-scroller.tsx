@@ -85,16 +85,13 @@ export function CategoryScroller() {
       </div>
 
       {cleaningExpanded && (
-        <div
-          id={CLEANING_PILLS_ID}
-          className="mt-8 max-w-2xl mx-auto px-2 scroll-mt-28"
-        >
+        <div id={CLEANING_PILLS_ID} className="mt-8 scroll-mt-28 w-full">
           <CleaningTypeTabs
             value={cleaningTypes[0]?.id ?? "standard"}
             getHref={(typeId) => `/customer/book?category=cleaning&type=${typeId}`}
             showDetails={false}
             showSelection={false}
-            centered
+            edgeToEdge
           />
         </div>
       )}

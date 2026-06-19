@@ -14,6 +14,8 @@ interface CleaningTypeTabsProps {
   getHref?: (typeId: string) => string;
   showDetails?: boolean;
   centered?: boolean;
+  /** Bleed pills to screen edges on mobile for easier horizontal scroll. */
+  edgeToEdge?: boolean;
   /** When false, no pill appears selected (useful for homepage link rows). */
   showSelection?: boolean;
 }
@@ -24,6 +26,7 @@ export function CleaningTypeTabs({
   getHref,
   showDetails = true,
   centered = false,
+  edgeToEdge = false,
   showSelection = true,
 }: CleaningTypeTabsProps) {
   const types = getResidentialCleaningTypes();
@@ -44,8 +47,9 @@ export function CleaningTypeTabs({
         role="tablist"
         aria-label="Type of clean"
         className={cn(
-          "flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1",
-          centered && "justify-start sm:justify-center"
+          "flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 scroll-px-4",
+          edgeToEdge && "-mx-4 px-4 sm:-mx-6 sm:px-6",
+          !edgeToEdge && centered && "justify-center"
         )}
       >
         {types.map((type) => {
