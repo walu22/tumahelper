@@ -41,49 +41,66 @@ export function CleaningTypeTabs({
         : "border-border bg-background text-foreground hover:border-primary/40"
     );
 
+  const tabs = types.map((type) => {
+    const active = showSelection && value === type.id;
+    const href = getHref?.(type.id);
+
+    if (href) {
+      return (
+        <Link
+          key={type.id}
+          href={href}
+          role="tab"
+          aria-selected={active}
+          className={tabClassName(active)}
+        >
+          {type.tabLabel ?? type.label}
+        </Link>
+      );
+    }
+
+    return (
+      <button
+        key={type.id}
+        type="button"
+        role="tab"
+        aria-selected={active}
+        onClick={() => onChange?.(type.id)}
+        className={tabClassName(active)}
+      >
+        {type.tabLabel ?? type.label}
+      </button>
+    );
+  });
+
+  const centerScroll = centered || edgeToEdge;
+
   return (
     <div className="space-y-4">
-      <div
-        role="tablist"
-        aria-label="Type of clean"
-        className={cn(
-          "flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 scroll-px-4",
-          edgeToEdge && "-mx-4 px-4 sm:-mx-6 sm:px-6",
-          !edgeToEdge && centered && "justify-center"
-        )}
-      >
-        {types.map((type) => {
-          const active = showSelection && value === type.id;
-          const href = getHref?.(type.id);
-
-          if (href) {
-            return (
-              <Link
-                key={type.id}
-                href={href}
-                role="tab"
-                aria-selected={active}
-                className={tabClassName(active)}
-              >
-                {type.tabLabel ?? type.label}
-              </Link>
-            );
-          }
-
-          return (
-            <button
-              key={type.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => onChange?.(type.id)}
-              className={tabClassName(active)}
-            >
-              {type.tabLabel ?? type.label}
-            </button>
-          );
-        })}
-      </div>
+      {centerScroll ? (
+        <div
+          className={cn(
+            "w-full overflow-x-auto scrollbar-hide scroll-px-4",
+            edgeToEdge && "-mx-4 px-4 sm:-mx-6 sm:px-6"
+          )}
+        >
+          <div
+            role="tablist"
+            aria-label="Type of clean"
+            className="mx-auto flex w-max min-w-full flex-nowrap justify-center gap-2 py-1"
+          >
+            {tabs}
+          </div>
+        </div>
+      ) : (
+        <div
+          role="tablist"
+          aria-label="Type of clean"
+          className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 scroll-px-4"
+        >
+          {tabs}
+        </div>
+      )}
 
       {showDetails && selected && (
         <div className="rounded-xl border border-border bg-surface/40 p-4 text-sm">
