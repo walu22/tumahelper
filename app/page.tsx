@@ -6,6 +6,7 @@ import { SweepStarsSection } from "@/components/landing/sweep-stars";
 import { TrustSection } from "@/components/landing/trust-section";
 import { WorkerRecruitment } from "@/components/landing/worker-recruitment";
 import { LandingFaqCta } from "@/components/landing/landing-faq-cta";
+import { WORKERS_SPOTLIGHT_LIMIT } from "@/lib/landing/content";
 import { PUBLIC_WORKER_AVAILABILITY, WORKER_STUB_AREA } from "@/lib/workers/public-listing";
 import type { PublicWorkerProfile } from "@/types";
 
@@ -30,7 +31,7 @@ export default async function HomePage() {
       .eq("availability_status", PUBLIC_WORKER_AVAILABILITY)
       .neq("area", WORKER_STUB_AREA)
       .order("trust_score", { ascending: false })
-      .limit(6);
+      .limit(WORKERS_SPOTLIGHT_LIMIT);
 
     if (featured?.length) {
       featuredWorkers = featured as PublicWorkerProfile[];
@@ -41,7 +42,7 @@ export default async function HomePage() {
         .eq("availability_status", PUBLIC_WORKER_AVAILABILITY)
         .neq("area", WORKER_STUB_AREA)
         .order("trust_score", { ascending: false })
-        .limit(6);
+        .limit(WORKERS_SPOTLIGHT_LIMIT);
       featuredWorkers = (data as PublicWorkerProfile[] | null) ?? null;
     }
   } catch {}

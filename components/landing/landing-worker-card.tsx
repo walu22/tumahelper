@@ -4,7 +4,14 @@ import { ArrowRight, MapPin, Shield, Star } from "lucide-react";
 import type { PublicWorkerProfile } from "@/types";
 
 function categoryLabel(category: PublicWorkerProfile["category"]) {
-  return category === "nanny" ? "Nanny" : "House cleaning";
+  return category === "nanny" ? "Nanny" : "House cleaner";
+}
+
+function skillLabel(skill: string) {
+  return skill
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 function verificationPillLabel(level: string): string | null {
@@ -27,7 +34,7 @@ function availabilityLabel(status: PublicWorkerProfile["availability_status"]) {
 }
 
 function formatSalaryRange(min?: number | null, max?: number | null) {
-  if (!min) return "Salary Negotiable";
+  if (!min) return "Salary negotiable";
   const minVal = min / 100;
   if (!max || min === max) {
     return `ZMW ${minVal.toLocaleString()}/mo`;
@@ -39,31 +46,38 @@ function formatSalaryRange(min?: number | null, max?: number | null) {
 export function LandingWorkerCard({
   worker,
   featured = false,
+  variant = "directory",
 }: {
   worker: PublicWorkerProfile;
   featured?: boolean;
+  variant?: "directory" | "spotlight";
 }) {
   const hasRating = worker.average_rating > 0;
   const verificationLabel = verificationPillLabel(worker.verification_level);
   const isAvailable = worker.availability_status === "available";
+  const isSpotlight = variant === "spotlight";
+  const skills = (worker.skills ?? []).slice(0, isSpotlight ? 4 : 0);
+  const photoSize = isSpotlight ? "h-20 w-20" : "h-16 w-16";
+  const imageSizes = isSpotlight ? "80px" : "64px";
 
   return (
     <Link
       href={`/workers/${worker.id}`}
-      className={`group flex h-full flex-col rounded-3xl border bg-card p-5 transition-all hover:border-primary/40 hover:shadow-lg ${
-        featured ? "border-primary/30 ring-4 ring-primary/5" : "border-border"
-      }`}
+      className={`group flex h-full flex-col rounded-3xl border bg-card transition-all hover:border-primary/40 hover:shadow-lg ${
+        isSpotlight ? "p-6 md:p-7" : "p-5"
+      } ${featured ? "border-primary/30 ring-4 ring-primary/5" : "border-border"}`}
     >
-      {/* Header Info */}
       <div className="flex items-start gap-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-primary/10 border border-primary/5 shadow-inner">
+        <div
+          className={`relative ${photoSize} shrink-0 overflow-hidden rounded-2xl bg-primary/10 border border-primary/5 shadow-inner`}
+        >
           {worker.profile_photo_url ? (
             <Image
               src={worker.profile_photo_url}
               alt={worker.full_name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="64px"
+              sizes={imageSizes}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center font-display text-xl font-semibold text-primary">
@@ -74,7 +88,11 @@ export function LandingWorkerCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-display text-lg font-bold leading-tight group-hover:text-primary transition-colors truncate">
+            <h3
+              className={`font-display font-bold leading-tight group-hover:text-primary transition-colors truncate ${
+                isSpotlight ? "text-xl" : "text-lg"
+              }`}
+            >
               {worker.full_name}
             </h3>
             {featured && (
@@ -85,18 +103,32 @@ export function LandingWorkerCard({
           </div>
           <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground font-medium">
             <MapPin className="h-3.5 w-3.5 shrink-0 text-primary/70" />
-            <span className="truncate">
-              {worker.area}, Lusaka
-            </span>
+            <span className="truncate">{worker.area}, Lusaka</span>
           </p>
         </div>
       </div>
 
-      {/* Badges Row */}
       <div className="mt-4 flex flex-wrap gap-2 items-center">
-        <span className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-bold text-foreground border border-border/50">
-          {categoryLabel(worker.category)}
-        </span>
+        {isSpotlight ? (
+          skills.length > 0 ? (
+            skills.map((skill) => (
+              <span
+                key={skill}
+                className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-semibold text-foreground border border-border/50"
+              >
+                {skillLabel(skill)}
+              </span>
+            ))
+          ) : (
+            <span className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-semibold text-foreground border border-border/50">
+              {categoryLabel(worker.category)}
+            </span>
+          )
+        ) : (
+          <span className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-bold text-foreground border border-border/50">
+            {categoryLabel(worker.category)}
+          </span>
+        )}
 
         <span className="inline-flex items-center rounded-full bg-primary/5 px-3 py-1 text-xs font-bold text-primary border border-primary/10">
           {worker.experience_years} yrs exp
@@ -107,9 +139,7 @@ export function LandingWorkerCard({
             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
             {worker.average_rating.toFixed(1)}
             {worker.total_reviews > 0 && (
-              <span className="font-semibold text-amber-600/80">
-                ({worker.total_reviews})
-              </span>
+              <span className="font-semibold text-amber-600/80">({worker.total_reviews})</span>
             )}
           </span>
         ) : verificationLabel ? (
@@ -125,22 +155,44 @@ export function LandingWorkerCard({
         )}
       </div>
 
-      {/* Bio Snippet */}
+      {isSpotlight && (
+        <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
+          {worker.trust_score > 0 && (
+            <span>
+              Trust score{" "}
+              <strong className="text-foreground font-semibold">{worker.trust_score}</strong>
+            </span>
+          )}
+          {worker.total_jobs_completed > 0 && (
+            <span>
+              <strong className="text-foreground font-semibold">
+                {worker.total_jobs_completed}
+              </strong>{" "}
+              jobs completed
+            </span>
+          )}
+        </div>
+      )}
+
       {worker.bio && (
-        <p className="mt-4 text-muted-foreground text-sm leading-relaxed line-clamp-2 group-hover:text-foreground/80 transition-colors">
+        <p
+          className={`mt-4 text-muted-foreground text-sm leading-relaxed group-hover:text-foreground/80 transition-colors ${
+            isSpotlight ? "line-clamp-1" : "line-clamp-2"
+          }`}
+        >
           {worker.bio}
         </p>
       )}
 
-      {/* Expected Salary / Pricing info */}
-      <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground font-semibold">
-        <span>Expected Salary:</span>
-        <span className="text-foreground font-extrabold text-sm text-primary">
-          {formatSalaryRange(worker.expected_salary_min, worker.expected_salary_max)}
-        </span>
-      </div>
+      {!isSpotlight && (
+        <div className="mt-4 pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground font-semibold">
+          <span>Expected salary</span>
+          <span className="text-foreground font-extrabold text-sm text-primary">
+            {formatSalaryRange(worker.expected_salary_min, worker.expected_salary_max)}
+          </span>
+        </div>
+      )}
 
-      {/* Footer / Status */}
       <div className="mt-auto flex items-center justify-between pt-4 text-sm">
         <span
           className={`inline-flex items-center gap-1.5 font-semibold capitalize ${

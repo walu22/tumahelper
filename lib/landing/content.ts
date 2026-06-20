@@ -197,6 +197,18 @@ export const SERVICES_DETAIL_INTRO = {
     "Typical visit lengths and price ranges for Lusaka homes. Final price depends on your address, duties, and chosen worker.",
 } as const;
 
+export const WORKERS_SPOTLIGHT_INTRO = {
+  eyebrow: "Real profiles",
+  headline: "Helpers families in Lusaka already book.",
+  subtitle:
+    "NRC-checked profiles with areas, experience, and reviews. Choose during booking or browse first.",
+  emptyHeadline: "Verified helpers joining every week",
+  emptySubtitle:
+    "We're growing Lusaka's trusted home-help network. Browse profiles as more helpers go live.",
+} as const;
+
+export const WORKERS_SPOTLIGHT_LIMIT = 3;
+
 export const SERVICE_DETAIL_TAB_ORDER: HeroCategoryId[] = [
   "nanny",
   "cleaning",
