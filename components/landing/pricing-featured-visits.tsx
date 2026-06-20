@@ -82,7 +82,7 @@ export function PricingFeaturedVisits() {
       <div
         role="tablist"
         aria-label="Service categories"
-        className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8"
+        className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 justify-start md:justify-center"
       >
         {CATEGORIES.map((category) => {
           const isActive = activeTab === category.id;
