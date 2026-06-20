@@ -180,7 +180,7 @@ export const SAFETY_SIGNALS = [
   "NRC identity checks on every worker",
   "Employer reference verification before profiles go live",
   "Trust scores updated after each completed job",
-  "Pay via MTN MoMo, Airtel Money, or cash, with proof upload",
+  "Pay via Airtel Money or cash, with proof upload",
 ];
 
 export const FAQ_ITEMS = [
@@ -190,7 +190,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: "How do I pay?",
-    a: "After booking, pay via MTN Mobile Money or Airtel Money and upload your confirmation screenshot. Cash on arrival works too. Just agree with your worker beforehand.",
+    a: "After booking, pay via Airtel Money and upload your confirmation screenshot. Cash on arrival works too. Just agree with your worker beforehand.",
   },
   {
     q: "Can I book once or regularly?",

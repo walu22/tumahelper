@@ -134,7 +134,7 @@ export default async function CustomerDashboard() {
                 Nannies & home cleaning in Lusaka
               </h2>
               <p className="text-sm text-muted-foreground max-w-md">
-                Choose your service, pick a verified worker, and pay securely with mobile money.
+                Choose your service, pick a verified worker, and pay securely with Airtel Money.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">

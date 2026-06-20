@@ -59,7 +59,7 @@ export function getCustomerBookingNextStep(params: {
       return {
         title: `Waiting for ${worker} to accept`,
         description:
-          "Your request was sent. Pay via mobile money and upload proof to secure the booking while you wait.",
+          "Your request was sent. Pay via Airtel Money and upload proof to secure the booking while you wait.",
         tone: "action",
       };
     }

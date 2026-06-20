@@ -7,7 +7,7 @@ Risk-based testing plan for the Lusaka home-help marketplace. Complements the ca
 1. **Protect money and trust paths** — booking creation, worker selection, payment proof.
 2. **Protect product boundaries** — Cleaning (task-based) vs Housekeeping (time + duties) vs Short-stay vs Nannies.
 3. **Keep CI fast** — smoke on every PR; full E2E nightly or pre-release.
-4. **Separate mocked CI from real staging** — UI journeys with mocks in CI; MoMo and Supabase on staging.
+4. **Separate mocked CI from real staging** — UI journeys with mocks in CI; Airtel Money and Supabase on staging.
 
 ## Testing pyramid
 
@@ -16,7 +16,7 @@ Risk-based testing plan for the Lusaka home-help marketplace. Complements the ca
 | **Unit** | Vitest | Catalog types, `suggestPrice` / `suggestDuration`, scope rows, URL parsing, display labels |
 | **E2E smoke** | Playwright `@smoke` | Auth, 4-service hero, redirects, service-model guardrails |
 | **E2E full** | Playwright (all specs) | Golden-path booking per product, mobile, worker lifecycle |
-| **Manual / staging** | Checklist | Real Supabase, MoMo proof, exploratory charters |
+| **Manual / staging** | Checklist | Real Supabase, Airtel Money proof, exploratory charters |
 
 ## Product test matrix
 
@@ -59,7 +59,7 @@ Full 30+ E2E tests including end-to-end booking confirmation for nanny, cleaning
 ### P2 — staging with real backend
 
 - Create a real booking; worker accepts on dashboard.
-- Upload MTN MoMo / Airtel payment proof.
+- Upload Airtel Money payment proof.
 - Verify booking detail page and status transitions.
 - Legacy URLs: `#hero-laundry-panel`, `?category=laundry`.
 
@@ -119,7 +119,7 @@ Without category loading, **Confirm booking** fails silently because `selectedCa
 | Cancel | Other party notified |
 | In-app alerts | Notification bell in header (`/api/notifications`) |
 
-Configure production MoMo numbers via `NEXT_PUBLIC_MTN_MOMO_NUMBER`, `NEXT_PUBLIC_AIRTEL_MONEY_NUMBER`, `NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME`.
+Configure production Airtel Money via `NEXT_PUBLIC_AIRTEL_MONEY_NUMBER`. Optionally set `NEXT_PUBLIC_PAYMENT_ACCOUNT_NAME` once the Airtel account is registered.
 
 ## File map
 

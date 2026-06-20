@@ -50,21 +50,21 @@ import {
 
 function guidePriceHint(details: ServiceDetails): string {
   if (isAirbnbCleaningType(details.serviceType)) {
-    return "Based on property size, visit length, linen, and add-ons. You pay the total below via mobile money after the clean.";
+    return "Based on property size, visit length, linen, and add-ons. You pay the total below via Airtel Money after the clean.";
   }
   if (details.category === "nanny") {
-    return "Based on children, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+    return "Based on children, visit length, and add-ons. You pay the total below via Airtel Money after the visit.";
   }
   if (details.category === "housekeeping") {
-    return "Based on visit length, duties, and schedule. You pay the total below via mobile money after the visit.";
+    return "Based on visit length, duties, and schedule. You pay the total below via Airtel Money after the visit.";
   }
   if (details.category === "laundry") {
-    return "Based on load size, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+    return "Based on load size, visit length, and add-ons. You pay the total below via Airtel Money after the visit.";
   }
   if (details.category === "garden") {
-    return "Based on yard size, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+    return "Based on yard size, visit length, and add-ons. You pay the total below via Airtel Money after the visit.";
   }
-  return "Based on home size, visit length, and add-ons. You pay the total below via mobile money after the clean.";
+  return "Based on home size, visit length, and add-ons. You pay the total below via Airtel Money after the clean.";
 }
 
 interface Category {
