@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LusakaAddressInput } from "@/components/booking/lusaka-address-input";
-import { formatServiceAddress } from "@/lib/booking/shared-flow";
+import { UseCurrentLocationButton } from "@/components/booking/use-current-location-button";
+import { formatServiceAddress, type LocationCoords } from "@/lib/booking/shared-flow";
 
 interface AddressStepFieldsProps {
   idPrefix: string;
@@ -11,7 +13,7 @@ interface AddressStepFieldsProps {
   unitAddress: string;
   onStreetAddressChange: (value: string) => void;
   onUnitAddressChange: (value: string) => void;
-  onConfirm: (fullAddress: string) => void;
+  onConfirm: (fullAddress: string, coords?: LocationCoords) => void;
   heading: string;
   description: string;
   streetLabel?: string;
@@ -30,6 +32,7 @@ export function AddressStepFields({
 }: AddressStepFieldsProps) {
   const previewAddress = formatServiceAddress(streetAddress, unitAddress);
   const canPreview = streetAddress.trim().length >= 5;
+  const [pendingCoords, setPendingCoords] = useState<LocationCoords | null>(null);
 
   return (
     <div className="space-y-6">
@@ -39,6 +42,14 @@ export function AddressStepFields({
       </div>
 
       <div className="space-y-4">
+        <UseCurrentLocationButton
+          className="w-full h-11 rounded-xl justify-center"
+          onResult={({ streetAddress: locatedStreet, coords }) => {
+            onStreetAddressChange(locatedStreet);
+            setPendingCoords(coords);
+          }}
+        />
+
         <div>
           <label htmlFor={`${idPrefix}-street`} className="text-sm font-medium mb-2 block">
             {streetLabel} <span className="text-primary">*</span>
@@ -46,7 +57,10 @@ export function AddressStepFields({
           <LusakaAddressInput
             id={`${idPrefix}-street`}
             value={streetAddress}
-            onChange={onStreetAddressChange}
+            onChange={(value) => {
+              onStreetAddressChange(value);
+              setPendingCoords(null);
+            }}
             placeholder="e.g. Plot 12, Kabulonga"
             required
           />
@@ -69,7 +83,7 @@ export function AddressStepFields({
       {canPreview && (
         <button
           type="button"
-          onClick={() => onConfirm(previewAddress)}
+          onClick={() => onConfirm(previewAddress, pendingCoords ?? undefined)}
           className="w-full rounded-2xl border-2 border-primary bg-primary/5 p-4 text-left hover:bg-primary/10 transition-colors"
         >
           <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">

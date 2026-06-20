@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Calendar,
   CalendarClock,
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { LusakaAddressInput } from "@/components/booking/lusaka-address-input";
+import { UseCurrentLocationButton } from "@/components/booking/use-current-location-button";
 import { AirbnbFlowProgress } from "@/components/booking/airbnb-flow-progress";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import { AirbnbTypeTabs } from "@/components/booking/airbnb-type-tabs";
@@ -30,6 +31,7 @@ import {
   type AirbnbWhenPreference,
   type LinenPreference,
 } from "@/lib/booking/airbnb-flow";
+import type { LocationCoords } from "@/lib/booking/shared-flow";
 import {
   DURATION_OPTIONS,
   TURNOVER_FREQUENCY_OPTIONS,
@@ -59,7 +61,7 @@ interface AirbnbBookingFlowProps {
   onStreetAddressChange: (value: string) => void;
   onUnitAddressChange: (value: string) => void;
   locationAddress: string;
-  onLocationConfirm: (fullAddress: string) => void;
+  onLocationConfirm: (fullAddress: string, coords?: LocationCoords) => void;
   serviceDetails: ServiceDetails;
   onServiceDetailsChange: (details: ServiceDetails) => void;
   serviceDate: string;
@@ -108,6 +110,7 @@ export function AirbnbBookingFlow({
   onFindWorker,
   lockServiceType = false,
 }: AirbnbBookingFlowProps) {
+  const [pendingCoords, setPendingCoords] = useState<LocationCoords | null>(null);
   const previewAddress = useMemo(
     () => formatAirbnbAddress(streetAddress, unitAddress),
     [streetAddress, unitAddress]
@@ -246,6 +249,14 @@ export function AirbnbBookingFlow({
         </div>
 
         <div className="space-y-4">
+          <UseCurrentLocationButton
+            className="w-full h-11 rounded-xl justify-center"
+            onResult={({ streetAddress: locatedStreet, coords }) => {
+              onStreetAddressChange(locatedStreet);
+              setPendingCoords(coords);
+            }}
+          />
+
           <div>
             <label htmlFor="airbnb-street" className="text-sm font-medium mb-2 block">
               Street or plot address <span className="text-primary">*</span>
@@ -253,7 +264,10 @@ export function AirbnbBookingFlow({
             <LusakaAddressInput
               id="airbnb-street"
               value={streetAddress}
-              onChange={onStreetAddressChange}
+              onChange={(value) => {
+                onStreetAddressChange(value);
+                setPendingCoords(null);
+              }}
               placeholder="e.g. Plot 12, Kabulonga"
               required
             />
@@ -276,7 +290,7 @@ export function AirbnbBookingFlow({
         {canPreviewLocation && (
           <button
             type="button"
-            onClick={() => onLocationConfirm(previewAddress)}
+            onClick={() => onLocationConfirm(previewAddress, pendingCoords ?? undefined)}
             className="w-full rounded-2xl border-2 border-primary bg-primary/5 p-4 text-left hover:bg-primary/10 transition-colors"
           >
             <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">

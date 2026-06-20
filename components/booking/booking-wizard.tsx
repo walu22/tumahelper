@@ -28,7 +28,7 @@ import { HandymanBookingFlow } from '@/components/booking/handyman-booking-flow'
 import { NannyBookingFlow } from '@/components/booking/nanny-booking-flow'
 import { TaskServiceBookingFlow } from '@/components/booking/task-service-booking-flow'
 import { ServiceBookingSummary } from '@/components/booking/service-booking-summary'
-import type { ServiceFlowStep } from '@/lib/booking/shared-flow'
+import type { ServiceFlowStep, LocationCoords } from '@/lib/booking/shared-flow'
 import { getBookingPageTitle } from '@/lib/booking/shared-flow'
 import { skillsForServiceCategory } from '@/lib/workers/skills'
 import { workerMeetsHandymanVerification } from '@/lib/workers/handyman-skills'
@@ -283,6 +283,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   const [serviceDate, setServiceDate] = useState('')
   const [serviceTime, setServiceTime] = useState('')
   const [locationAddress, setLocationAddress] = useState('')
+  const [locationCoords, setLocationCoords] = useState<LocationCoords | null>(null)
   const [description, setDescription] = useState('')
   const [guestCheckoutTime, setGuestCheckoutTime] = useState('')
   const [nextCheckIn, setNextCheckIn] = useState('')
@@ -561,6 +562,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           serviceDate,
           serviceTime,
           locationAddress,
+          locationLat: locationCoords?.lat,
+          locationLng: locationCoords?.lng,
           description: buildBookingDescription(
             description,
             serviceDetails.serviceType,
@@ -655,8 +658,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       onStreetAddressChange: setStreetAddress,
       onUnitAddressChange: setUnitAddress,
       locationAddress,
-      onLocationConfirm: (full: string) => {
+      onLocationConfirm: (full: string, coords?: LocationCoords) => {
         setLocationAddress(full)
+        setLocationCoords(coords ?? null)
         setServiceSubStep('plan')
       },
       serviceDetails,

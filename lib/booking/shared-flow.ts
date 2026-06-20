@@ -4,6 +4,11 @@ import { isAirbnbCleaningType, TURNOVER_FREQUENCY_OPTIONS } from "@/lib/services
 
 export type ServiceFlowStep = "address" | "plan" | "scope";
 
+export type LocationCoords = {
+  lat: number;
+  lng: number;
+};
+
 export type WhenPreference = "today" | "last_minute" | "tomorrow_later";
 
 export const REGULAR_FREQUENCY_OPTIONS = TURNOVER_FREQUENCY_OPTIONS.filter(

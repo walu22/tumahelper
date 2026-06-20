@@ -26,6 +26,13 @@ interface PhotonFeature {
 const LUSAKA_LAT = -15.4167;
 const LUSAKA_LON = 28.2833;
 
+export interface ReverseGeocodeResult {
+  streetAddress: string;
+  label: string;
+  lat: number;
+  lng: number;
+}
+
 function formatPhotonSuggestion(feature: PhotonFeature): AddressSuggestion | null {
   const props = feature.properties;
   if (!props) return null;
@@ -90,6 +97,44 @@ export async function fetchStreetSuggestions(query: string): Promise<AddressSugg
   }
 
   return results;
+}
+
+export async function reverseGeocodeCoordinates(
+  lat: number,
+  lng: number
+): Promise<ReverseGeocodeResult | null> {
+  const url = new URL("https://photon.komoot.io/reverse");
+  url.searchParams.set("lat", String(lat));
+  url.searchParams.set("lon", String(lng));
+  url.searchParams.set("lang", "en");
+
+  const response = await fetch(url.toString(), {
+    headers: { Accept: "application/json" },
+    next: { revalidate: 3600 },
+  });
+
+  if (!response.ok) return null;
+
+  const data = (await response.json()) as { features?: PhotonFeature[] };
+
+  for (const feature of data.features ?? []) {
+    const suggestion = formatPhotonSuggestion(feature);
+    if (suggestion) {
+      return {
+        streetAddress: suggestion.fillValue,
+        label: suggestion.label,
+        lat,
+        lng,
+      };
+    }
+  }
+
+  return {
+    streetAddress: "Current location, Lusaka",
+    label: "Current location",
+    lat,
+    lng,
+  };
 }
 
 export function areaSuggestionsToAddressSuggestions(
