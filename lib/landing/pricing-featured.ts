@@ -9,6 +9,7 @@ import {
   getAirbnbCleaningTypes,
   getCookingTypes,
   getGardenTypes,
+  getHandymanTypes,
   getHousekeepingTypes,
   getLaundryTypes,
   getNannyTypes,
@@ -58,6 +59,8 @@ function getTypesForTab(tabId: HeroCategoryId): ServiceTypeOption[] {
       return getLaundryTypes();
     case "garden":
       return getGardenTypes();
+    case "handyman":
+      return getHandymanTypes();
     case "short_stay":
       return getAirbnbCleaningTypes();
   }
@@ -81,6 +84,7 @@ function tabLabel(tabId: HeroCategoryId): string {
   if (tabId === "housekeeping") return "Housekeeping";
   if (tabId === "laundry") return "Laundry";
   if (tabId === "garden") return "Garden";
+  if (tabId === "handyman") return "Handyman";
   return TAB_META[tabId].label;
 }
 

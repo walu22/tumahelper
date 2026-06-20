@@ -49,6 +49,13 @@ export function getFlowSteps(
       { id: "scope", label: "Garden details" },
     ];
   }
+  if (category === "handyman") {
+    return [
+      { id: "address", label: "Your home" },
+      { id: "plan", label: "Schedule" },
+      { id: "scope", label: "Job details" },
+    ];
+  }
   if (serviceType && isAirbnbCleaningType(serviceType)) {
     return [
       { id: "address", label: "Property" },
@@ -132,5 +139,6 @@ export function getBookingPageTitle(
   if (category === "cooking") return "Book cooking & meals";
   if (category === "laundry") return "Book laundry & ironing";
   if (category === "garden") return "Book garden & yard work";
+  if (category === "handyman") return "Book handyman & home repairs";
   return "Book house cleaning";
 }

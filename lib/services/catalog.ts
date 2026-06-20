@@ -1,10 +1,13 @@
+import { HANDYMAN_ADDONS, HANDYMAN_TYPE_IDS, HANDYMAN_TYPES } from "./handyman-types";
+
 export type ServiceCategoryKey =
   | "cleaning"
   | "nanny"
   | "housekeeping"
   | "cooking"
   | "laundry"
-  | "garden";
+  | "garden"
+  | "handyman";
 
 export interface ServiceTypeOption {
   id: string;
@@ -226,6 +229,13 @@ export function getHousekeepingTypes(): ServiceTypeOption[] {
 export function getCookingTypes(): ServiceTypeOption[] {
   const byId = new Map(SERVICE_CATALOG.cooking.types.map((t) => [t.id, t] as const));
   return COOKING_TYPE_IDS.map((id) => byId.get(id)).filter(
+    (t): t is ServiceTypeOption => t !== undefined
+  );
+}
+
+export function getHandymanTypes(): ServiceTypeOption[] {
+  const byId = new Map(SERVICE_CATALOG.handyman.types.map((t) => [t.id, t] as const));
+  return HANDYMAN_TYPE_IDS.map((id) => byId.get(id)).filter(
     (t): t is ServiceTypeOption => t !== undefined
   );
 }
@@ -1498,6 +1508,16 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       },
     ],
   },
+  handyman: {
+    key: "handyman",
+    title: "Handyman & Home Repairs",
+    tagline:
+      "Small repairs, mounting, plumbing, electrical help, painting, carpentry, and home maintenance for Lusaka homes",
+    bookParam: "handyman",
+    scopeLabel: "home",
+    types: HANDYMAN_TYPES,
+    addons: HANDYMAN_ADDONS,
+  },
 };
 
 export function categorySlugToKey(slug: string): ServiceCategoryKey | null {
@@ -1506,6 +1526,7 @@ export function categorySlugToKey(slug: string): ServiceCategoryKey | null {
   if (slug.includes("cook")) return "cooking";
   if (slug.includes("laundry")) return "laundry";
   if (slug.includes("garden")) return "garden";
+  if (slug.includes("handyman") || slug.includes("repair")) return "handyman";
   if (slug.includes("clean") || slug.includes("house")) return "cleaning";
   return null;
 }
@@ -1516,6 +1537,7 @@ export function paramToCategoryKey(param: string | null): ServiceCategoryKey | n
   if (param === "cooking") return "cooking";
   if (param === "laundry") return "laundry";
   if (param === "garden") return "garden";
+  if (param === "handyman") return "handyman";
   if (param === "cleaning" || param === "house-cleaner") return "cleaning";
   return null;
 }
@@ -1552,6 +1574,15 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
       durationHours: firstType.defaultHours,
       addons: [],
       frequency: serviceType === "weekly_cooking" ? "weekly" : "once",
+    };
+  }
+  if (category === "handyman") {
+    return {
+      category,
+      serviceType: firstType.id,
+      durationHours: firstType.defaultHours,
+      addons: [],
+      frequency: "once",
     };
   }
   return {
@@ -1619,6 +1650,7 @@ export function catalogServiceTypeOptions() {
     "cooking",
     "laundry",
     "garden",
+    "handyman",
   ];
   return order.flatMap((categoryKey) => {
     const entry = SERVICE_CATALOG[categoryKey];

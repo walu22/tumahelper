@@ -34,7 +34,9 @@ export function ServiceScopeTeaser({
           ? "What's included in this laundry visit"
           : category === "garden"
             ? "What's included in this garden visit"
-            : "What's included in this clean";
+            : category === "handyman"
+              ? "What's included in this repair visit"
+              : "What's included in this clean";
 
   const pricingLine =
     type.pricingHint ??

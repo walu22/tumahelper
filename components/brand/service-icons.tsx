@@ -99,6 +99,23 @@ export function CookingIcon({ className }: ServiceIconProps) {
   );
 }
 
+export function HandymanIcon({ className }: ServiceIconProps) {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
+      <circle cx="32" cy="32" r="30" fill="#FEF3C7" />
+      <path
+        d="M22 42l8-18 6 6 10-4-4 10 6 6-20 0Z"
+        fill="#D97706"
+        stroke="#B45309"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M40 20l6 6" stroke="#78716C" strokeWidth="3" strokeLinecap="round" />
+      <rect x="43" y="17" width="8" height="4" rx="1" transform="rotate(45 47 19)" fill="#57534E" />
+    </svg>
+  );
+}
+
 const ICON_MAP: Record<ServiceIconKey, ComponentType<ServiceIconProps>> = {
   indoor: IndoorCleaningIcon,
   nanny: NannyIcon,
@@ -107,6 +124,7 @@ const ICON_MAP: Record<ServiceIconKey, ComponentType<ServiceIconProps>> = {
   cooking: CookingIcon,
   laundry: LaundryIcon,
   garden: GardenIcon,
+  handyman: HandymanIcon,
 };
 
 export function ServiceIcon({ name, className }: { name: ServiceIconKey; className?: string }) {

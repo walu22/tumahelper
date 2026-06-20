@@ -8,6 +8,7 @@ import { CookingTypeTabs } from "@/components/booking/cooking-type-tabs";
 import { HousekeepingTypeTabs } from "@/components/booking/housekeeping-type-tabs";
 import { LaundryTypeTabs } from "@/components/booking/laundry-type-tabs";
 import { GardenTypeTabs } from "@/components/booking/garden-type-tabs";
+import { HandymanTypeTabs } from "@/components/booking/handyman-type-tabs";
 import { ServiceIcon } from "@/components/brand/service-icons";
 import {
   HERO_CATEGORIES,
@@ -19,6 +20,7 @@ import {
   getAirbnbCleaningTypes,
   getCookingTypes,
   getGardenTypes,
+  getHandymanTypes,
   getHousekeepingTypes,
   getLaundryTypes,
   getNannyTypes,
@@ -35,6 +37,7 @@ export const SHORT_STAY_PILLS_ID = HERO_CATEGORY_PANEL_IDS.short_stay;
 export const AIRBNB_PILLS_ID = SHORT_STAY_PILLS_ID;
 export const LAUNDRY_PILLS_ID = HERO_CATEGORY_PANEL_IDS.laundry;
 export const GARDEN_PILLS_ID = HERO_CATEGORY_PANEL_IDS.garden;
+export const HANDYMAN_PILLS_ID = HERO_CATEGORY_PANEL_IDS.handyman;
 
 const PANEL_ID_TO_CATEGORY: Record<string, HeroCategoryId> = {
   [HERO_CATEGORY_PANEL_IDS.nanny]: "nanny",
@@ -43,6 +46,7 @@ const PANEL_ID_TO_CATEGORY: Record<string, HeroCategoryId> = {
   [HERO_CATEGORY_PANEL_IDS.cooking]: "cooking",
   [HERO_CATEGORY_PANEL_IDS.laundry]: "laundry",
   [HERO_CATEGORY_PANEL_IDS.garden]: "garden",
+  [HERO_CATEGORY_PANEL_IDS.handyman]: "handyman",
   [HERO_CATEGORY_PANEL_IDS.short_stay]: "short_stay",
   [LEGACY_SHORT_STAY_PANEL_ID]: "short_stay",
 };
@@ -55,6 +59,7 @@ export function CategoryScroller() {
   const cookingTypes = getCookingTypes();
   const laundryTypes = getLaundryTypes();
   const gardenTypes = getGardenTypes();
+  const handymanTypes = getHandymanTypes();
   const [expanded, setExpanded] = useState<HeroCategoryId | null>(null);
 
   useEffect(() => {
@@ -182,6 +187,19 @@ export function CategoryScroller() {
           <GardenTypeTabs
             value={gardenTypes[0]?.id ?? "lawn_cutting"}
             getHref={(typeId) => `/customer/book?category=garden&type=${typeId}`}
+            showDetails={false}
+            showSelection={false}
+            edgeToEdge
+            centered
+          />
+        </div>
+      )}
+
+      {expanded === "handyman" && (
+        <div id={HANDYMAN_PILLS_ID} className="mt-8 scroll-mt-28 w-full">
+          <HandymanTypeTabs
+            value={handymanTypes[0]?.id ?? "general_handyman"}
+            getHref={(typeId) => `/customer/book?category=handyman&type=${typeId}`}
             showDetails={false}
             showSelection={false}
             edgeToEdge

@@ -1,5 +1,6 @@
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 import { isAirbnbCleaningType } from "@/lib/services/catalog";
+import { skillsForHandymanType } from "@/lib/workers/handyman-skills";
 import type { WorkerCategory } from "@/types";
 
 export const NANNY_SKILLS = [
@@ -23,6 +24,19 @@ export const HOUSE_CLEANER_SKILLS = [
   "organization",
   "meal_prep",
   "cooking",
+  "general_handyman",
+  "plumbing",
+  "electrical",
+  "mounting",
+  "doors_cabinets",
+  "wall_patch_paint",
+  "furniture_assembly",
+  "ac_fans",
+  "tiling",
+  "carpentry",
+  "fence_gate",
+  "home_maintenance",
+  "welding",
 ] as const;
 
 export const WORKER_SKILLS_BY_CATEGORY: Record<WorkerCategory, readonly string[]> = {
@@ -52,6 +66,8 @@ export function skillsForServiceCategory(
       return ["laundry", "ironing"];
     case "garden":
       return ["garden"];
+    case "handyman":
+      return serviceType ? skillsForHandymanType(serviceType) : ["general_handyman"];
     default:
       return [];
   }

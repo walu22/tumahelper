@@ -7,11 +7,13 @@ import { CookingTypeTabs } from "@/components/booking/cooking-type-tabs";
 import { HousekeepingTypeTabs } from "@/components/booking/housekeeping-type-tabs";
 import { LaundryTypeTabs } from "@/components/booking/laundry-type-tabs";
 import { GardenTypeTabs } from "@/components/booking/garden-type-tabs";
+import { HandymanTypeTabs } from "@/components/booking/handyman-type-tabs";
 import {
   defaultServiceDetails,
   getAirbnbCleaningTypes,
   getCookingTypes,
   getGardenTypes,
+  getHandymanTypes,
   getHousekeepingTypes,
   getLaundryTypes,
   getResidentialCleaningTypes,
@@ -30,6 +32,7 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
   const cookingTypes = getCookingTypes();
   const laundryTypes = getLaundryTypes();
   const gardenTypes = getGardenTypes();
+  const handymanTypes = getHandymanTypes();
 
   return (
     <div className="space-y-8">
@@ -138,6 +141,22 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
           getHref={(typeId) =>
             buildBookUrl({
               ...defaultServiceDetails("garden"),
+              serviceType: typeId,
+            })
+          }
+          showDetails={false}
+        />
+      </section>
+
+      <section>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
+          Handyman & home repairs
+        </p>
+        <HandymanTypeTabs
+          value={handymanTypes[0]?.id ?? "general_handyman"}
+          getHref={(typeId) =>
+            buildBookUrl({
+              ...defaultServiceDetails("handyman"),
               serviceType: typeId,
             })
           }

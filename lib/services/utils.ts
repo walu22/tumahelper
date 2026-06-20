@@ -81,6 +81,12 @@ export function suggestDuration(details: ServiceDetails): number {
     hours += Math.max(0, (details.children ?? 1) - 1) * 0.5;
   } else if (details.category === "housekeeping" || details.category === "cooking") {
     hours += Math.max(0, details.addons.length - 2) * 0.25;
+  } else if (details.category === "handyman") {
+    if (details.addons.includes("extra_hour")) hours += 1;
+    if (details.addons.includes("second_helper")) hours += 1;
+    if (details.serviceType === "home_maintenance" && details.durationHours >= 8) {
+      hours = 8;
+    }
   }
 
   for (const addonId of details.addons) {
@@ -120,6 +126,10 @@ export function suggestPrice(details: ServiceDetails): {
     const dutyCount = details.addons.length;
     min += dutyCount * 25;
     max += dutyCount * 45;
+  } else if (details.category === "handyman") {
+    const addonCount = details.addons.filter((id) => id !== "inspection_only").length;
+    min += addonCount * 30;
+    max += addonCount * 50;
   }
 
   const hourFactor = details.durationHours / type.defaultHours;

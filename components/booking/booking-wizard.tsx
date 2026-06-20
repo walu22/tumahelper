@@ -24,12 +24,14 @@ import { AirbnbBookingSummary } from '@/components/booking/airbnb-booking-summar
 import { CleaningBookingFlow } from '@/components/booking/cleaning-booking-flow'
 import { HousekeepingBookingFlow } from '@/components/booking/housekeeping-booking-flow'
 import { CookingBookingFlow } from '@/components/booking/cooking-booking-flow'
+import { HandymanBookingFlow } from '@/components/booking/handyman-booking-flow'
 import { NannyBookingFlow } from '@/components/booking/nanny-booking-flow'
 import { TaskServiceBookingFlow } from '@/components/booking/task-service-booking-flow'
 import { ServiceBookingSummary } from '@/components/booking/service-booking-summary'
 import type { ServiceFlowStep } from '@/lib/booking/shared-flow'
 import { getBookingPageTitle } from '@/lib/booking/shared-flow'
 import { skillsForServiceCategory } from '@/lib/workers/skills'
+import { workerMeetsHandymanVerification } from '@/lib/workers/handyman-skills'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
@@ -69,6 +71,9 @@ function guidePriceHint(details: ServiceDetails): string {
   if (details.category === "garden") {
     return "Based on yard size, visit length, and add-ons. You pay the total below via Airtel Money after the visit.";
   }
+  if (details.category === "handyman") {
+    return "Based on repair type, visit length, parts, and add-ons. You pay the total below via Airtel Money after the visit.";
+  }
   return "Based on home size, visit length, and add-ons. You pay the total below via Airtel Money after the clean.";
 }
 
@@ -104,6 +109,7 @@ const categoryParamToSlug: Record<string, string> = {
   nanny: 'nanny-services',
   cleaning: 'house-cleaning',
   'house-cleaner': 'house-cleaning',
+  handyman: 'house-cleaning',
 }
 
 /** 0 = pick service (optional prelude), 1 = Details, 2 = Worker, 3 = Payment */
@@ -223,7 +229,8 @@ function usesGuidedBookingFlow(details: ServiceDetails): boolean {
     details.category === 'housekeeping' ||
     details.category === 'cooking' ||
     details.category === 'laundry' ||
-    details.category === 'garden'
+    details.category === 'garden' ||
+    details.category === 'handyman'
   )
 }
 
@@ -332,7 +339,13 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           setWorkers([])
           return
         }
-        const list: WorkerSummary[] = res.data || []
+        const list: WorkerSummary[] = (res.data || []).filter((worker: WorkerSummary) => {
+          if (serviceDetails?.category !== 'handyman') return true
+          return workerMeetsHandymanVerification(
+            worker.verification_level as 'none' | 'bronze' | 'silver' | 'gold' | 'platinum',
+            serviceDetails.serviceType
+          )
+        })
         setWorkers(list)
         const preId = preselectedWorkerRef.current
         if (preId) {
@@ -348,7 +361,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         setWorkers([])
       })
       .finally(() => setWorkersLoading(false))
-  }, [categorySlug, workerProfileId, bookingSkills.join(',')])
+  }, [categorySlug, workerProfileId, bookingSkills.join(','), serviceDetails?.category, serviceDetails?.serviceType])
 
   useEffect(() => {
     if (!serviceDetails || categories.length === 0) return
@@ -383,6 +396,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     }
     if (categoryParam === "garden" && !typeParam && !funnelParam && !workerProfileId) {
       window.location.assign("/#hero-garden-panel")
+    }
+    if (categoryParam === "handyman" && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-handyman-panel")
     }
   }, [airbnbEntry, lockedAirbnb, categoryParam, typeParam, funnelParam, workerProfileId])
 
@@ -665,6 +681,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     }
     if (serviceDetails.category === 'cooking') {
       return <CookingBookingFlow {...shared} lockServiceType={lockServiceType} />
+    }
+    if (serviceDetails.category === 'handyman') {
+      return <HandymanBookingFlow {...shared} lockServiceType={lockServiceType} />
     }
     if (serviceDetails.category === 'laundry' || serviceDetails.category === 'garden') {
       return (

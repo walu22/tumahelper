@@ -24,8 +24,8 @@ export function LandingHero() {
             Book verified home help.
           </h1>
           <p className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto">
-            Nannies, cleaning, housekeeping, cooking, laundry, garden help, and short-stay
-            turnover cleaning. One-off or regular visits, with a path to permanent hire when
+            Nannies, cleaning, housekeeping, cooking, laundry, garden help, handyman repairs, and
+            short-stay turnover cleaning. One-off or regular visits, with a path to permanent hire when
             you&apos;re ready.
           </p>
         </div>

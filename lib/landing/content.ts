@@ -5,7 +5,8 @@ export type ServiceIconKey =
   | "housekeeping"
   | "cooking"
   | "laundry"
-  | "garden";
+  | "garden"
+  | "handyman";
 
 export type HeroCategoryId =
   | "nanny"
@@ -14,6 +15,7 @@ export type HeroCategoryId =
   | "cooking"
   | "laundry"
   | "garden"
+  | "handyman"
   | "short_stay";
 
 export const LUSAKA_AREAS = [
@@ -42,6 +44,7 @@ export const HERO_CATEGORY_PANEL_IDS = {
   cooking: "hero-cooking-panel",
   laundry: "hero-laundry-panel",
   garden: "hero-garden-panel",
+  handyman: "hero-handyman-panel",
   short_stay: "hero-short-stay-panel",
 } as const;
 
@@ -106,6 +109,14 @@ export const HERO_CATEGORIES: {
     panelId: HERO_CATEGORY_PANEL_IDS.garden,
   },
   {
+    id: "handyman",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.handyman}`,
+    label: "Handyman & Home Repairs",
+    subtitle: "Plumbing, electrical, mounting, repairs, and maintenance.",
+    icon: "handyman",
+    panelId: HERO_CATEGORY_PANEL_IDS.handyman,
+  },
+  {
     id: "short_stay",
     href: `/#${HERO_CATEGORY_PANEL_IDS.short_stay}`,
     label: "Short-Stay Cleaning",
@@ -122,6 +133,7 @@ export const SHORT_STAY_CLEAN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.short_sta
 export const AIRBNB_CLEAN_BOOK_HREF = SHORT_STAY_CLEAN_BOOK_HREF;
 export const LAUNDRY_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.laundry}`;
 export const GARDEN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.garden}`;
+export const HANDYMAN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.handyman}`;
 export const HOUSEKEEPING_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.housekeeping}`;
 export const COOKING_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.cooking}`;
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
@@ -225,6 +237,7 @@ export const SERVICE_DETAIL_TAB_ORDER: HeroCategoryId[] = [
   "cooking",
   "laundry",
   "garden",
+  "handyman",
   "short_stay",
 ];
 

@@ -15,6 +15,7 @@ const VALID: ServiceCategoryKey[] = [
   "cooking",
   "laundry",
   "garden",
+  "handyman",
 ];
 
 export default function ServiceCategoryPage({
