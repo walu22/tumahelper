@@ -2,6 +2,7 @@ export type ServiceCategoryKey =
   | "cleaning"
   | "nanny"
   | "housekeeping"
+  | "cooking"
   | "laundry"
   | "garden";
 
@@ -150,6 +151,13 @@ export const HOUSEKEEPING_TYPE_IDS = [
   "monthly",
 ] as const;
 
+export const COOKING_TYPE_IDS = [
+  "lunch",
+  "dinner",
+  "meal_prep",
+  "weekly_cooking",
+] as const;
+
 export const LEGACY_SERVICE_TYPE_ALIASES: Record<string, string> = {
   airbnb: "guest_checkout",
   babysitting: "babysitter",
@@ -215,8 +223,19 @@ export function getHousekeepingTypes(): ServiceTypeOption[] {
   );
 }
 
+export function getCookingTypes(): ServiceTypeOption[] {
+  const byId = new Map(SERVICE_CATALOG.cooking.types.map((t) => [t.id, t] as const));
+  return COOKING_TYPE_IDS.map((id) => byId.get(id)).filter(
+    (t): t is ServiceTypeOption => t !== undefined
+  );
+}
+
 export function isRecurringHousekeepingType(serviceType: string): boolean {
   return serviceType === "weekly" || serviceType === "monthly";
+}
+
+export function isRecurringCookingType(serviceType: string): boolean {
+  return serviceType === "weekly_cooking";
 }
 
 export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = {
@@ -1032,6 +1051,150 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       },
     ],
   },
+  cooking: {
+    key: "cooking",
+    title: "Cooking & meals",
+    tagline: "Lunch, dinner, meal prep, and regular home cooking for Lusaka households",
+    bookParam: "cooking",
+    scopeLabel: "home",
+    types: [
+      {
+        id: "lunch",
+        label: "Lunch cooking",
+        tabLabel: "Lunch",
+        description:
+          "A cook comes to prepare lunch for your household using ingredients you provide on site.",
+        pricingHint:
+          "Price depends on number of people, dishes requested, and whether kitchen cleanup is included.",
+        included: [
+          "Cooking lunch using your ingredients",
+          "Basic kitchen cleanup after cooking",
+          "Serving and clearing if selected",
+          "Up to about 3 hours at your home",
+        ],
+        notIncluded: [
+          "Buying groceries unless agreed upfront",
+          "Catering for large events",
+          "Dedicated childcare",
+          "Deep kitchen cleaning beyond normal tidy-up",
+        ],
+        defaultHours: 3,
+        priceHintMin: 200,
+        priceHintMax: 350,
+      },
+      {
+        id: "dinner",
+        label: "Dinner cooking",
+        tabLabel: "Dinner",
+        description:
+          "A cook prepares dinner for your family or guests using ingredients you provide.",
+        pricingHint:
+          "Price depends on headcount, number of dishes, dietary needs, and visit length.",
+        included: [
+          "Cooking dinner using your ingredients",
+          "Basic kitchen cleanup after cooking",
+          "Serving and clearing if selected",
+          "Up to about 4 hours at your home",
+        ],
+        notIncluded: [
+          "Buying groceries unless agreed upfront",
+          "Wait staff for large events",
+          "Baking-only bookings unless selected",
+          "Washing dishes beyond the cooking area unless selected",
+        ],
+        defaultHours: 4,
+        priceHintMin: 220,
+        priceHintMax: 400,
+      },
+      {
+        id: "meal_prep",
+        label: "Meal prep",
+        tabLabel: "Meal prep",
+        description:
+          "Batch cooking and portioning meals for the week ahead using ingredients you provide.",
+        pricingHint:
+          "Price depends on number of meals, containers needed, and dietary requirements.",
+        included: [
+          "Batch cooking multiple meals",
+          "Portioning and labelling containers",
+          "Basic kitchen cleanup",
+          "Up to about 4 hours at your home",
+        ],
+        notIncluded: [
+          "Buying ingredients unless agreed",
+          "Delivery of meals off-site",
+          "Specialised diet planning by a nutritionist",
+          "Cleaning the whole kitchen beyond cooking area",
+        ],
+        defaultHours: 4,
+        priceHintMin: 250,
+        priceHintMax: 420,
+      },
+      {
+        id: "weekly_cooking",
+        label: "Weekly cooking",
+        tabLabel: "Weekly",
+        description:
+          "The same cook on a weekly schedule for regular lunch or dinner support.",
+        pricingHint:
+          "Weekly cooking is priced per visit. Headcount and dishes shape the guide price.",
+        included: [
+          "Recurring weekly cooking visit",
+          "Your chosen meals each week",
+          "Consistent help for busy households",
+          "Kitchen cleanup after cooking",
+          "Flexible menu priorities you can adjust",
+        ],
+        notIncluded: [
+          "Live-in cook placement",
+          "Buying groceries every week unless agreed",
+          "Large party catering",
+          "Full housekeeping beyond the kitchen",
+        ],
+        defaultHours: 4,
+        priceHintMin: 230,
+        priceHintMax: 400,
+      },
+    ],
+    addons: [
+      {
+        id: "local_dishes",
+        label: "Local dishes",
+        description: "Nshima, relish, and everyday Zambian home meals",
+        priceHint: 0,
+      },
+      {
+        id: "serve_clear",
+        label: "Serve & clear",
+        description: "Serve food and clear the table after the meal",
+        priceHint: 0,
+      },
+      {
+        id: "kitchen_cleanup",
+        label: "Kitchen cleanup",
+        description: "Wash pots, wipe surfaces, and tidy the cooking area",
+        priceHint: 0,
+      },
+      {
+        id: "packed_lunch",
+        label: "Packed lunch",
+        description: "Portion meals for school or work lunchboxes",
+        priceHint: 40,
+      },
+      {
+        id: "baking",
+        label: "Baking",
+        description: "Bread, cakes, or other baked items",
+        priceHint: 50,
+      },
+      {
+        id: "dietary_care",
+        label: "Dietary care",
+        description: "Low salt, diabetic-friendly, or allergy-aware cooking",
+        priceHint: 40,
+      },
+    ],
+  },
   laundry: {
     key: "laundry",
     title: "Laundry & ironing",
@@ -1340,6 +1503,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
 export function categorySlugToKey(slug: string): ServiceCategoryKey | null {
   if (slug.includes("nanny")) return "nanny";
   if (slug.includes("housekeep")) return "housekeeping";
+  if (slug.includes("cook")) return "cooking";
   if (slug.includes("laundry")) return "laundry";
   if (slug.includes("garden")) return "garden";
   if (slug.includes("clean") || slug.includes("house")) return "cleaning";
@@ -1349,6 +1513,7 @@ export function categorySlugToKey(slug: string): ServiceCategoryKey | null {
 export function paramToCategoryKey(param: string | null): ServiceCategoryKey | null {
   if (param === "nanny") return "nanny";
   if (param === "housekeeping") return "housekeeping";
+  if (param === "cooking") return "cooking";
   if (param === "laundry") return "laundry";
   if (param === "garden") return "garden";
   if (param === "cleaning" || param === "house-cleaner") return "cleaning";
@@ -1377,6 +1542,16 @@ export function defaultServiceDetails(category: ServiceCategoryKey): ServiceDeta
       durationHours: firstType.defaultHours,
       addons: [],
       frequency: serviceType === "weekly" ? "weekly" : "once",
+    };
+  }
+  if (category === "cooking") {
+    const serviceType = firstType.id;
+    return {
+      category,
+      serviceType,
+      durationHours: firstType.defaultHours,
+      addons: [],
+      frequency: serviceType === "weekly_cooking" ? "weekly" : "once",
     };
   }
   return {
@@ -1441,6 +1616,7 @@ export function catalogServiceTypeOptions() {
     "nanny",
     "cleaning",
     "housekeeping",
+    "cooking",
     "laundry",
     "garden",
   ];

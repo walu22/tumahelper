@@ -50,6 +50,22 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
     });
   });
 
+  test("hero Cooking & Meals expands cooking pills", async ({ page }) => {
+    await page.goto("/");
+    await expect(
+      page.locator("#hero-cooking-panel").getByRole("tab", { name: /^Lunch\./ })
+    ).not.toBeVisible();
+    await page.getByRole("button", { name: "Cooking & Meals" }).click();
+    await expect(
+      page.locator("#hero-cooking-panel").getByRole("tab", { name: /^Lunch\./ })
+    ).toBeVisible();
+    await page.locator("#hero-cooking-panel").getByRole("tab", { name: /^Dinner\./ }).click();
+    await expect(page).toHaveURL(/category=cooking.*type=dinner/);
+    await expect(page.getByRole("heading", { name: "Book cooking & meals" })).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
   test("hero Laundry & Ironing expands laundry pills", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("tab", { name: "Wash & fold" })).not.toBeVisible();
@@ -80,9 +96,19 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
     await expect(page.getByRole("tab", { name: "Deep cleaning" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Day nanny" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Half-day" })).toBeVisible();
+    await expect(
+      page.getByRole("tablist", { name: "Type of cooking visit" }).getByRole("tab", {
+        name: /^Lunch\./,
+      })
+    ).toBeVisible();
     await expect(page.getByRole("tab", { name: "Guest checkout clean" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Wash & fold" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Lawn cutting" })).toBeVisible();
+  });
+
+  test("book cooking without type redirects to homepage pills", async ({ page }) => {
+    await page.goto("/customer/book?category=cooking");
+    await expect(page).toHaveURL(/#hero-cooking-panel/);
   });
 
   test("book laundry without type redirects to homepage pills", async ({ page }) => {

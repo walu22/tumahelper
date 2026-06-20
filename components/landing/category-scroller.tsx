@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
 import { NannyTypeTabs } from "@/components/booking/nanny-type-tabs";
 import { AirbnbTypeTabs } from "@/components/booking/airbnb-type-tabs";
+import { CookingTypeTabs } from "@/components/booking/cooking-type-tabs";
 import { HousekeepingTypeTabs } from "@/components/booking/housekeeping-type-tabs";
 import { LaundryTypeTabs } from "@/components/booking/laundry-type-tabs";
 import { GardenTypeTabs } from "@/components/booking/garden-type-tabs";
@@ -16,6 +17,7 @@ import {
 } from "@/lib/landing/content";
 import {
   getAirbnbCleaningTypes,
+  getCookingTypes,
   getGardenTypes,
   getHousekeepingTypes,
   getLaundryTypes,
@@ -27,6 +29,7 @@ import { cn } from "@/lib/utils";
 export const CLEANING_PILLS_ID = HERO_CATEGORY_PANEL_IDS.cleaning;
 export const NANNY_PILLS_ID = HERO_CATEGORY_PANEL_IDS.nanny;
 export const HOUSEKEEPING_PILLS_ID = HERO_CATEGORY_PANEL_IDS.housekeeping;
+export const COOKING_PILLS_ID = HERO_CATEGORY_PANEL_IDS.cooking;
 export const SHORT_STAY_PILLS_ID = HERO_CATEGORY_PANEL_IDS.short_stay;
 /** @deprecated Use SHORT_STAY_PILLS_ID */
 export const AIRBNB_PILLS_ID = SHORT_STAY_PILLS_ID;
@@ -37,6 +40,7 @@ const PANEL_ID_TO_CATEGORY: Record<string, HeroCategoryId> = {
   [HERO_CATEGORY_PANEL_IDS.nanny]: "nanny",
   [HERO_CATEGORY_PANEL_IDS.cleaning]: "cleaning",
   [HERO_CATEGORY_PANEL_IDS.housekeeping]: "housekeeping",
+  [HERO_CATEGORY_PANEL_IDS.cooking]: "cooking",
   [HERO_CATEGORY_PANEL_IDS.laundry]: "laundry",
   [HERO_CATEGORY_PANEL_IDS.garden]: "garden",
   [HERO_CATEGORY_PANEL_IDS.short_stay]: "short_stay",
@@ -48,6 +52,7 @@ export function CategoryScroller() {
   const nannyTypes = getNannyTypes();
   const shortStayTypes = getAirbnbCleaningTypes();
   const housekeepingTypes = getHousekeepingTypes();
+  const cookingTypes = getCookingTypes();
   const laundryTypes = getLaundryTypes();
   const gardenTypes = getGardenTypes();
   const [expanded, setExpanded] = useState<HeroCategoryId | null>(null);
@@ -138,6 +143,19 @@ export function CategoryScroller() {
           <HousekeepingTypeTabs
             value={housekeepingTypes[0]?.id ?? "half_day"}
             getHref={(typeId) => `/customer/book?category=housekeeping&type=${typeId}`}
+            showDetails={false}
+            showSelection={false}
+            edgeToEdge
+            centered
+          />
+        </div>
+      )}
+
+      {expanded === "cooking" && (
+        <div id={COOKING_PILLS_ID} className="mt-8 scroll-mt-28 w-full">
+          <CookingTypeTabs
+            value={cookingTypes[0]?.id ?? "lunch"}
+            getHref={(typeId) => `/customer/book?category=cooking&type=${typeId}`}
             showDetails={false}
             showSelection={false}
             edgeToEdge

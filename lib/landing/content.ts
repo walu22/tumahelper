@@ -3,6 +3,7 @@ export type ServiceIconKey =
   | "nanny"
   | "short_stay"
   | "housekeeping"
+  | "cooking"
   | "laundry"
   | "garden";
 
@@ -10,6 +11,7 @@ export type HeroCategoryId =
   | "nanny"
   | "cleaning"
   | "housekeeping"
+  | "cooking"
   | "laundry"
   | "garden"
   | "short_stay";
@@ -37,6 +39,7 @@ export const HERO_CATEGORY_PANEL_IDS = {
   nanny: "hero-nanny-panel",
   cleaning: "hero-cleaning-panel",
   housekeeping: "hero-housekeeping-panel",
+  cooking: "hero-cooking-panel",
   laundry: "hero-laundry-panel",
   garden: "hero-garden-panel",
   short_stay: "hero-short-stay-panel",
@@ -79,6 +82,14 @@ export const HERO_CATEGORIES: {
     panelId: HERO_CATEGORY_PANEL_IDS.housekeeping,
   },
   {
+    id: "cooking",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.cooking}`,
+    label: "Cooking & Meals",
+    subtitle: "Lunch, dinner, meal prep, and weekly cooking.",
+    icon: "cooking",
+    panelId: HERO_CATEGORY_PANEL_IDS.cooking,
+  },
+  {
     id: "laundry",
     href: `/#${HERO_CATEGORY_PANEL_IDS.laundry}`,
     label: "Laundry & Ironing",
@@ -112,6 +123,7 @@ export const AIRBNB_CLEAN_BOOK_HREF = SHORT_STAY_CLEAN_BOOK_HREF;
 export const LAUNDRY_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.laundry}`;
 export const GARDEN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.garden}`;
 export const HOUSEKEEPING_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.housekeeping}`;
+export const COOKING_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.cooking}`;
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
 export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
@@ -134,13 +146,13 @@ export const PRIMARY_NAV_LINKS = [
 ] as const;
 
 export const FOOTER_TAGLINE =
-  "Connecting Lusaka families with trusted, verified home help: nannies, cleaners, housekeepers, laundry, gardeners, and short-stay turnover cleaning.";
+  "Connecting Lusaka families with trusted, verified home help: nannies, cleaners, housekeepers, cooks, laundry, gardeners, and short-stay turnover cleaning.";
 
 export const PLATFORM_OFFERINGS_INTRO = {
   eyebrow: "What we do",
   headline: "Verified home help for Lusaka households.",
   subtitle:
-    "Book nannies, cleaning, housekeeping, laundry, garden help, and short-stay turnover cleaning, once or on a regular schedule. Hire permanently when you find the right person.",
+    "Book nannies, cleaning, housekeeping, cooking, laundry, garden help, and short-stay turnover cleaning, once or on a regular schedule. Hire permanently when you find the right person.",
 };
 
 export const PLATFORM_OFFERINGS = [
@@ -164,6 +176,13 @@ export const PLATFORM_OFFERINGS = [
       "Half-day or full-day household help: cleaning, dishes, tidying, and meal prep for a set visit.",
     href: HOUSEKEEPING_BOOK_HREF,
     variant: "teal" as const,
+  },
+  {
+    title: "Cooking & meals",
+    description:
+      "Lunch, dinner, meal prep, and weekly cooking visits using ingredients you provide at home.",
+    href: COOKING_BOOK_HREF,
+    variant: "pink" as const,
   },
   {
     title: "Laundry & ironing",

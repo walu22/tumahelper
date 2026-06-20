@@ -22,6 +22,7 @@ export const HOUSE_CLEANER_SKILLS = [
   "window_cleaning",
   "organization",
   "meal_prep",
+  "cooking",
 ] as const;
 
 export const WORKER_SKILLS_BY_CATEGORY: Record<WorkerCategory, readonly string[]> = {
@@ -45,6 +46,8 @@ export function skillsForServiceCategory(
       return ["deep_cleaning", "window_cleaning", "organization"];
     case "housekeeping":
       return ["housekeeping", "meal_prep", "laundry", "ironing"];
+    case "cooking":
+      return ["cooking", "meal_prep"];
     case "laundry":
       return ["laundry", "ironing"];
     case "garden":

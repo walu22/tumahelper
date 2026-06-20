@@ -8,6 +8,7 @@ import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
 import { HousekeepingTypeTabs } from "@/components/booking/housekeeping-type-tabs";
+import { CookingTypeTabs } from "@/components/booking/cooking-type-tabs";
 import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
@@ -20,14 +21,16 @@ import {
   DURATION_OPTIONS,
   getAvailableAddons,
   getServiceType,
+  isRecurringCookingType,
   isRecurringHousekeepingType,
   sanitizeAddons,
+  type ServiceCategoryKey,
   type ServiceDetails,
   type TurnoverFrequency,
 } from "@/lib/services/catalog";
 import { suggestDuration } from "@/lib/services/utils";
 
-interface HousekeepingBookingFlowProps {
+export interface HousekeepingBookingFlowProps {
   step: ServiceFlowStep;
   onStepChange: (step: ServiceFlowStep) => void;
   streetAddress: string;
@@ -46,7 +49,47 @@ interface HousekeepingBookingFlowProps {
   onDescriptionChange: (value: string) => void;
   onFindWorker: () => void;
   lockServiceType?: boolean;
+  variant?: "housekeeping" | "cooking";
 }
+
+const FLOW_COPY = {
+  housekeeping: {
+    idPrefix: "housekeeping",
+    addressHeading: "Where should the helper work?",
+    addressDescription:
+      "Start typing your home address in Lusaka so we can match housekeepers nearby.",
+    intro:
+      "Housekeeping is sold by visit length and duties, including cleaning, laundry, dishes, and more. It is not a fixed clean checklist.",
+    lockedSummary:
+      "You are booking household help for a set time. Choose duties in the next step, not a fixed clean package.",
+    scopeLead: "Choose what the helper should focus on during the visit.",
+    dutiesTitle: "Duties for this visit",
+    visitLengthHint:
+      "Half-day and full-day visits can be adjusted between 3 and 8 hours. We suggest a length based on your duties.",
+    notesLabel: "Access and notes for your housekeeper",
+    notesPlaceholder: "Gate code, laundry access, meal preferences, areas to prioritise...",
+    workerCta: "Choose your housekeeper",
+    timingHeading: "When should the helper arrive?",
+  },
+  cooking: {
+    idPrefix: "cooking",
+    addressHeading: "Where should the cook come?",
+    addressDescription:
+      "Start typing your home address in Lusaka so we can match cooks nearby.",
+    intro:
+      "Cooking visits are sold by meal type, visit length, and what you need prepared. Ingredients stay yours unless you agree otherwise.",
+    lockedSummary:
+      "You are booking a cooking visit for a set time. Choose meals and kitchen tasks in the next step.",
+    scopeLead: "Choose what the cook should prepare during the visit.",
+    dutiesTitle: "Meals and kitchen tasks",
+    visitLengthHint:
+      "Visit length can be adjusted between 3 and 8 hours. We suggest a length based on your meal choices.",
+    notesLabel: "Dietary notes and kitchen access",
+    notesPlaceholder: "Gate code, allergies, favourite dishes, ingredients on site, areas off limits...",
+    workerCta: "Choose your cook",
+    timingHeading: "When should the cook arrive?",
+  },
+} as const;
 
 export function HousekeepingBookingFlow({
   step,
@@ -67,16 +110,22 @@ export function HousekeepingBookingFlow({
   onDescriptionChange,
   onFindWorker,
   lockServiceType = false,
+  variant = "housekeeping",
 }: HousekeepingBookingFlowProps) {
-  const flowSteps = getFlowSteps("housekeeping", serviceDetails.serviceType);
+  const category: ServiceCategoryKey = variant;
+  const copy = FLOW_COPY[variant];
+  const flowSteps = getFlowSteps(category, serviceDetails.serviceType);
   const recommendedHours = suggestDuration(serviceDetails);
   const whenPreference = serviceDetails.whenPreference;
-  const availableAddons = getAvailableAddons("housekeeping", serviceDetails.serviceType);
-  const recurringType = isRecurringHousekeepingType(serviceDetails.serviceType);
+  const availableAddons = getAvailableAddons(category, serviceDetails.serviceType);
+  const recurringType =
+    category === "cooking"
+      ? isRecurringCookingType(serviceDetails.serviceType)
+      : isRecurringHousekeepingType(serviceDetails.serviceType);
   const isRepeat = serviceDetails.frequency !== "once";
   const repeatCadenceChosen =
     recurringType || !isRepeat || (isRepeat && !!serviceDetails.frequency);
-  const selectedType = getServiceType("housekeeping", serviceDetails.serviceType);
+  const selectedType = getServiceType(category, serviceDetails.serviceType);
   const canAdjustHours = !recurringType;
 
   function update(patch: Partial<ServiceDetails>) {
@@ -84,9 +133,9 @@ export function HousekeepingBookingFlow({
   }
 
   function setServiceType(serviceType: string, defaultHours: number) {
-    const addons = sanitizeAddons("housekeeping", serviceType, serviceDetails.addons);
+    const addons = sanitizeAddons(category, serviceType, serviceDetails.addons);
     const frequency: TurnoverFrequency =
-      serviceType === "weekly" ? "weekly" : "once";
+      serviceType === "weekly" || serviceType === "weekly_cooking" ? "weekly" : "once";
     const next = {
       ...serviceDetails,
       serviceType,
@@ -114,9 +163,11 @@ export function HousekeepingBookingFlow({
   }
 
   function handleTypeChange(typeId: string) {
-    const type = getServiceType("housekeeping", typeId);
+    const type = getServiceType(category, typeId);
     if (type) setServiceType(typeId, type.defaultHours);
   }
+
+  const TypeTabs = category === "cooking" ? CookingTypeTabs : HousekeepingTypeTabs;
 
   const canContinuePlan =
     !!whenPreference && repeatCadenceChosen && !!serviceDate && !!serviceTime;
@@ -129,7 +180,7 @@ export function HousekeepingBookingFlow({
   const typePicker =
     !lockServiceType && step === "address" ? (
       <div className="mb-6">
-        <HousekeepingTypeTabs
+        <TypeTabs
           value={serviceDetails.serviceType}
           onChange={handleTypeChange}
           showDetails
@@ -141,11 +192,8 @@ export function HousekeepingBookingFlow({
   const lockedTypeSummary =
     lockServiceType && selectedType && step === "address" ? (
       <div className="mb-6">
-        <ServiceScopeTeaser category="housekeeping" serviceType={serviceDetails.serviceType} />
-        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
-          You are booking household help for a set time. Choose duties in the next step, not a
-          fixed clean package.
-        </p>
+        <ServiceScopeTeaser category={category} serviceType={serviceDetails.serviceType} />
+        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{copy.lockedSummary}</p>
       </div>
     ) : null;
 
@@ -156,20 +204,17 @@ export function HousekeepingBookingFlow({
         {lockedTypeSummary}
         {typePicker}
         {!lockServiceType && (
-          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-            Housekeeping is sold by visit length and duties, including cleaning, laundry, dishes,
-            and more. It is not a fixed clean checklist.
-          </p>
+          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{copy.intro}</p>
         )}
         <AddressStepFields
-          idPrefix="housekeeping"
+          idPrefix={copy.idPrefix}
           streetAddress={streetAddress}
           unitAddress={unitAddress}
           onStreetAddressChange={onStreetAddressChange}
           onUnitAddressChange={onUnitAddressChange}
           onConfirm={onLocationConfirm}
-          heading="Where should the helper work?"
-          description="Start typing your home address in Lusaka so we can match housekeepers nearby."
+          heading={copy.addressHeading}
+          description={copy.addressDescription}
         />
       </div>
     );
@@ -180,7 +225,7 @@ export function HousekeepingBookingFlow({
       <div>
         <BookingFlowProgress steps={flowSteps} current="plan" />
         <SchedulePlanSection
-          category="housekeeping"
+          category={category}
           serviceType={serviceDetails.serviceType}
           serviceDetails={serviceDetails}
           onServiceDetailsChange={onServiceDetailsChange}
@@ -198,7 +243,7 @@ export function HousekeepingBookingFlow({
               ? "This visit type already includes a regular schedule."
               : "Is this a one-off visit, or something you want on a regular schedule?"
           }
-          timingHeading="When should the helper arrive?"
+          timingHeading={copy.timingHeading}
         />
       </div>
     );
@@ -220,20 +265,19 @@ export function HousekeepingBookingFlow({
       <div className="rounded-2xl border border-border bg-surface/40 px-4 py-3 text-sm">
         <p className="font-semibold text-foreground">
           {formatVisitCadence(serviceDetails.frequency, {
-            category: "housekeeping",
+            category,
             serviceType: serviceDetails.serviceType,
           })}
           {whenPreference ? ` · ${formatWhenPreference(whenPreference)}` : ""}
         </p>
         <p className="text-muted-foreground mt-1 leading-relaxed">
-          Choose what the helper should focus on during the visit. The guide price in your booking
-          summary updates as you go.
+          {copy.scopeLead} The guide price in your booking summary updates as you go.
         </p>
       </div>
 
       {availableAddons.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold mb-1">Duties for this visit</h3>
+          <h3 className="text-lg font-semibold mb-1">{copy.dutiesTitle}</h3>
           <p className="text-sm text-muted-foreground mb-3">Select all that apply.</p>
           <div className="grid sm:grid-cols-2 gap-3">
             {availableAddons.map((addon) => (
@@ -253,7 +297,7 @@ export function HousekeepingBookingFlow({
         <h3 className="text-lg font-semibold mb-2">Visit length</h3>
         <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
           {canAdjustHours
-            ? "Half-day and full-day visits can be adjusted between 3 and 8 hours. We suggest a length based on your duties."
+            ? copy.visitLengthHint
             : `This visit type is booked for about ${selectedType?.defaultHours ?? serviceDetails.durationHours} hours.`}
         </p>
         <div className="flex flex-wrap items-center gap-4">
@@ -294,12 +338,12 @@ export function HousekeepingBookingFlow({
       </div>
 
       <div>
-        <label htmlFor="housekeeping-notes" className="text-sm font-medium mb-2 block">
-          Access and notes for your housekeeper
+        <label htmlFor={`${copy.idPrefix}-notes`} className="text-sm font-medium mb-2 block">
+          {copy.notesLabel}
         </label>
         <Textarea
-          id="housekeeping-notes"
-          placeholder="Gate code, laundry access, meal preferences, areas to prioritise..."
+          id={`${copy.idPrefix}-notes`}
+          placeholder={copy.notesPlaceholder}
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           rows={3}
@@ -309,7 +353,7 @@ export function HousekeepingBookingFlow({
 
       <BookingStepFooter
         onBack={() => onStepChange("plan")}
-        primaryLabel="Choose your housekeeper"
+        primaryLabel={copy.workerCta}
         onPrimary={onFindWorker}
         primaryDisabled={!canChooseWorker}
       />

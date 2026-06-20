@@ -86,11 +86,25 @@ export function HousekeepingIcon({ className }: ServiceIconProps) {
   );
 }
 
+export function CookingIcon({ className }: ServiceIconProps) {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" className={cn(iconBase, className)} aria-hidden>
+      <circle cx="32" cy="32" r="30" fill="#FFF4E6" />
+      <ellipse cx="32" cy="40" rx="16" ry="6" fill="#EA580C" />
+      <path d="M20 40c0-10 5-16 12-16s12 6 12 16" fill="#F97316" />
+      <path d="M26 30c2-4 4-6 6-6s4 2 6 6" stroke="#C2410C" strokeWidth="2" strokeLinecap="round" />
+      <path d="M24 22c0-3 2-5 4-5" stroke="#E1B016" strokeWidth="2" strokeLinecap="round" />
+      <path d="M40 22c0-3-2-5-4-5" stroke="#E1B016" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const ICON_MAP: Record<ServiceIconKey, ComponentType<ServiceIconProps>> = {
   indoor: IndoorCleaningIcon,
   nanny: NannyIcon,
   short_stay: ShortStayIcon,
   housekeeping: HousekeepingIcon,
+  cooking: CookingIcon,
   laundry: LaundryIcon,
   garden: GardenIcon,
 };

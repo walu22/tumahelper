@@ -5,6 +5,10 @@ import {
 } from "./skills";
 
 describe("worker skills matching", () => {
+  it("returns cooking skills for cooking bookings", () => {
+    expect(skillsForServiceCategory("cooking")).toEqual(["cooking", "meal_prep"]);
+  });
+
   it("returns laundry skills for laundry bookings", () => {
     expect(skillsForServiceCategory("laundry")).toEqual(["laundry", "ironing"]);
   });

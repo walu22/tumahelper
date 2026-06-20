@@ -35,6 +35,13 @@ export function getFlowSteps(
       { id: "scope", label: "Duties & time" },
     ];
   }
+  if (category === "cooking") {
+    return [
+      { id: "address", label: "Your home" },
+      { id: "plan", label: "Schedule" },
+      { id: "scope", label: "Meals & time" },
+    ];
+  }
   if (category === "garden") {
     return [
       { id: "address", label: "Your home" },
@@ -102,6 +109,10 @@ export function formatVisitCadence(
     if (options.serviceType === "monthly") return "Once a month";
   }
 
+  if (options?.category === "cooking" && options.serviceType === "weekly_cooking") {
+    return "Every week";
+  }
+
   const visitLabels: Record<string, string> = {
     once: "One-time visit",
     weekly: "Every week",
@@ -118,6 +129,7 @@ export function getBookingPageTitle(
   if (serviceType && isAirbnbCleaningType(serviceType)) return "Book short-stay cleaning";
   if (category === "nanny") return "Book a nanny";
   if (category === "housekeeping") return "Book housekeeping";
+  if (category === "cooking") return "Book cooking & meals";
   if (category === "laundry") return "Book laundry & ironing";
   if (category === "garden") return "Book garden & yard work";
   return "Book house cleaning";

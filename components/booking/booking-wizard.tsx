@@ -23,6 +23,7 @@ import { AirbnbBookingFlow } from '@/components/booking/airbnb-booking-flow'
 import { AirbnbBookingSummary } from '@/components/booking/airbnb-booking-summary'
 import { CleaningBookingFlow } from '@/components/booking/cleaning-booking-flow'
 import { HousekeepingBookingFlow } from '@/components/booking/housekeeping-booking-flow'
+import { CookingBookingFlow } from '@/components/booking/cooking-booking-flow'
 import { NannyBookingFlow } from '@/components/booking/nanny-booking-flow'
 import { TaskServiceBookingFlow } from '@/components/booking/task-service-booking-flow'
 import { ServiceBookingSummary } from '@/components/booking/service-booking-summary'
@@ -55,6 +56,9 @@ function guidePriceHint(details: ServiceDetails): string {
   }
   if (details.category === "nanny") {
     return "Based on children, visit length, and add-ons. You pay the total below via Airtel Money after the visit.";
+  }
+  if (details.category === "cooking") {
+    return "Based on meal type, dishes, and visit length. You pay the total below via Airtel Money after the visit.";
   }
   if (details.category === "housekeeping") {
     return "Based on visit length, duties, and schedule. You pay the total below via Airtel Money after the visit.";
@@ -217,6 +221,7 @@ function usesGuidedBookingFlow(details: ServiceDetails): boolean {
     details.category === 'nanny' ||
     details.category === 'cleaning' ||
     details.category === 'housekeeping' ||
+    details.category === 'cooking' ||
     details.category === 'laundry' ||
     details.category === 'garden'
   )
@@ -369,6 +374,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     }
     if (categoryParam === "housekeeping" && !typeParam && !funnelParam && !workerProfileId) {
       window.location.assign("/#hero-housekeeping-panel")
+    }
+    if (categoryParam === "cooking" && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-cooking-panel")
     }
     if (categoryParam === "laundry" && !typeParam && !funnelParam && !workerProfileId) {
       window.location.assign("/#hero-laundry-panel")
@@ -655,6 +663,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     if (serviceDetails.category === 'housekeeping') {
       return <HousekeepingBookingFlow {...shared} lockServiceType={lockServiceType} />
     }
+    if (serviceDetails.category === 'cooking') {
+      return <CookingBookingFlow {...shared} lockServiceType={lockServiceType} />
+    }
     if (serviceDetails.category === 'laundry' || serviceDetails.category === 'garden') {
       return (
         <TaskServiceBookingFlow
@@ -791,6 +802,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                     ? 'Choose your nanny'
                     : serviceDetails?.category === 'housekeeping'
                       ? 'Choose your housekeeper'
+                      : serviceDetails?.category === 'cooking'
+                        ? 'Choose your cook'
                       : 'Choose your cleaner'}
                 </h2>
 

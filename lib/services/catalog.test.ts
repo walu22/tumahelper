@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   getAirbnbCleaningTypes,
   getAvailableAddons,
+  getCookingTypes,
   getGardenTypes,
   getHousekeepingTypes,
   getLaundryTypes,
@@ -107,6 +108,17 @@ describe("service catalog add-ons", () => {
       "meal_prep",
       "tidying",
       "outside_sweep",
+    ]);
+  });
+
+  it("lists four cooking tabs for launch", () => {
+    const types = getCookingTypes();
+    expect(types).toHaveLength(4);
+    expect(types.map((t) => t.id)).toEqual([
+      "lunch",
+      "dinner",
+      "meal_prep",
+      "weekly_cooking",
     ]);
   });
 

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getAdminClient } from "@/lib/supabase";
 import { successResponse, errorResponse } from "@/lib/auth";
 import { workerMatchesSkills } from "@/lib/workers/skills";
+import { isWorkerSearchable } from "@/lib/workers/eligibility";
 
 export async function GET(request: NextRequest) {
   try {
@@ -75,6 +76,8 @@ export async function GET(request: NextRequest) {
         workerMatchesSkills(profile.skills as string[], requiredSkills)
       );
     }
+
+    publicProfiles = publicProfiles?.filter((profile) => isWorkerSearchable(profile));
 
     return successResponse(publicProfiles || [], {
       page,

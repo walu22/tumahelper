@@ -79,7 +79,7 @@ export function suggestDuration(details: ServiceDetails): number {
     hours += Math.max(0, baths - 1) * 0.5;
   } else if (details.category === "nanny") {
     hours += Math.max(0, (details.children ?? 1) - 1) * 0.5;
-  } else if (details.category === "housekeeping") {
+  } else if (details.category === "housekeeping" || details.category === "cooking") {
     hours += Math.max(0, details.addons.length - 2) * 0.25;
   }
 
@@ -116,7 +116,7 @@ export function suggestPrice(details: ServiceDetails): {
     const extraChildren = Math.max(0, (details.children ?? 1) - 1);
     min += extraChildren * 60;
     max += extraChildren * 100;
-  } else if (details.category === "housekeeping") {
+  } else if (details.category === "housekeeping" || details.category === "cooking") {
     const dutyCount = details.addons.length;
     min += dutyCount * 25;
     max += dutyCount * 45;

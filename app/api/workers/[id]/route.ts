@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { getAdminClient } from "@/lib/supabase";
 import { successResponse, errorResponse } from "@/lib/auth";
 import { calculateTrustScore } from "@/lib/trust-score";
+import { isWorkerSearchable } from "@/lib/workers/eligibility";
 
 export async function GET(
   request: NextRequest,
@@ -18,7 +19,7 @@ export async function GET(
       .eq("verification_status", "approved")
       .single();
 
-    if (profileError || !profile) {
+    if (profileError || !profile || !isWorkerSearchable(profile)) {
       return errorResponse("NOT_FOUND", "Worker not found", 404);
     }
 

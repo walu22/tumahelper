@@ -5,6 +5,7 @@ const LAUNCH_HERO_LABELS = [
   "Nannies",
   "Cleaning",
   "Housekeeping",
+  "Cooking & Meals",
   "Laundry & Ironing",
   "Garden & Yard",
   "Short-Stay Cleaning",
@@ -14,6 +15,7 @@ const LAUNCH_HERO_PANEL_IDS = [
   "hero-nanny-panel",
   "hero-cleaning-panel",
   "hero-housekeeping-panel",
+  "hero-cooking-panel",
   "hero-laundry-panel",
   "hero-garden-panel",
   "hero-short-stay-panel",
@@ -24,13 +26,13 @@ test.describe("Launch hero regression", { tag: "@smoke" }, () => {
     await loginAsCustomer(page, baseURL!);
   });
 
-  test("homepage shows six launch service categories in order", async ({ page }) => {
+  test("homepage shows seven launch service categories in order", async ({ page }) => {
     await page.goto("/");
 
     const categoryButtons = page.locator(
       'button[aria-controls^="hero-"][aria-controls$="-panel"]'
     );
-    await expect(categoryButtons).toHaveCount(6);
+    await expect(categoryButtons).toHaveCount(7);
 
     for (let i = 0; i < LAUNCH_HERO_LABELS.length; i++) {
       await expect(categoryButtons.nth(i)).toHaveAttribute(
@@ -39,6 +41,14 @@ test.describe("Launch hero regression", { tag: "@smoke" }, () => {
       );
       await expect(categoryButtons.nth(i)).toContainText(LAUNCH_HERO_LABELS[i]);
     }
+  });
+
+  test("cooking hash expands cooking pills", async ({ page }) => {
+    await page.goto("/#hero-cooking-panel");
+    await expect(
+      page.locator("#hero-cooking-panel").getByRole("tab", { name: /^Lunch\./ })
+    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator("#hero-cooking-panel")).toBeVisible();
   });
 
   test("laundry hash expands laundry pills", async ({ page }) => {
