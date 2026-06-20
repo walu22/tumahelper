@@ -1,4 +1,4 @@
-import { PricingSnapshot } from "@/components/landing/pricing-snapshot";
+import { PricingFeaturedVisits } from "@/components/landing/pricing-featured-visits";
 import { PRICING_SECTION_ID, SERVICES_DETAIL_INTRO } from "@/lib/landing/content";
 
 export function ServicesDetailSection() {
@@ -20,7 +20,7 @@ export function ServicesDetailSection() {
           </p>
         </div>
 
-        <PricingSnapshot />
+        <PricingFeaturedVisits />
       </div>
     </section>
   );
