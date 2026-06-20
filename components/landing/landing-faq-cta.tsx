@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, MessageCircle, Sparkles, UserPlus } from "lucide-react";
-import { CLEANING_BOOK_HREF, FAQ_ITEMS, NANNY_BOOK_HREF } from "@/lib/landing/content";
+import {
+  CLEANING_BOOK_HREF,
+  COOKING_BOOK_HREF,
+  FAQ_ITEMS,
+  GET_HELP_HREF,
+  HOUSEKEEPING_BOOK_HREF,
+  NANNY_BOOK_HREF,
+} from "@/lib/landing/content";
 
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "260970000000";
 const whatsappHref = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent("Hi TumaHelper, I need help finding a worker in Lusaka.")}`;
@@ -55,8 +62,14 @@ export function LandingFaqCta() {
               </div>
               <div className="grid sm:grid-cols-2 gap-3">
                 <Link
+                  href={GET_HELP_HREF}
+                  className="flex items-center justify-center rounded-full bg-primary text-primary-foreground py-3.5 text-sm font-semibold hover:opacity-95 transition-opacity sm:col-span-2"
+                >
+                  Choose a service
+                </Link>
+                <Link
                   href={NANNY_BOOK_HREF}
-                  className="flex items-center justify-center rounded-full bg-primary text-primary-foreground py-3.5 text-sm font-semibold hover:opacity-95 transition-opacity"
+                  className="flex items-center justify-center rounded-full border border-border py-3.5 text-sm font-semibold hover:bg-surface transition-colors"
                 >
                   Book a nanny
                 </Link>
@@ -65,6 +78,18 @@ export function LandingFaqCta() {
                   className="flex items-center justify-center rounded-full border border-border py-3.5 text-sm font-semibold hover:bg-surface transition-colors"
                 >
                   Book cleaning
+                </Link>
+                <Link
+                  href={HOUSEKEEPING_BOOK_HREF}
+                  className="flex items-center justify-center rounded-full border border-border py-3.5 text-sm font-semibold hover:bg-surface transition-colors"
+                >
+                  Book housekeeping
+                </Link>
+                <Link
+                  href={COOKING_BOOK_HREF}
+                  className="flex items-center justify-center rounded-full border border-border py-3.5 text-sm font-semibold hover:bg-surface transition-colors"
+                >
+                  Book cooking
                 </Link>
               </div>
             </div>

@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
-import { LAUNDRY_BOOK_HREF, GARDEN_BOOK_HREF, SHORT_STAY_CLEAN_BOOK_HREF, FOOTER_TAGLINE } from "@/lib/landing/content";
+import {
+  COOKING_BOOK_HREF,
+  FOOTER_TAGLINE,
+  GARDEN_BOOK_HREF,
+  GET_HELP_HREF,
+  HOUSEKEEPING_BOOK_HREF,
+  LAUNDRY_BOOK_HREF,
+  SHORT_STAY_CLEAN_BOOK_HREF,
+} from "@/lib/landing/content";
 import { cn } from "@/lib/utils";
 
 export function Footer({ className }: { className?: string }) {
@@ -20,10 +28,12 @@ export function Footer({ className }: { className?: string }) {
           <div>
             <h3 className="font-semibold mb-4">For Customers</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/customer/book" className="hover:text-primary transition-colors">Book a Service</Link></li>
+              <li><Link href={GET_HELP_HREF} className="hover:text-primary transition-colors">Book a service</Link></li>
               <li><Link href="/workers" className="hover:text-primary transition-colors">Find a Worker</Link></li>
               <li><Link href="/nannies" className="hover:text-primary transition-colors">Nannies</Link></li>
               <li><Link href="/house-cleaners" className="hover:text-primary transition-colors">House Cleaners</Link></li>
+              <li><Link href={HOUSEKEEPING_BOOK_HREF} className="hover:text-primary transition-colors">Housekeeping</Link></li>
+              <li><Link href={COOKING_BOOK_HREF} className="hover:text-primary transition-colors">Cooking & meals</Link></li>
               <li><Link href={SHORT_STAY_CLEAN_BOOK_HREF} className="hover:text-primary transition-colors">Short-stay cleaning</Link></li>
               <li><Link href={LAUNDRY_BOOK_HREF} className="hover:text-primary transition-colors">Laundry & ironing</Link></li>
               <li><Link href={GARDEN_BOOK_HREF} className="hover:text-primary transition-colors">Garden & yard work</Link></li>

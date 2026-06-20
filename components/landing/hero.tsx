@@ -21,10 +21,12 @@ export function LandingHero() {
             Trusted home help in Lusaka
           </p>
           <h1 className="font-display text-[2.75rem] sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.05] text-balance text-foreground mb-4">
-            Book verified nannies &amp; cleaners.
+            Book verified home help.
           </h1>
-          <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
-            One-off or regular visits, with a path to permanent hire when you&apos;re ready.
+          <p className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto">
+            Nannies, cleaning, housekeeping, cooking, laundry, garden help, and short-stay
+            turnover cleaning. One-off or regular visits, with a path to permanent hire when
+            you&apos;re ready.
           </p>
         </div>
 

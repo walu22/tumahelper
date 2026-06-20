@@ -138,6 +138,8 @@ export const HEADER_NAV_LINKS = [
 export const PRIMARY_NAV_LINKS = [
   { href: NANNY_BOOK_HREF, label: "Nannies" },
   { href: CLEANING_BOOK_HREF, label: "Cleaning" },
+  { href: HOUSEKEEPING_BOOK_HREF, label: "Housekeeping" },
+  { href: COOKING_BOOK_HREF, label: "Cooking & meals" },
   { href: SHORT_STAY_CLEAN_BOOK_HREF, label: "Short-stay cleaning" },
   { href: LAUNDRY_BOOK_HREF, label: "Laundry & ironing" },
   { href: GARDEN_BOOK_HREF, label: "Garden & yard work" },
@@ -256,6 +258,10 @@ export const FAQ_ITEMS = [
   {
     q: "Which areas do you cover?",
     a: "We serve households across Lusaka, including Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, Chelstone, and surrounding areas.",
+  },
+  {
+    q: "Can I book a cook for lunch or dinner?",
+    a: "Yes. Choose Cooking & meals on the homepage, pick lunch, dinner, meal prep, or weekly cooking, then set your schedule. You provide ingredients unless you agree otherwise with your cook.",
   },
   {
     q: "Do you clean short-stay rentals?",

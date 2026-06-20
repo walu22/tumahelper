@@ -27,10 +27,10 @@ export function SweepStarsSection({
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/customer/book"
+              href="/#choose-service"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-95"
             >
-              Book a service
+              Choose a service
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
@@ -87,10 +87,10 @@ export function SweepStarsSection({
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
-            href="/customer/book"
+            href="/#choose-service"
             className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground hover:opacity-95 w-full sm:w-auto"
           >
-            Book a service
+            Choose a service
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link

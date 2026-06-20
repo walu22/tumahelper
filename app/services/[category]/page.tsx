@@ -8,7 +8,14 @@ import {
 } from "@/lib/services/catalog";
 import { buildBookUrl } from "@/lib/services/utils";
 
-const VALID: ServiceCategoryKey[] = ["cleaning", "nanny"];
+const VALID: ServiceCategoryKey[] = [
+  "cleaning",
+  "nanny",
+  "housekeeping",
+  "cooking",
+  "laundry",
+  "garden",
+];
 
 export default function ServiceCategoryPage({
   params,

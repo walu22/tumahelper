@@ -6,11 +6,11 @@ export function WorkerRecruitment() {
     <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-surface border-t border-border">
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-          Are you a nanny or housekeeper in Lusaka?
+          Are you a nanny, housekeeper, cook, or cleaner in Lusaka?
         </h2>
         <p className="text-muted-foreground leading-relaxed max-w-xl mx-auto mb-8">
-          Join TumaHelper, get verified, set your availability, and receive bookings
-          from families who respect your work.
+          Join TumaHelper, get verified, set your skills and availability, and receive
+          bookings from families who respect your work.
         </p>
         <Link
           href="/register?role=worker"

@@ -1,7 +1,14 @@
 import { SERVICE_CATALOG, type ServiceCategoryKey } from "@/lib/services/catalog";
 import { ServiceCategoryPanel } from "@/components/landing/service-category-panel";
 
-const ORDER: ServiceCategoryKey[] = ["cleaning", "nanny"];
+const ORDER: ServiceCategoryKey[] = [
+  "nanny",
+  "cleaning",
+  "housekeeping",
+  "cooking",
+  "laundry",
+  "garden",
+];
 
 export function ServicesDetailSection() {
   return (
@@ -12,11 +19,11 @@ export function ServicesDetailSection() {
             Services in detail
           </p>
           <h2 className="font-display text-3xl md:text-[2.75rem] font-bold text-balance leading-tight">
-            Two ways we help your home.
+            Every service, explained.
           </h2>
           <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            Start with house cleaning or childcare, then pick a specific service type
-            when you&apos;re ready, or book straight away and fine-tune on the next step.
+            Pick a service above to book quickly, or browse types, pricing hints, and what is
+            included before you start. Short-stay turnover cleaning is available from the hero.
           </p>
         </div>
 
