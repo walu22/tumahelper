@@ -151,6 +151,14 @@ tumahelper/
 
 See `.env.local.example` for all required variables.
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [docs/SYSTEM_MANUAL.md](docs/SYSTEM_MANUAL.md) | **Full system manual** — product, roles, booking, payments, admin, API, database, deployment |
+| [docs/TEST_STRATEGY.md](docs/TEST_STRATEGY.md) | Testing approach |
+| [docs/TEST_CASES.md](docs/TEST_CASES.md) | Test case catalog |
+
 ## License
 
 MIT
