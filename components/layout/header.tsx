@@ -95,11 +95,6 @@ export function Header({ user }: { user: AppUser | null }) {
           </div>
 
           <div className="flex md:hidden items-center gap-2 shrink-0">
-            <Link href={HEADER_BOOK_CTA.href}>
-              <Button size="sm" className="rounded-full px-4">
-                Book
-              </Button>
-            </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-3 min-h-11 min-w-11 flex items-center justify-center rounded-lg hover:bg-surface transition-colors"

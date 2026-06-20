@@ -191,10 +191,10 @@ export const PLATFORM_TRUST_BAR = [
 ] as const;
 
 export const SERVICES_DETAIL_INTRO = {
-  eyebrow: "Pricing & what's included",
-  headline: "Know what you're booking before you pay.",
-  subtitle:
-    "Typical visit lengths and price ranges for Lusaka homes. Final price depends on your address, duties, and chosen worker.",
+  eyebrow: "Typical prices in Lusaka",
+  headline: "Most visits start between K200 and K550.",
+  subtitle: "Prices vary by area, hours, and worker. No surprises at checkout.",
+  footnote: "Final price depends on your address, duties, and chosen worker.",
 } as const;
 
 export const WORKERS_SPOTLIGHT_INTRO = {

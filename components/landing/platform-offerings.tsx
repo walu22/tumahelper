@@ -63,7 +63,7 @@ export function PlatformOfferings() {
         <p className="text-center text-sm text-muted-foreground mb-14">
           Want typical prices first?{" "}
           <Link href={PRICING_SECTION_HREF} className="font-semibold text-primary hover:underline">
-            See pricing &amp; what&apos;s included
+            See typical Lusaka prices
           </Link>
         </p>
 

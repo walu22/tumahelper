@@ -1,4 +1,4 @@
-import { ServiceDetailTabs } from "@/components/landing/service-detail-tabs";
+import { PricingSnapshot } from "@/components/landing/pricing-snapshot";
 import { PRICING_SECTION_ID, SERVICES_DETAIL_INTRO } from "@/lib/landing/content";
 
 export function ServicesDetailSection() {
@@ -20,7 +20,7 @@ export function ServicesDetailSection() {
           </p>
         </div>
 
-        <ServiceDetailTabs />
+        <PricingSnapshot />
       </div>
     </section>
   );
