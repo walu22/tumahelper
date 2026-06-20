@@ -1,4 +1,10 @@
 import { HANDYMAN_ADDONS, HANDYMAN_TYPE_IDS, HANDYMAN_TYPES } from "./handyman-types";
+import type {
+  PartsAvailable,
+  PlumberBuyParts,
+  PlumbingBookingMode,
+  PlumbingWorkerRouteType,
+} from "./handyman-plumbing";
 
 export type ServiceCategoryKey =
   | "cleaning"
@@ -59,6 +65,17 @@ export interface ServiceDetails {
   linenPreferences?: LinenPreference[];
   /** @deprecated Use linenPreferences */
   linenPreference?: LinenPreference;
+  /** Handyman plumbing: customer-selected issue type */
+  plumbingJobType?: string;
+  /** Handyman plumbing: resolved booking path */
+  handymanBookingMode?: PlumbingBookingMode;
+  /** Handyman plumbing: backend worker routing */
+  routeToWorkerType?: PlumbingWorkerRouteType;
+  partsAvailable?: PartsAvailable;
+  plumberBuyParts?: PlumberBuyParts;
+  activeLeak?: boolean;
+  waterShutoffAvailable?: boolean;
+  requiresAdminReview?: boolean;
 }
 
 export type LinenPreference = "replace_no_wash" | "wash_repack" | "basket_only";

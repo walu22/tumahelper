@@ -50,7 +50,15 @@ export const workerProfileSchema = z.object({
 });
 
 export const serviceDetailsSchema = z.object({
-  category: z.enum(["cleaning", "nanny"]),
+  category: z.enum([
+    "cleaning",
+    "nanny",
+    "housekeeping",
+    "cooking",
+    "laundry",
+    "garden",
+    "handyman",
+  ]),
   serviceType: z.string().min(1).max(50),
   durationHours: z.number().min(2).max(12),
   bedrooms: z.number().min(1).max(10).optional(),
@@ -58,20 +66,64 @@ export const serviceDetailsSchema = z.object({
   children: z.number().min(1).max(10).optional(),
   childAgeGroups: z.array(z.string()).optional(),
   addons: z.array(z.string()).default([]),
+  frequency: z
+    .enum(["once", "per_checkout", "weekly", "every_2_weeks"])
+    .optional(),
+  whenPreference: z.enum(["today", "last_minute", "tomorrow_later"]).optional(),
+  linenPreferences: z
+    .array(z.enum(["replace_no_wash", "wash_repack", "basket_only"]))
+    .optional(),
+  linenPreference: z.enum(["replace_no_wash", "wash_repack", "basket_only"]).optional(),
+  plumbingJobType: z.string().max(50).optional(),
+  handymanBookingMode: z
+    .enum([
+      "standard_repair_visit",
+      "inspection_only",
+      "specialist_quote_request",
+      "emergency_request",
+    ])
+    .optional(),
+  routeToWorkerType: z
+    .enum([
+      "general_plumber",
+      "specialist_plumber",
+      "drainage_sewer_specialist",
+      "borehole_pump_technician",
+      "emergency_plumber",
+    ])
+    .optional(),
+  partsAvailable: z.enum(["yes", "no", "not_sure"]).optional(),
+  plumberBuyParts: z.enum(["yes_receipt", "no_provide"]).optional(),
+  activeLeak: z.boolean().optional(),
+  waterShutoffAvailable: z.boolean().optional(),
+  requiresAdminReview: z.boolean().optional(),
 });
 
-export const bookingSchema = z.object({
-  workerId: z.string().uuid(),
-  categoryId: z.string().uuid(),
-  serviceDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  serviceTime: z.string().regex(/^\d{2}:\d{2}$/),
-  locationAddress: z.string().min(5).max(500),
-  locationLat: z.number().optional(),
-  locationLng: z.number().optional(),
-  description: z.string().max(1000).optional(),
-  serviceDetails: serviceDetailsSchema.optional(),
-  amount: z.number().min(50).max(1000000),
-});
+export const bookingSchema = z
+  .object({
+    workerId: z.string().uuid().optional(),
+    categoryId: z.string().uuid(),
+    serviceDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    serviceTime: z.string().regex(/^\d{2}:\d{2}$/),
+    locationAddress: z.string().min(5).max(500),
+    locationLat: z.number().optional(),
+    locationLng: z.number().optional(),
+    description: z.string().max(1000).optional(),
+    serviceDetails: serviceDetailsSchema.optional(),
+    amount: z.number().min(50).max(1000000),
+    requiresAdminReview: z.boolean().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const adminReview =
+      data.requiresAdminReview || data.serviceDetails?.requiresAdminReview === true;
+    if (!adminReview && !data.workerId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Worker is required for this booking",
+        path: ["workerId"],
+      });
+    }
+  });
 
 export const bookingStatusSchema = z.object({
   status: z.enum([

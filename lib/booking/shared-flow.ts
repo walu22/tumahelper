@@ -2,7 +2,7 @@ import { finalizeLusakaAddress } from "@/lib/lusaka/places";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 import { isAirbnbCleaningType, TURNOVER_FREQUENCY_OPTIONS } from "@/lib/services/catalog";
 
-export type ServiceFlowStep = "address" | "plan" | "scope";
+export type ServiceFlowStep = "address" | "classify" | "plan" | "scope";
 
 export type WhenPreference = "today" | "last_minute" | "tomorrow_later";
 
@@ -50,6 +50,14 @@ export function getFlowSteps(
     ];
   }
   if (category === "handyman") {
+    if (serviceType === "plumbing") {
+      return [
+        { id: "address", label: "Your home" },
+        { id: "classify", label: "Plumbing issue" },
+        { id: "plan", label: "Schedule" },
+        { id: "scope", label: "Job details" },
+      ];
+    }
     return [
       { id: "address", label: "Your home" },
       { id: "plan", label: "Schedule" },

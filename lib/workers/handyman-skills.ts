@@ -1,10 +1,22 @@
 import type { HandymanServiceTypeId } from "@/lib/services/handyman-types";
+import {
+  getPlumbingJobType,
+  isPlumbingService,
+  minVerificationForPlumbingRoute,
+  workerSkillsForPlumbingRoute,
+} from "@/lib/services/handyman-plumbing";
+import type { ServiceDetails } from "@/lib/services/catalog";
 import type { VerificationLevel } from "@/types";
 
 /** Worker skill tags used to match handyman booking types. */
 export const HANDYMAN_WORKER_SKILLS = [
   "general_handyman",
   "plumbing",
+  "general_plumber",
+  "specialist_plumber",
+  "drainage_sewer_specialist",
+  "borehole_pump_technician",
+  "emergency_plumber",
   "electrical",
   "mounting",
   "doors_cabinets",
@@ -49,21 +61,42 @@ const VERIFICATION_RANK: VerificationLevel[] = [
   "platinum",
 ];
 
-export function skillsForHandymanType(serviceType: string): string[] {
+export function skillsForHandymanType(
+  serviceType: string,
+  details?: Pick<ServiceDetails, "plumbingJobType" | "routeToWorkerType">
+): string[] {
+  if (isPlumbingService(serviceType)) {
+    if (details?.routeToWorkerType) {
+      return workerSkillsForPlumbingRoute(details.routeToWorkerType);
+    }
+    const job = getPlumbingJobType(details?.plumbingJobType);
+    if (job) return workerSkillsForPlumbingRoute(job.routeToWorkerType);
+    return ["general_plumber", "plumbing"];
+  }
   return SKILL_BY_TYPE[serviceType as HandymanServiceTypeId] ?? ["general_handyman"];
 }
 
 export function minVerificationForHandymanType(
-  serviceType: string
+  serviceType: string,
+  details?: Pick<ServiceDetails, "plumbingJobType" | "routeToWorkerType">
 ): VerificationLevel | null {
+  if (isPlumbingService(serviceType)) {
+    if (details?.routeToWorkerType) {
+      return minVerificationForPlumbingRoute(details.routeToWorkerType);
+    }
+    const job = getPlumbingJobType(details?.plumbingJobType);
+    if (job) return minVerificationForPlumbingRoute(job.routeToWorkerType);
+    return "gold";
+  }
   return MIN_VERIFICATION[serviceType as HandymanServiceTypeId] ?? null;
 }
 
 export function workerMeetsHandymanVerification(
   workerLevel: VerificationLevel,
-  serviceType: string
+  serviceType: string,
+  details?: Pick<ServiceDetails, "plumbingJobType" | "routeToWorkerType">
 ): boolean {
-  const required = minVerificationForHandymanType(serviceType);
+  const required = minVerificationForHandymanType(serviceType, details);
   if (!required) return true;
   return (
     VERIFICATION_RANK.indexOf(workerLevel) >= VERIFICATION_RANK.indexOf(required)

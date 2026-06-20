@@ -10,6 +10,7 @@ import { SchedulePlanSection } from "@/components/booking/schedule-plan-section"
 import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import { HandymanTypeTabs } from "@/components/booking/handyman-type-tabs";
+import { PlumbingJobClassifier } from "@/components/booking/plumbing-job-classifier";
 import {
   formatVisitCadence,
   formatWhenPreference,
@@ -17,6 +18,15 @@ import {
   type ServiceFlowStep,
 } from "@/lib/booking/shared-flow";
 import { HANDYMAN_SCOPE_DISCLAIMER } from "@/lib/services/handyman-types";
+import {
+  isPlumbingService,
+  plumbingRequiresAdminReview,
+  plumbingSkipsWorkerSelection,
+  plumbingBookingModeDescription,
+  plumbingBookingModeLabel,
+  type PartsAvailable,
+  type PlumberBuyParts,
+} from "@/lib/services/handyman-plumbing";
 import {
   DURATION_OPTIONS,
   getAvailableAddons,
@@ -44,6 +54,7 @@ interface HandymanBookingFlowProps {
   onTimeChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onFindWorker: () => void;
+  onSubmitReviewRequest?: () => void;
   lockServiceType?: boolean;
 }
 
@@ -68,8 +79,10 @@ export function HandymanBookingFlow({
   onTimeChange,
   onDescriptionChange,
   onFindWorker,
+  onSubmitReviewRequest,
   lockServiceType = false,
 }: HandymanBookingFlowProps) {
+  const isPlumbing = isPlumbingService(serviceDetails.serviceType);
   const flowSteps = getFlowSteps("handyman", serviceDetails.serviceType);
   const recommendedHours = suggestDuration(serviceDetails);
   const whenPreference = serviceDetails.whenPreference;
@@ -107,17 +120,45 @@ export function HandymanBookingFlow({
 
   function handleTypeChange(typeId: string) {
     const type = getServiceType("handyman", typeId);
-    if (type) setServiceType(typeId, type.defaultHours);
+    const clearedPlumbing = {
+      plumbingJobType: undefined,
+      handymanBookingMode: undefined,
+      routeToWorkerType: undefined,
+      partsAvailable: undefined,
+      plumberBuyParts: undefined,
+      activeLeak: undefined,
+      waterShutoffAvailable: undefined,
+      requiresAdminReview: undefined,
+    };
+    if (type) {
+      onServiceDetailsChange({
+        ...serviceDetails,
+        serviceType: typeId,
+        addons: sanitizeAddons("handyman", typeId, serviceDetails.addons),
+        durationHours: type.defaultHours,
+        ...clearedPlumbing,
+      });
+    }
   }
 
+  const plumbingClassified = !isPlumbing || !!serviceDetails.plumbingJobType;
+  const reviewRequest = isPlumbing && plumbingRequiresAdminReview(serviceDetails);
+
   const canContinuePlan =
-    !!whenPreference && repeatCadenceChosen && !!serviceDate && !!serviceTime;
+    plumbingClassified &&
+    !!whenPreference &&
+    repeatCadenceChosen &&
+    !!serviceDate &&
+    !!serviceTime;
   const canChooseWorker =
+    plumbingClassified &&
     !!serviceDate &&
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!whenPreference &&
-    description.trim().length >= 10;
+    description.trim().length >= 10 &&
+    (!isPlumbing || !!serviceDetails.partsAvailable) &&
+    (!isPlumbing || !!serviceDetails.plumberBuyParts);
 
   const typePicker =
     !lockServiceType && step === "address" ? (
@@ -158,6 +199,20 @@ export function HandymanBookingFlow({
     );
   }
 
+  if (step === "classify" && isPlumbing) {
+    return (
+      <div>
+        <BookingFlowProgress steps={flowSteps} current="classify" />
+        <PlumbingJobClassifier
+          serviceDetails={serviceDetails}
+          onServiceDetailsChange={onServiceDetailsChange}
+          onBack={() => onStepChange("address")}
+          onContinue={() => onStepChange("plan")}
+        />
+      </div>
+    );
+  }
+
   if (step === "plan") {
     return (
       <div>
@@ -171,7 +226,7 @@ export function HandymanBookingFlow({
           serviceTime={serviceTime}
           onDateChange={onDateChange}
           onTimeChange={onTimeChange}
-          onBack={() => onStepChange("address")}
+          onBack={() => onStepChange(isPlumbing ? "classify" : "address")}
           onContinue={() => onStepChange("scope")}
           canContinue={canContinuePlan}
           frequencyHeading="How often?"
@@ -197,6 +252,17 @@ export function HandymanBookingFlow({
               {selectedType.pricingHint}
             </p>
           )}
+        </div>
+      )}
+
+      {isPlumbing && serviceDetails.handymanBookingMode && (
+        <div className="rounded-2xl border border-border bg-card px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+            {plumbingBookingModeLabel(serviceDetails.handymanBookingMode)}
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {plumbingBookingModeDescription(serviceDetails.handymanBookingMode)}
+          </p>
         </div>
       )}
 
@@ -228,10 +294,61 @@ export function HandymanBookingFlow({
         />
         <p className="text-xs text-muted-foreground mt-2">
           Tip: mention if water is leaking, power is off, parts are on site, or access is difficult.
+          {isPlumbing && " Upload photos in your notes if you can — this helps us send the right plumber."}
         </p>
       </div>
 
-      {availableAddons.length > 0 && (
+      {isPlumbing && (
+        <>
+          <div>
+            <h3 className="text-lg font-semibold mb-1">Parts available?</h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              Let us know if replacement parts are already at the property.
+            </p>
+            <div className="grid sm:grid-cols-3 gap-3">
+              {(
+                [
+                  { id: "yes", label: "Yes" },
+                  { id: "no", label: "No" },
+                  { id: "not_sure", label: "Not sure" },
+                ] as const
+              ).map((option) => (
+                <AirbnbOptionCard
+                  key={option.id}
+                  selected={serviceDetails.partsAvailable === option.id}
+                  onClick={() => update({ partsAvailable: option.id as PartsAvailable })}
+                  title={option.label}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-1">
+              Should the plumber buy parts if needed?
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {(
+                [
+                  { id: "yes_receipt", label: "Yes, with receipt" },
+                  { id: "no_provide", label: "No, I will provide parts" },
+                ] as const
+              ).map((option) => (
+                <AirbnbOptionCard
+                  key={option.id}
+                  selected={serviceDetails.plumberBuyParts === option.id}
+                  onClick={() =>
+                    update({ plumberBuyParts: option.id as PlumberBuyParts })
+                  }
+                  title={option.label}
+                />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {availableAddons.length > 0 && !isPlumbing && (
         <div>
           <h3 className="text-lg font-semibold mb-1">Add-ons</h3>
           <p className="text-sm text-muted-foreground mb-3">
@@ -294,8 +411,14 @@ export function HandymanBookingFlow({
 
       <BookingStepFooter
         onBack={() => onStepChange("plan")}
-        primaryLabel="Choose your helper"
-        onPrimary={onFindWorker}
+        primaryLabel={
+          reviewRequest
+            ? "Submit for review"
+            : plumbingSkipsWorkerSelection(serviceDetails)
+              ? "Submit request"
+              : "Choose your helper"
+        }
+        onPrimary={reviewRequest ? (onSubmitReviewRequest ?? onFindWorker) : onFindWorker}
         primaryDisabled={!canChooseWorker}
       />
     </div>

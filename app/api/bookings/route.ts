@@ -12,33 +12,46 @@ export async function POST(request: NextRequest) {
     const validated = bookingSchema.parse(body);
 
     const adminClient = getAdminClient();
+    const adminReview =
+      validated.requiresAdminReview ||
+      validated.serviceDetails?.requiresAdminReview === true;
 
-    const { data: worker } = await adminClient
-      .from("worker_profiles")
-      .select("user_id, availability_status, verification_level")
-      .eq("user_id", validated.workerId)
-      .single();
+    if (!adminReview) {
+      if (!validated.workerId) {
+        return errorResponse("WORKER_REQUIRED", "Worker is required for this booking", 400);
+      }
 
-    if (!worker) {
-      return errorResponse("WORKER_NOT_FOUND", "Worker not found", 404);
-    }
+      const { data: worker } = await adminClient
+        .from("worker_profiles")
+        .select("user_id, availability_status, verification_level")
+        .eq("user_id", validated.workerId)
+        .single();
 
-    if (worker.availability_status !== "available") {
-      return errorResponse("WORKER_UNAVAILABLE", "Worker is not available", 400);
-    }
+      if (!worker) {
+        return errorResponse("WORKER_NOT_FOUND", "Worker not found", 404);
+      }
 
-    const { data: category } = await adminClient
-      .from("service_categories")
-      .select("requires_verification")
-      .eq("id", validated.categoryId)
-      .single();
+      if (worker.availability_status !== "available") {
+        return errorResponse("WORKER_UNAVAILABLE", "Worker is not available", 400);
+      }
 
-    const verificationLevels = ["none", "bronze", "silver", "gold", "platinum"];
-    const workerLevel = verificationLevels.indexOf(worker.verification_level);
-    const requiredLevel = verificationLevels.indexOf(category?.requires_verification || "bronze");
+      const { data: category } = await adminClient
+        .from("service_categories")
+        .select("requires_verification")
+        .eq("id", validated.categoryId)
+        .single();
 
-    if (workerLevel < requiredLevel) {
-      return errorResponse("INSUFFICIENT_VERIFICATION", "Worker does not meet minimum verification", 400);
+      const verificationLevels = ["none", "bronze", "silver", "gold", "platinum"];
+      const workerLevel = verificationLevels.indexOf(worker.verification_level);
+      const requiredLevel = verificationLevels.indexOf(category?.requires_verification || "bronze");
+
+      if (workerLevel < requiredLevel) {
+        return errorResponse(
+          "INSUFFICIENT_VERIFICATION",
+          "Worker does not meet minimum verification",
+          400
+        );
+      }
     }
 
     const platformFee = calculatePlatformFee(validated.amount);
@@ -49,7 +62,7 @@ export async function POST(request: NextRequest) {
       .insert({
         booking_code: generateBookingCode(),
         customer_id: user.id,
-        worker_id: validated.workerId,
+        worker_id: validated.workerId ?? null,
         category_id: validated.categoryId,
         status: "pending",
         service_date: validated.serviceDate,
@@ -70,13 +83,30 @@ export async function POST(request: NextRequest) {
       return errorResponse("CREATE_FAILED", error.message, 500);
     }
 
-    await adminClient.from("notifications").insert({
-      user_id: validated.workerId,
-      type: "booking_request",
-      title: "New Booking Request",
-      message: `You have a new booking request for ${validated.serviceDate}`,
-      data: { bookingId: booking.id },
-    });
+    if (validated.workerId) {
+      await adminClient.from("notifications").insert({
+        user_id: validated.workerId,
+        type: "booking_request",
+        title: "New Booking Request",
+        message: `You have a new booking request for ${validated.serviceDate}`,
+        data: { bookingId: booking.id },
+      });
+    }
+
+    if (adminReview) {
+      const { data: admins } = await adminClient.from("users").select("id").eq("role", "admin");
+      if (admins?.length) {
+        await adminClient.from("notifications").insert(
+          admins.map((admin) => ({
+            user_id: admin.id,
+            type: "booking_review",
+            title: "Specialist booking needs review",
+            message: `A plumbing request needs admin review for ${validated.serviceDate}.`,
+            data: { bookingId: booking.id },
+          }))
+        );
+      }
+    }
 
     return successResponse(booking);
   } catch (error) {

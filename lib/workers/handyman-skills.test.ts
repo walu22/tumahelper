@@ -6,8 +6,24 @@ import {
 } from "./handyman-skills";
 
 describe("handyman skills", () => {
-  it("maps plumbing to plumbing skills", () => {
-    expect(skillsForHandymanType("plumbing")).toEqual(["plumbing"]);
+  it("maps plumbing to general plumber skills by default", () => {
+    expect(skillsForHandymanType("plumbing")).toEqual(["general_plumber", "plumbing"]);
+  });
+
+  it("routes plumbing by job type", () => {
+    expect(
+      skillsForHandymanType("plumbing", {
+        routeToWorkerType: "borehole_pump_technician",
+      })
+    ).toEqual(["borehole_pump_technician"]);
+  });
+
+  it("requires gold verification for borehole plumbing routes", () => {
+    expect(
+      minVerificationForHandymanType("plumbing", {
+        routeToWorkerType: "borehole_pump_technician",
+      })
+    ).toBe("gold");
   });
 
   it("requires gold verification for electrical work", () => {

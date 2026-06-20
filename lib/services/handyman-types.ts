@@ -55,7 +55,7 @@ export const HANDYMAN_TYPES: ServiceTypeOption[] = [
     label: "Plumbing",
     tabLabel: "Plumbing",
     description:
-      "For plumbing repairs and maintenance such as leaking taps, blocked drains, toilet issues, shower fittings, and visible pipe leaks.",
+      "For leaking taps, blocked drains, toilet issues, shower heads, visible pipe leaks, and basic household plumbing repairs.",
     pricingHint:
       "Final price depends on the issue, parts required, whether water is actively leaking, and whether the job is a repair, replacement, or diagnosis.",
     included: [

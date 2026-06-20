@@ -32,6 +32,7 @@ import type { ServiceFlowStep } from '@/lib/booking/shared-flow'
 import { getBookingPageTitle } from '@/lib/booking/shared-flow'
 import { skillsForServiceCategory } from '@/lib/workers/skills'
 import { workerMeetsHandymanVerification } from '@/lib/workers/handyman-skills'
+import { plumbingRequiresAdminReview } from '@/lib/services/handyman-plumbing'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
@@ -316,7 +317,11 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       : ''
 
   const bookingSkills = serviceDetails
-    ? skillsForServiceCategory(serviceDetails.category, serviceDetails.serviceType)
+    ? skillsForServiceCategory(
+        serviceDetails.category,
+        serviceDetails.serviceType,
+        serviceDetails
+      )
     : []
 
   useEffect(() => {
@@ -343,7 +348,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           if (serviceDetails?.category !== 'handyman') return true
           return workerMeetsHandymanVerification(
             worker.verification_level as 'none' | 'bronze' | 'silver' | 'gold' | 'platinum',
-            serviceDetails.serviceType
+            serviceDetails.serviceType,
+            serviceDetails
           )
         })
         setWorkers(list)
@@ -361,7 +367,15 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         setWorkers([])
       })
       .finally(() => setWorkersLoading(false))
-  }, [categorySlug, workerProfileId, bookingSkills.join(','), serviceDetails?.category, serviceDetails?.serviceType])
+  }, [
+    categorySlug,
+    workerProfileId,
+    bookingSkills.join(','),
+    serviceDetails?.category,
+    serviceDetails?.serviceType,
+    serviceDetails?.plumbingJobType,
+    serviceDetails?.routeToWorkerType,
+  ])
 
   useEffect(() => {
     if (!serviceDetails || categories.length === 0) return
@@ -526,6 +540,73 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   const platformFee = Math.round(amountInCents * 0.1)
   const totalCents = amountInCents + platformFee
 
+  async function handleSubmitReviewRequest() {
+    if (!serviceDetails) {
+      toast.error('Please configure your service')
+      goToStep(STEP.DETAILS)
+      return
+    }
+    if (!plumbingRequiresAdminReview(serviceDetails)) {
+      goToStep(STEP.WORKER)
+      return
+    }
+    if (!selectedCategory) {
+      toast.error('Service categories are still loading. Please try again in a moment.')
+      return
+    }
+    if (!serviceDate || !serviceTime || locationAddress.length < 5) {
+      toast.error('Please complete your booking details')
+      goToStep(STEP.DETAILS)
+      return
+    }
+
+    const signedIn = await ensureSignedInForBooking()
+    if (!signedIn) return
+
+    setSubmitting(true)
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          categoryId: selectedCategory.id,
+          serviceDate,
+          serviceTime,
+          locationAddress,
+          description: buildBookingDescription(
+            description,
+            serviceDetails.serviceType,
+            guestCheckoutTime,
+            nextCheckIn
+          ),
+          serviceDetails,
+          amount: 50,
+          requiresAdminReview: true,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (res.status === 401 || data.error?.code === 'UNAUTHORIZED') {
+        const returnTo = `${window.location.pathname}${window.location.search}`
+        router.push(`/login?redirect=${encodeURIComponent(returnTo)}`)
+        toast.message('Sign in to complete your booking')
+        return
+      }
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error?.message || 'Failed to submit request')
+      }
+
+      toast.success('Request submitted. TumaHelper will review and follow up.')
+      router.push(`/customer/bookings/${data.data.id}`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   async function handleSubmit() {
     if (!serviceDetails) {
       toast.error('Please configure your service')
@@ -624,7 +705,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     if (lockedAirbnb || (serviceDetails && usesAirbnbBookingFlow(serviceDetails))) {
       return (
         <AirbnbBookingSummary
-          step={serviceSubStep}
+          step={serviceSubStep as 'address' | 'plan' | 'scope'}
           locationAddress={locationAddress}
           details={serviceDetails}
           serviceDate={serviceDate}
@@ -657,7 +738,14 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       locationAddress,
       onLocationConfirm: (full: string) => {
         setLocationAddress(full)
-        setServiceSubStep('plan')
+        if (
+          serviceDetails?.category === 'handyman' &&
+          serviceDetails.serviceType === 'plumbing'
+        ) {
+          setServiceSubStep('classify')
+        } else {
+          setServiceSubStep('plan')
+        }
       },
       serviceDetails,
       onServiceDetailsChange: setServiceDetails,
@@ -667,7 +755,16 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       onDateChange: setServiceDate,
       onTimeChange: setServiceTime,
       onDescriptionChange: setDescription,
-      onFindWorker: () => goToStep(STEP.WORKER),
+      onFindWorker: () => {
+        if (serviceDetails && plumbingRequiresAdminReview(serviceDetails)) {
+          void handleSubmitReviewRequest()
+          return
+        }
+        goToStep(STEP.WORKER)
+      },
+      onSubmitReviewRequest: () => {
+        void handleSubmitReviewRequest()
+      },
     }
 
     if (lockedAirbnb || (serviceDetails && usesAirbnbBookingFlow(serviceDetails))) {
@@ -823,7 +920,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                       ? 'Choose your housekeeper'
                       : serviceDetails?.category === 'cooking'
                         ? 'Choose your cook'
-                      : 'Choose your cleaner'}
+                        : serviceDetails?.category === 'handyman'
+                          ? 'Choose your helper'
+                          : 'Choose your cleaner'}
                 </h2>
 
                 <div className="relative">
