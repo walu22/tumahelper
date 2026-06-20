@@ -158,68 +158,95 @@ export const FOOTER_TAGLINE =
   "Connecting Lusaka families with trusted, verified home help: nannies, cleaners, housekeepers, cooks, laundry, gardeners, and short-stay turnover cleaning.";
 
 export const PLATFORM_OFFERINGS_INTRO = {
-  eyebrow: "What we do",
-  headline: "Verified home help for Lusaka households.",
+  eyebrow: "How it works",
+  headline: "One place to book trusted help at home.",
   subtitle:
-    "Book nannies, cleaning, housekeeping, cooking, laundry, garden help, and short-stay turnover cleaning, once or on a regular schedule. Hire permanently when you find the right person.",
+    "Choose a service, pick a verified worker, and book for a single visit or every week.",
 };
 
-export const PLATFORM_OFFERINGS = [
+export const PLATFORM_BOOKING_STEPS = [
+  {
+    title: "Choose a service",
+    description: "Pick nannies, cleaning, cooking, laundry, and more from the homepage.",
+  },
+  {
+    title: "Pick your worker",
+    description: "Browse verified profiles matched to your service and area.",
+  },
+  {
+    title: "Book & pay securely",
+    description: "Pay via Airtel Money or cash, with proof upload after booking.",
+  },
+] as const;
+
+export const PLATFORM_TRUST_BAR = [
+  "NRC identity checks",
+  "Reference verification",
+  "Reviews & trust scores",
+] as const;
+
+export const PLATFORM_OFFERINGS: {
+  title: string;
+  description: string;
+  href: string;
+  variant: "pink" | "green" | "teal" | "blue";
+  icon: ServiceIconKey;
+}[] = [
   {
     title: "Nannies & childcare",
     description:
-      "Day nanny, babysitting, infant care, after-school, and weekend support. Book verified childcare for the times you need.",
+      "Day nanny, babysitting, infant care, after-school, and weekend support.",
     href: NANNY_BOOK_HREF,
-    variant: "pink" as const,
+    variant: "pink",
+    icon: "nanny",
   },
   {
     title: "House cleaning",
     description:
-      "House, apartment, deep, spring, move-in/out, and garage cleans for homes across Lusaka.",
+      "House, apartment, deep, spring, move-in/out, and garage cleans for Lusaka homes.",
     href: CLEANING_BOOK_HREF,
-    variant: "green" as const,
+    variant: "green",
+    icon: "indoor",
   },
   {
     title: "Housekeeping",
     description:
-      "Half-day or full-day household help: cleaning, dishes, tidying, and meal prep for a set visit.",
+      "Half-day or full-day help: cleaning, dishes, tidying, and meal prep for a set visit.",
     href: HOUSEKEEPING_BOOK_HREF,
-    variant: "teal" as const,
+    variant: "teal",
+    icon: "housekeeping",
   },
   {
     title: "Cooking & meals",
     description:
-      "Lunch, dinner, meal prep, and weekly cooking visits using ingredients you provide at home.",
+      "Lunch, dinner, meal prep, and weekly cooking using ingredients you provide at home.",
     href: COOKING_BOOK_HREF,
-    variant: "pink" as const,
+    variant: "pink",
+    icon: "cooking",
   },
   {
     title: "Laundry & ironing",
     description:
-      "Wash and fold, ironing, bedding, curtains, and pickup or drop-off for Lusaka homes.",
+      "Wash and fold, ironing, bedding, curtains, and pickup or drop-off.",
     href: LAUNDRY_BOOK_HREF,
-    variant: "blue" as const,
+    variant: "blue",
+    icon: "laundry",
   },
   {
     title: "Garden & yard work",
     description:
       "Lawn cutting, yard sweeping, hedge trimming, garden clean-up, and plant watering.",
     href: GARDEN_BOOK_HREF,
-    variant: "green" as const,
+    variant: "green",
+    icon: "garden",
   },
   {
     title: "Short-stay cleaning",
     description:
-      "Guest checkout, same-day turnaround, deep cleans, and linen setup for Airbnbs, guesthouses, and furnished rentals.",
+      "Guest checkout, same-day turnaround, deep cleans, and linen setup for rentals.",
     href: SHORT_STAY_CLEAN_BOOK_HREF,
-    variant: "blue" as const,
-  },
-  {
-    title: "Verified profiles",
-    description:
-      "NRC checks, reference verification, trust scores, and reviews on every worker.",
-    href: "/workers",
-    variant: "teal" as const,
+    variant: "blue",
+    icon: "short_stay",
   },
 ];
 
