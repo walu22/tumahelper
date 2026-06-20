@@ -129,6 +129,11 @@ export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
 export const GET_HELP_HREF = "/#choose-service";
 
+export const PRICING_SECTION_ID = "pricing";
+
+/** In-page link to pricing & scope reference on the homepage. */
+export const PRICING_SECTION_HREF = `/#${PRICING_SECTION_ID}`;
+
 /** Primary header CTA — opens the homepage service picker. */
 export const HEADER_BOOK_CTA = {
   href: GET_HELP_HREF,
@@ -200,71 +205,6 @@ export const SERVICE_DETAIL_TAB_ORDER: HeroCategoryId[] = [
   "laundry",
   "garden",
   "short_stay",
-];
-
-export const PLATFORM_OFFERINGS: {
-  title: string;
-  description: string;
-  href: string;
-  variant: "pink" | "green" | "teal" | "blue";
-  icon: ServiceIconKey;
-}[] = [
-  {
-    title: "Nannies & childcare",
-    description:
-      "Day nanny, babysitting, infant care, after-school, and weekend support.",
-    href: NANNY_BOOK_HREF,
-    variant: "pink",
-    icon: "nanny",
-  },
-  {
-    title: "House cleaning",
-    description:
-      "House, apartment, deep, spring, move-in/out, and garage cleans for Lusaka homes.",
-    href: CLEANING_BOOK_HREF,
-    variant: "green",
-    icon: "indoor",
-  },
-  {
-    title: "Housekeeping",
-    description:
-      "Half-day or full-day help: cleaning, dishes, tidying, and meal prep for a set visit.",
-    href: HOUSEKEEPING_BOOK_HREF,
-    variant: "teal",
-    icon: "housekeeping",
-  },
-  {
-    title: "Cooking & meals",
-    description:
-      "Lunch, dinner, meal prep, and weekly cooking using ingredients you provide at home.",
-    href: COOKING_BOOK_HREF,
-    variant: "pink",
-    icon: "cooking",
-  },
-  {
-    title: "Laundry & ironing",
-    description:
-      "Wash and fold, ironing, bedding, curtains, and pickup or drop-off.",
-    href: LAUNDRY_BOOK_HREF,
-    variant: "blue",
-    icon: "laundry",
-  },
-  {
-    title: "Garden & yard work",
-    description:
-      "Lawn cutting, yard sweeping, hedge trimming, garden clean-up, and plant watering.",
-    href: GARDEN_BOOK_HREF,
-    variant: "green",
-    icon: "garden",
-  },
-  {
-    title: "Short-stay cleaning",
-    description:
-      "Guest checkout, same-day turnaround, deep cleans, and linen setup for rentals.",
-    href: SHORT_STAY_CLEAN_BOOK_HREF,
-    variant: "blue",
-    icon: "short_stay",
-  },
 ];
 
 export const PERMANENT_PLACEMENT_ROLES = [

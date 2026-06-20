@@ -1,9 +1,12 @@
 import { ServiceDetailTabs } from "@/components/landing/service-detail-tabs";
-import { SERVICES_DETAIL_INTRO } from "@/lib/landing/content";
+import { PRICING_SECTION_ID, SERVICES_DETAIL_INTRO } from "@/lib/landing/content";
 
 export function ServicesDetailSection() {
   return (
-    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-surface border-t border-border">
+    <section
+      id={PRICING_SECTION_ID}
+      className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-surface border-t border-border scroll-mt-24"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
