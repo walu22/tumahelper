@@ -9,50 +9,74 @@ import { useTheme } from '@/components/theme-provider'
 import type { User as AppUser } from '@/types'
 import { ROLE_REDIRECTS } from '@/lib/auth/config'
 import { logoutAction } from '@/app/(auth)/login/actions'
-import { GET_HELP_HREF, HEADER_NAV_LINKS } from '@/lib/landing/content'
+import { HEADER_BOOK_CTA, HEADER_NAV_LINKS } from '@/lib/landing/content'
 import { NotificationBell } from '@/components/layout/notification-bell'
+
+function ThemeToggle({
+  className,
+  showLabel = false,
+}: {
+  className?: string
+  showLabel?: boolean
+}) {
+  const { theme, toggleTheme } = useTheme()
+
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className={className}
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      {showLabel ? (
+        <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+      ) : null}
+    </button>
+  )
+}
 
 export function Header({ user }: { user: AppUser | null }) {
   const [isOpen, setIsOpen] = useState(false)
-  const { theme, toggleTheme } = useTheme()
   const dashboardHref = user ? ROLE_REDIRECTS[user.role] || '/dashboard' : '/login'
+
+  function closeMenu() {
+    setIsOpen(false)
+  }
 
   return (
     <header className="border-b border-border/60 bg-background/95 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center shrink-0">
-            <Logo size="sm" />
-          </Link>
+        <div className="flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center gap-8 min-w-0">
+            <Link href="/" className="flex items-center shrink-0">
+              <Logo size="sm" />
+            </Link>
 
-          <div className="hidden md:flex items-center gap-6">
-            {HEADER_NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+            <nav className="hidden md:flex items-center gap-6" aria-label="Main">
+              {HEADER_NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors whitespace-nowrap"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-surface transition-colors"
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
+          <div className="hidden md:flex items-center gap-2 shrink-0">
+            <ThemeToggle className="p-2 rounded-full hover:bg-surface transition-colors" />
 
             {user ? (
               <>
                 <NotificationBell userId={user.id} />
                 <Link href={dashboardHref}>
-                <Button variant="ghost" size="sm" className="rounded-full">
-                  <User className="h-4 w-4 mr-2" />
-                  Account
-                </Button>
+                  <Button variant="ghost" size="sm" className="rounded-full">
+                    <User className="h-4 w-4 mr-2" />
+                    Account
+                  </Button>
                 </Link>
               </>
             ) : (
@@ -63,31 +87,24 @@ export function Header({ user }: { user: AppUser | null }) {
               </Link>
             )}
 
-            <Link href={GET_HELP_HREF}>
+            <Link href={HEADER_BOOK_CTA.href}>
               <Button size="sm" className="rounded-full px-6">
-                Get help
+                {HEADER_BOOK_CTA.label}
               </Button>
             </Link>
           </div>
 
-          <div className="flex md:hidden items-center gap-2">
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="p-2 min-h-11 min-w-11 flex items-center justify-center rounded-lg hover:bg-surface transition-colors"
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
-            <Link href={GET_HELP_HREF}>
+          <div className="flex md:hidden items-center gap-2 shrink-0">
+            <Link href={HEADER_BOOK_CTA.href}>
               <Button size="sm" className="rounded-full px-4">
-                Get help
+                Book
               </Button>
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-3 min-h-11 min-w-11 flex items-center justify-center rounded-lg"
+              className="p-3 min-h-11 min-w-11 flex items-center justify-center rounded-lg hover:bg-surface transition-colors"
               aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isOpen}
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -95,37 +112,37 @@ export function Header({ user }: { user: AppUser | null }) {
         </div>
 
         {isOpen && (
-          <div className="md:hidden border-t py-4 space-y-1">
-            {HEADER_NAV_LINKS.map((link) => (
+          <div className="md:hidden border-t py-4">
+            <nav className="space-y-1" aria-label="Main">
               <Link
-                key={link.href}
-                href={link.href}
-                className="block text-sm font-medium py-3 px-1"
-                onClick={() => setIsOpen(false)}
+                href={HEADER_BOOK_CTA.href}
+                className="block text-sm font-semibold py-3 px-1 text-primary"
+                onClick={closeMenu}
               >
-                {link.label}
+                {HEADER_BOOK_CTA.label}
               </Link>
-            ))}
-            <Link
-              href="/hire"
-              className="block text-sm font-medium py-3 px-1"
-              onClick={() => setIsOpen(false)}
-            >
-              Permanent hire
-            </Link>
-            <div className="flex flex-col gap-2 pt-4 border-t border-border mt-2">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="flex items-center gap-2 px-1 py-2 text-sm font-medium rounded-lg hover:bg-surface transition-colors"
-              >
-                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-              </button>
+              {HEADER_NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block text-sm font-medium py-3 px-1"
+                  onClick={closeMenu}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-border">
+              <ThemeToggle
+                showLabel
+                className="flex items-center gap-2 px-1 py-2 text-sm font-medium rounded-lg hover:bg-surface transition-colors w-full text-left"
+              />
+
               {user ? (
                 <>
                   <NotificationBell userId={user.id} />
-                  <Link href={dashboardHref} onClick={() => setIsOpen(false)}>
+                  <Link href={dashboardHref} onClick={closeMenu}>
                     <Button variant="outline" className="w-full rounded-full">
                       Account
                     </Button>
@@ -138,15 +155,12 @@ export function Header({ user }: { user: AppUser | null }) {
                   </form>
                 </>
               ) : (
-                <Link href="/login" onClick={() => setIsOpen(false)}>
+                <Link href="/login" onClick={closeMenu}>
                   <Button variant="outline" className="w-full rounded-full">
                     Sign in
                   </Button>
                 </Link>
               )}
-              <Link href={GET_HELP_HREF} onClick={() => setIsOpen(false)}>
-                <Button className="w-full rounded-full">Get help</Button>
-              </Link>
             </div>
           </div>
         )}

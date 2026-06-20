@@ -129,9 +129,16 @@ export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
 export const GET_HELP_HREF = "/#choose-service";
 
+/** Primary header CTA — opens the homepage service picker. */
+export const HEADER_BOOK_CTA = {
+  href: GET_HELP_HREF,
+  label: "Book a service",
+} as const;
+
 /** Minimal header links (Option B — services live on homepage hero). */
 export const HEADER_NAV_LINKS = [
   { href: "/workers", label: "Find workers" },
+  { href: "/hire", label: "Permanent hire" },
 ] as const;
 
 /** @deprecated Services are chosen on the homepage hero; use HEADER_NAV_LINKS in the header. */
