@@ -6,7 +6,13 @@ export type ServiceIconKey =
   | "laundry"
   | "garden";
 
-export type HeroCategoryId = "nanny" | "cleaning" | "housekeeping" | "short_stay";
+export type HeroCategoryId =
+  | "nanny"
+  | "cleaning"
+  | "housekeeping"
+  | "laundry"
+  | "garden"
+  | "short_stay";
 
 export const LUSAKA_AREAS = [
   "Kabulonga",
@@ -31,11 +37,9 @@ export const HERO_CATEGORY_PANEL_IDS = {
   nanny: "hero-nanny-panel",
   cleaning: "hero-cleaning-panel",
   housekeeping: "hero-housekeeping-panel",
+  laundry: "hero-laundry-panel",
+  garden: "hero-garden-panel",
   short_stay: "hero-short-stay-panel",
-  /** @deprecated Laundry removed from hero — deep links scroll to housekeeping */
-  laundry: "hero-housekeeping-panel",
-  /** @deprecated Garden removed from hero — deep links scroll to housekeeping */
-  garden: "hero-housekeeping-panel",
 } as const;
 
 /** @deprecated Use HERO_CATEGORY_PANEL_IDS.short_stay */
@@ -70,9 +74,25 @@ export const HERO_CATEGORIES: {
     id: "housekeeping",
     href: `/#${HERO_CATEGORY_PANEL_IDS.housekeeping}`,
     label: "Housekeeping",
-    subtitle: "Household help by the visit: cleaning, laundry, dishes.",
+    subtitle: "Half-day or full-day help: cleaning, dishes, and tidying.",
     icon: "housekeeping",
     panelId: HERO_CATEGORY_PANEL_IDS.housekeeping,
+  },
+  {
+    id: "laundry",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.laundry}`,
+    label: "Laundry & Ironing",
+    subtitle: "Wash, fold, iron, bedding, and curtains.",
+    icon: "laundry",
+    panelId: HERO_CATEGORY_PANEL_IDS.laundry,
+  },
+  {
+    id: "garden",
+    href: `/#${HERO_CATEGORY_PANEL_IDS.garden}`,
+    label: "Garden & Yard",
+    subtitle: "Lawn, sweeping, trimming, and outside tidy-up.",
+    icon: "garden",
+    panelId: HERO_CATEGORY_PANEL_IDS.garden,
   },
   {
     id: "short_stay",
@@ -89,8 +109,8 @@ export const CLEANING_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.cleaning}`;
 export const SHORT_STAY_CLEAN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.short_stay}`;
 /** @deprecated Use SHORT_STAY_CLEAN_BOOK_HREF */
 export const AIRBNB_CLEAN_BOOK_HREF = SHORT_STAY_CLEAN_BOOK_HREF;
-export const LAUNDRY_BOOK_HREF = "/customer/book?category=laundry";
-export const GARDEN_BOOK_HREF = "/customer/book?category=garden";
+export const LAUNDRY_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.laundry}`;
+export const GARDEN_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.garden}`;
 export const HOUSEKEEPING_BOOK_HREF = `/#${HERO_CATEGORY_PANEL_IDS.housekeeping}`;
 /** @deprecated Prefer NANNY_BOOK_HREF or CLEANING_BOOK_HREF */
 export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
@@ -114,13 +134,13 @@ export const PRIMARY_NAV_LINKS = [
 ] as const;
 
 export const FOOTER_TAGLINE =
-  "Connecting Lusaka families with trusted, verified home help: nannies, cleaners, housekeepers, and short-stay turnover cleaning.";
+  "Connecting Lusaka families with trusted, verified home help: nannies, cleaners, housekeepers, laundry, gardeners, and short-stay turnover cleaning.";
 
 export const PLATFORM_OFFERINGS_INTRO = {
   eyebrow: "What we do",
   headline: "Verified home help for Lusaka households.",
   subtitle:
-    "Book nannies, cleaning, housekeeping, and short-stay turnover cleaning, once or on a regular schedule. Hire permanently when you find the right person.",
+    "Book nannies, cleaning, housekeeping, laundry, garden help, and short-stay turnover cleaning, once or on a regular schedule. Hire permanently when you find the right person.",
 };
 
 export const PLATFORM_OFFERINGS = [
@@ -141,9 +161,23 @@ export const PLATFORM_OFFERINGS = [
   {
     title: "Housekeeping",
     description:
-      "Half-day or full-day household help: cleaning, laundry, dishes, tidying, and meal prep for a set visit.",
+      "Half-day or full-day household help: cleaning, dishes, tidying, and meal prep for a set visit.",
     href: HOUSEKEEPING_BOOK_HREF,
     variant: "teal" as const,
+  },
+  {
+    title: "Laundry & ironing",
+    description:
+      "Wash and fold, ironing, bedding, curtains, and pickup or drop-off for Lusaka homes.",
+    href: LAUNDRY_BOOK_HREF,
+    variant: "blue" as const,
+  },
+  {
+    title: "Garden & yard work",
+    description:
+      "Lawn cutting, yard sweeping, hedge trimming, garden clean-up, and plant watering.",
+    href: GARDEN_BOOK_HREF,
+    variant: "green" as const,
   },
   {
     title: "Short-stay cleaning",

@@ -61,7 +61,7 @@ Full 30+ E2E tests including end-to-end booking confirmation for nanny, cleaning
 - Create a real booking; worker accepts on dashboard.
 - Upload MTN MoMo / Airtel payment proof.
 - Verify booking detail page and status transitions.
-- Legacy URLs: `#hero-laundry-panel`, `?category=laundry`.
+- Legacy URLs: `#hero-laundry-panel`, `#hero-garden-panel`, `?category=laundry`.
 
 ### P3 — exploratory (time-boxed)
 

@@ -360,6 +360,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     if (categoryParam === "housekeeping" && !typeParam && !funnelParam && !workerProfileId) {
       window.location.assign("/#hero-housekeeping-panel")
     }
+    if (categoryParam === "laundry" && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-laundry-panel")
+    }
+    if (categoryParam === "garden" && !typeParam && !funnelParam && !workerProfileId) {
+      window.location.assign("/#hero-garden-panel")
+    }
   }, [airbnbEntry, lockedAirbnb, categoryParam, typeParam, funnelParam, workerProfileId])
 
   useEffect(() => {

@@ -5,6 +5,8 @@ import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
 import { NannyTypeTabs } from "@/components/booking/nanny-type-tabs";
 import { AirbnbTypeTabs } from "@/components/booking/airbnb-type-tabs";
 import { HousekeepingTypeTabs } from "@/components/booking/housekeeping-type-tabs";
+import { LaundryTypeTabs } from "@/components/booking/laundry-type-tabs";
+import { GardenTypeTabs } from "@/components/booking/garden-type-tabs";
 import { ServiceIcon } from "@/components/brand/service-icons";
 import {
   HERO_CATEGORIES,
@@ -14,7 +16,9 @@ import {
 } from "@/lib/landing/content";
 import {
   getAirbnbCleaningTypes,
+  getGardenTypes,
   getHousekeepingTypes,
+  getLaundryTypes,
   getNannyTypes,
   getResidentialCleaningTypes,
 } from "@/lib/services/catalog";
@@ -26,19 +30,17 @@ export const HOUSEKEEPING_PILLS_ID = HERO_CATEGORY_PANEL_IDS.housekeeping;
 export const SHORT_STAY_PILLS_ID = HERO_CATEGORY_PANEL_IDS.short_stay;
 /** @deprecated Use SHORT_STAY_PILLS_ID */
 export const AIRBNB_PILLS_ID = SHORT_STAY_PILLS_ID;
-/** @deprecated Laundry removed from hero */
 export const LAUNDRY_PILLS_ID = HERO_CATEGORY_PANEL_IDS.laundry;
-/** @deprecated Garden removed from hero */
 export const GARDEN_PILLS_ID = HERO_CATEGORY_PANEL_IDS.garden;
 
 const PANEL_ID_TO_CATEGORY: Record<string, HeroCategoryId> = {
   [HERO_CATEGORY_PANEL_IDS.nanny]: "nanny",
   [HERO_CATEGORY_PANEL_IDS.cleaning]: "cleaning",
   [HERO_CATEGORY_PANEL_IDS.housekeeping]: "housekeeping",
+  [HERO_CATEGORY_PANEL_IDS.laundry]: "laundry",
+  [HERO_CATEGORY_PANEL_IDS.garden]: "garden",
   [HERO_CATEGORY_PANEL_IDS.short_stay]: "short_stay",
   [LEGACY_SHORT_STAY_PANEL_ID]: "short_stay",
-  "hero-laundry-panel": "housekeeping",
-  "hero-garden-panel": "housekeeping",
 };
 
 export function CategoryScroller() {
@@ -46,6 +48,8 @@ export function CategoryScroller() {
   const nannyTypes = getNannyTypes();
   const shortStayTypes = getAirbnbCleaningTypes();
   const housekeepingTypes = getHousekeepingTypes();
+  const laundryTypes = getLaundryTypes();
+  const gardenTypes = getGardenTypes();
   const [expanded, setExpanded] = useState<HeroCategoryId | null>(null);
 
   useEffect(() => {
@@ -134,6 +138,32 @@ export function CategoryScroller() {
           <HousekeepingTypeTabs
             value={housekeepingTypes[0]?.id ?? "half_day"}
             getHref={(typeId) => `/customer/book?category=housekeeping&type=${typeId}`}
+            showDetails={false}
+            showSelection={false}
+            edgeToEdge
+            centered
+          />
+        </div>
+      )}
+
+      {expanded === "laundry" && (
+        <div id={LAUNDRY_PILLS_ID} className="mt-8 scroll-mt-28 w-full">
+          <LaundryTypeTabs
+            value={laundryTypes[0]?.id ?? "wash_fold"}
+            getHref={(typeId) => `/customer/book?category=laundry&type=${typeId}`}
+            showDetails={false}
+            showSelection={false}
+            edgeToEdge
+            centered
+          />
+        </div>
+      )}
+
+      {expanded === "garden" && (
+        <div id={GARDEN_PILLS_ID} className="mt-8 scroll-mt-28 w-full">
+          <GardenTypeTabs
+            value={gardenTypes[0]?.id ?? "lawn_cutting"}
+            getHref={(typeId) => `/customer/book?category=garden&type=${typeId}`}
             showDetails={false}
             showSelection={false}
             edgeToEdge

@@ -50,6 +50,30 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
     });
   });
 
+  test("hero Laundry & Ironing expands laundry pills", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("tab", { name: "Wash & fold" })).not.toBeVisible();
+    await page.getByRole("button", { name: "Laundry & Ironing" }).click();
+    await expect(page.getByRole("tab", { name: "Wash & fold" })).toBeVisible();
+    await page.getByRole("tab", { name: "Ironing" }).click();
+    await expect(page).toHaveURL(/category=laundry.*type=ironing/);
+    await expect(page.getByRole("heading", { name: "Book laundry & ironing" })).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
+  test("hero Garden & Yard expands garden pills", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("tab", { name: "Lawn cutting" })).not.toBeVisible();
+    await page.getByRole("button", { name: "Garden & Yard" }).click();
+    await expect(page.getByRole("tab", { name: "Lawn cutting" })).toBeVisible();
+    await page.getByRole("tab", { name: "Yard sweeping" }).click();
+    await expect(page).toHaveURL(/category=garden.*type=yard_sweeping/);
+    await expect(page.getByRole("heading", { name: "Book garden & yard work" })).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
   test("plain /customer/book shows launch service pills", async ({ page }) => {
     await page.goto("/customer/book");
     await expect(page.getByRole("heading", { name: "What do you need?" })).toBeVisible();
@@ -57,6 +81,18 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
     await expect(page.getByRole("tab", { name: "Day nanny" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Half-day" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Guest checkout clean" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Wash & fold" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Lawn cutting" })).toBeVisible();
+  });
+
+  test("book laundry without type redirects to homepage pills", async ({ page }) => {
+    await page.goto("/customer/book?category=laundry");
+    await expect(page).toHaveURL(/#hero-laundry-panel/);
+  });
+
+  test("book garden without type redirects to homepage pills", async ({ page }) => {
+    await page.goto("/customer/book?category=garden");
+    await expect(page).toHaveURL(/#hero-garden-panel/);
   });
 
   test("book cleaning without type redirects to homepage pills", async ({ page }) => {
