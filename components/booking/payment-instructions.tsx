@@ -16,8 +16,8 @@ interface PaymentInstructionsProps {
 const STEPS = [
   {
     icon: Smartphone,
-    title: "Pay via mobile money",
-    body: "Send the total amount using MTN Mobile Money or Airtel Money from your phone.",
+    title: "Pay via Airtel Money",
+    body: "Send the total amount to the Airtel Money number below from your phone.",
   },
   {
     icon: Banknote,
@@ -108,14 +108,14 @@ export function PaymentInstructions({
           Payment details{paymentDetails.isDemo ? " (demo)" : ""}
         </p>
         <p>
-          <span className="text-muted-foreground">MTN MoMo:</span>{" "}
-          <span className="font-mono">{paymentDetails.mtnNumber}</span> ·{" "}
-          {paymentDetails.accountName}
-        </p>
-        <p>
           <span className="text-muted-foreground">Airtel Money:</span>{" "}
-          <span className="font-mono">{paymentDetails.airtelNumber}</span> ·{" "}
-          {paymentDetails.accountName}
+          <span className="font-mono">{paymentDetails.airtelNumber}</span>
+          {paymentDetails.accountName ? (
+            <>
+              {" "}
+              · {paymentDetails.accountName}
+            </>
+          ) : null}
         </p>
         <p className="text-muted-foreground text-xs pt-1">
           Cash on arrival is also fine. Agree with your worker before the visit.

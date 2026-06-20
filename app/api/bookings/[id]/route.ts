@@ -3,35 +3,46 @@ import { createAuthenticatedRouteHandlerClient } from "@/lib/supabase-server";
 import { requireAuth, successResponse, errorResponse } from "@/lib/auth";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const user = await requireAuth();
-    const { id } = params;
     const supabase = createAuthenticatedRouteHandlerClient();
 
-    const { data, error } = await supabase
+    const { data: booking, error } = await supabase
       .from("bookings")
-      .select(`
+      .select(
+        `
         *,
-        worker:worker_id(full_name, profile_photo_url, phone),
-        customer:customer_id(full_name, phone),
-        category:category_id(name)
-      `)
-      .eq("id", id)
+        customer:customer_id(
+          id,
+          full_name,
+          phone
+        )
+      `
+      )
+      .eq("id", params.id)
       .single();
 
-    if (error || !data) {
+    if (error || !booking) {
       return errorResponse("NOT_FOUND", "Booking not found", 404);
     }
 
-    if (user.role !== "admin" && user.id !== data.customer_id && user.id !== data.worker_id) {
+    const isCustomer = user.id === booking.customer_id;
+    const isWorker = user.id === booking.worker_id;
+    const isAdmin = user.role === "admin";
+
+    if (!isCustomer && !isWorker && !isAdmin) {
       return errorResponse("FORBIDDEN", "Access denied", 403);
     }
 
-    return successResponse(data);
-  } catch (error) {
+    if (user.role === "worker" && !isWorker) {
+      return errorResponse("FORBIDDEN", "Access denied", 403);
+    }
+
+    return successResponse(booking);
+  } catch {
     return errorResponse("INTERNAL_ERROR", "Failed to fetch booking", 500);
   }
 }

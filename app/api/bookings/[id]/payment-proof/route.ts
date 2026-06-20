@@ -75,7 +75,7 @@ export async function POST(
       amount: booking.amount,
       platform_fee: Math.round(booking.amount * 0.1),
       payment_type: 'booking',
-      payment_method: 'cash',
+      payment_method: 'airtel_money',
       payment_proof_url: uploadData?.path || '',
       status: 'pending',
     })

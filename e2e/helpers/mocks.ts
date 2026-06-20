@@ -42,6 +42,7 @@ export const MOCK_CLEANER_WORKER = {
   city: "Lusaka",
   area: "Woodlands",
   category: "house_cleaner",
+  skills: ["deep_cleaning", "laundry", "garden", "housekeeping"],
   profile_photo_url: null,
   average_rating: 4.6,
   total_reviews: 5,

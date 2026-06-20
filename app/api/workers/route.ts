@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getAdminClient } from "@/lib/supabase";
 import { successResponse, errorResponse } from "@/lib/auth";
+import { workerMatchesSkills } from "@/lib/workers/skills";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,6 +14,13 @@ export async function GET(request: NextRequest) {
     const available = searchParams.get("available");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
+
+    const skillsParam = searchParams.get("skills");
+    const requiredSkills =
+      skillsParam
+        ?.split(",")
+        .map((skill) => skill.trim())
+        .filter(Boolean) ?? [];
 
     // Service role: public worker browse must not join `users` via anon RLS (returns empty).
     const supabase = getAdminClient();
@@ -40,7 +48,7 @@ export async function GET(request: NextRequest) {
       return errorResponse("FETCH_FAILED", error.message, 500);
     }
 
-    const publicProfiles = data?.map((profile) => ({
+    let publicProfiles = data?.map((profile) => ({
       id: profile.id,
       user_id: profile.user_id,
       full_name: profile.full_name,
@@ -61,6 +69,12 @@ export async function GET(request: NextRequest) {
       employment_types: profile.employment_types,
       availability_status: profile.availability_status,
     }));
+
+    if (requiredSkills.length > 0) {
+      publicProfiles = publicProfiles?.filter((profile) =>
+        workerMatchesSkills(profile.skills as string[], requiredSkills)
+      );
+    }
 
     return successResponse(publicProfiles || [], {
       page,

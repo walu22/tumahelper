@@ -1,8 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { loginAsWorker } from "./helpers/auth";
-import { MOCK_LIFECYCLE_BOOKING_ID } from "./helpers/bookings";
+import {
+  MOCK_LIFECYCLE_BOOKING_ID,
+  mockWorkerBookingDetail,
+} from "./helpers/bookings";
 
 const DEV_UI = "/dev/test/booking-ui";
+const WORKER_BOOKING_PAGE = `/worker/bookings/${MOCK_LIFECYCLE_BOOKING_ID}`;
 
 test.describe("Worker booking lifecycle", () => {
   test.beforeEach(async ({ page }) => {
@@ -18,6 +22,34 @@ test.describe("Worker booking lifecycle", () => {
         body: JSON.stringify({ success: true, data: { status: body.status } }),
       });
     });
+  });
+
+  test("worker can accept, start, and complete on booking detail page", async ({
+    page,
+    baseURL,
+  }) => {
+    await mockWorkerBookingDetail(page, "pending");
+    await loginAsWorker(page, baseURL!);
+    await page.goto(WORKER_BOOKING_PAGE);
+
+    const actions = page.getByTestId("worker-booking-actions");
+    await expect(page.getByRole("heading", { name: /Job #TH-TEST01/ })).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(actions.getByRole("button", { name: "Accept Booking" })).toBeVisible();
+
+    await actions.getByRole("button", { name: "Accept Booking" }).click();
+    await expect(actions.getByRole("button", { name: "Start Job" })).toBeVisible({
+      timeout: 10_000,
+    });
+
+    await actions.getByRole("button", { name: "Start Job" }).click();
+    await expect(actions.getByRole("button", { name: "Complete Job" })).toBeVisible({
+      timeout: 10_000,
+    });
+
+    await actions.getByRole("button", { name: "Complete Job" }).click();
+    await expect(page).toHaveURL(/\/worker\/bookings\/?$/, { timeout: 15_000 });
   });
 
   test("worker can accept, start, and complete via interactive harness", async ({

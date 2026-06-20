@@ -84,7 +84,7 @@ export function WorkerBookingActions({
   }
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-3" data-testid="worker-booking-actions">
       {actions.map((action) => (
         <Button
           key={action.action}

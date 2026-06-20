@@ -28,6 +28,7 @@ import { TaskServiceBookingFlow } from '@/components/booking/task-service-bookin
 import { ServiceBookingSummary } from '@/components/booking/service-booking-summary'
 import type { ServiceFlowStep } from '@/lib/booking/shared-flow'
 import { getBookingPageTitle } from '@/lib/booking/shared-flow'
+import { skillsForServiceCategory } from '@/lib/workers/skills'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
@@ -50,21 +51,21 @@ import {
 
 function guidePriceHint(details: ServiceDetails): string {
   if (isAirbnbCleaningType(details.serviceType)) {
-    return "Based on property size, visit length, linen, and add-ons. You pay the total below via mobile money after the clean.";
+    return "Based on property size, visit length, linen, and add-ons. You pay the total below via Airtel Money after the clean.";
   }
   if (details.category === "nanny") {
-    return "Based on children, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+    return "Based on children, visit length, and add-ons. You pay the total below via Airtel Money after the visit.";
   }
   if (details.category === "housekeeping") {
-    return "Based on visit length, duties, and schedule. You pay the total below via mobile money after the visit.";
+    return "Based on visit length, duties, and schedule. You pay the total below via Airtel Money after the visit.";
   }
   if (details.category === "laundry") {
-    return "Based on load size, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+    return "Based on load size, visit length, and add-ons. You pay the total below via Airtel Money after the visit.";
   }
   if (details.category === "garden") {
-    return "Based on yard size, visit length, and add-ons. You pay the total below via mobile money after the visit.";
+    return "Based on yard size, visit length, and add-ons. You pay the total below via Airtel Money after the visit.";
   }
-  return "Based on home size, visit length, and add-ons. You pay the total below via mobile money after the clean.";
+  return "Based on home size, visit length, and add-ons. You pay the total below via Airtel Money after the clean.";
 }
 
 interface Category {
@@ -302,6 +303,10 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       ? workerCategorySlug(serviceDetails.category)
       : ''
 
+  const bookingSkills = serviceDetails
+    ? skillsForServiceCategory(serviceDetails.category, serviceDetails.serviceType)
+    : []
+
   useEffect(() => {
     if (!categorySlug) {
       setWorkers([])
@@ -309,7 +314,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     }
     setWorkersLoading(true)
 
-    fetch(`/api/workers?category=${categorySlug}&available=true`)
+    const skillsQuery =
+      bookingSkills.length > 0
+        ? `&skills=${encodeURIComponent(bookingSkills.join(','))}`
+        : ''
+
+    fetch(`/api/workers?category=${categorySlug}&available=true${skillsQuery}`)
       .then((r) => r.json())
       .then((res) => {
         if (!res.success) {
@@ -333,7 +343,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         setWorkers([])
       })
       .finally(() => setWorkersLoading(false))
-  }, [categorySlug, workerProfileId])
+  }, [categorySlug, workerProfileId, bookingSkills.join(',')])
 
   useEffect(() => {
     if (!serviceDetails || categories.length === 0) return

@@ -12,6 +12,8 @@ import { Footer } from '@/components/layout/footer'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import { User, Phone, MapPin, Briefcase, Globe, Award, Upload, CheckCircle, Loader2, Save } from 'lucide-react'
+import { WORKER_SKILLS_BY_CATEGORY } from '@/lib/workers/skills'
+import type { WorkerCategory } from '@/types'
 
 const EMPLOYMENT_TYPES = ['full_time', 'part_time', 'live_in', 'live_out', 'contract'] as const
 const EMPLOYMENT_LABELS: Record<string, string> = {
@@ -91,6 +93,20 @@ export default function WorkerProfilePage() {
     }))
   }
 
+  function parseSkills(value: string) {
+    return value.split(',').map((skill) => skill.trim()).filter(Boolean)
+  }
+
+  function toggleSkill(skill: string) {
+    setForm((prev) => {
+      const current = parseSkills(prev.skills)
+      const next = current.includes(skill)
+        ? current.filter((item) => item !== skill)
+        : [...current, skill]
+      return { ...prev, skills: next.join(', ') }
+    })
+  }
+
   async function handleSave() {
     if (!form.fullName || !form.area || !form.category) {
       toast.error('Please fill in your name, area, and category')
@@ -98,6 +114,10 @@ export default function WorkerProfilePage() {
     }
     if (form.employmentTypes.length === 0) {
       toast.error('Select at least one employment type')
+      return
+    }
+    if (parseSkills(form.skills).length === 0) {
+      toast.error('Select at least one skill')
       return
     }
 
@@ -111,7 +131,7 @@ export default function WorkerProfilePage() {
         bio: form.bio || undefined,
         experienceYears: form.experienceYears,
         languages: form.languages.split(',').map((s) => s.trim()).filter(Boolean),
-        skills: form.skills.split(',').map((s) => s.trim()).filter(Boolean),
+        skills: parseSkills(form.skills),
         employmentTypes: form.employmentTypes,
         availabilityStatus: form.availabilityStatus,
         expectedSalaryMin: form.expectedSalaryMin ? Math.round(parseFloat(form.expectedSalaryMin) * 100) : undefined,
@@ -270,13 +290,32 @@ export default function WorkerProfilePage() {
                 <p className="text-xs text-muted-foreground mt-1">Separate with commas</p>
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">Skills</label>
-                <Input
-                  value={form.skills}
-                  onChange={(e) => setForm({ ...form, skills: e.target.value })}
-                  placeholder="e.g. infant care, meal prep, first aid"
-                />
-                <p className="text-xs text-muted-foreground mt-1">Separate with commas</p>
+                <label className="text-sm font-medium mb-2 block">Skills</label>
+                {form.category ? (
+                  <div className="flex flex-wrap gap-2">
+                    {WORKER_SKILLS_BY_CATEGORY[form.category as WorkerCategory].map((skill) => (
+                      <button
+                        key={skill}
+                        type="button"
+                        onClick={() => toggleSkill(skill)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          parseSkills(form.skills).includes(skill)
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-surface text-foreground border border-border'
+                        }`}
+                      >
+                        {skill.replace(/_/g, ' ')}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Choose nanny or house cleaning above to select your skills.
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground mt-2">
+                  Pick the services you can do. Customers are matched based on these skills.
+                </p>
               </div>
             </CardContent>
           </Card>

@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import { getPaymentAccountDetails } from "./config";
 
 describe("payment account config", () => {
-  it("returns demo defaults when env is unset", () => {
+  it("formats the production Airtel number when env is unset", () => {
     const details = getPaymentAccountDetails();
-    expect(details.isDemo).toBe(true);
-    expect(details.mtnNumber).toBe("097 000 0000");
+    expect(details.isDemo).toBe(false);
+    expect(details.airtelNumber).toBe("097 282 6732");
+    expect(details.accountName).toBe("");
   });
 });

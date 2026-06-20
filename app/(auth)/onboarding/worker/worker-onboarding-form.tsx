@@ -7,26 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { LogoMark } from "@/components/brand/logo";
 import { WorkerCategory, EmploymentType } from "@/types";
-
-const skillsByCategory: Record<WorkerCategory, string[]> = {
-  nanny: [
-    "infant_care",
-    "meal_prep",
-    "homework_help",
-    "first_aid",
-    "sleep_training",
-    "newborn_care",
-    "early_education",
-  ],
-  house_cleaner: [
-    "deep_cleaning",
-    "laundry",
-    "ironing",
-    "window_cleaning",
-    "organization",
-    "meal_prep",
-  ],
-};
+import { WORKER_SKILLS_BY_CATEGORY } from "@/lib/workers/skills";
 
 interface WorkerOnboardingFormProps {
   initialFullName: string;
@@ -357,7 +338,7 @@ export function WorkerOnboardingForm({ initialFullName }: WorkerOnboardingFormPr
                   Skills <span className="text-muted-foreground">(pick at least one)</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {skillsByCategory[formData.category].map((skill) => (
+                  {WORKER_SKILLS_BY_CATEGORY[formData.category].map((skill) => (
                     <button
                       key={skill}
                       type="button"
