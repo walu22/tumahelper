@@ -185,6 +185,23 @@ export const PLATFORM_TRUST_BAR = [
   "Reviews & trust scores",
 ] as const;
 
+export const SERVICES_DETAIL_INTRO = {
+  eyebrow: "Pricing & what's included",
+  headline: "Know what you're booking before you pay.",
+  subtitle:
+    "Typical visit lengths and price ranges for Lusaka homes. Final price depends on your address, duties, and chosen worker.",
+} as const;
+
+export const SERVICE_DETAIL_TAB_ORDER: HeroCategoryId[] = [
+  "nanny",
+  "cleaning",
+  "housekeeping",
+  "cooking",
+  "laundry",
+  "garden",
+  "short_stay",
+];
+
 export const PLATFORM_OFFERINGS: {
   title: string;
   description: string;
