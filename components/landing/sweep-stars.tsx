@@ -11,10 +11,9 @@ function formatAvailabilityLine(
   workers: PublicWorkerProfile[],
   availableCount: number
 ): string {
-  const areas = [...new Set(workers.map((worker) => worker.area).filter(Boolean))].slice(
-    0,
-    3
-  );
+  const areas = Array.from(
+    new Set(workers.map((worker) => worker.area).filter(Boolean))
+  ).slice(0, 3);
 
   if (areas.length === 0) {
     return `${availableCount} available now · across Lusaka`;
