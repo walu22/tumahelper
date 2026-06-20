@@ -44,7 +44,7 @@ interface HandymanBookingFlowProps {
   onStreetAddressChange: (value: string) => void;
   onUnitAddressChange: (value: string) => void;
   locationAddress: string;
-  onLocationConfirm: (fullAddress: string) => void;
+  onLocationConfirm: (fullAddress: string, coords?: import("@/lib/booking/shared-flow").LocationCoords) => void;
   serviceDetails: ServiceDetails;
   onServiceDetailsChange: (details: ServiceDetails) => void;
   serviceDate: string;
