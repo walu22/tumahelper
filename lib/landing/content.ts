@@ -209,6 +209,15 @@ export const WORKERS_SPOTLIGHT_INTRO = {
 
 export const WORKERS_SPOTLIGHT_LIMIT = 3;
 
+export const FAQ_CTA_INTRO = {
+  eyebrow: "Still deciding?",
+  headline: "Book help when you're ready.",
+  subtitle:
+    "Browse profiles first, or jump straight into booking from the homepage.",
+  bookLabel: "Book a service",
+  browseLabel: "Browse all workers",
+} as const;
+
 export const SERVICE_DETAIL_TAB_ORDER: HeroCategoryId[] = [
   "nanny",
   "cleaning",
