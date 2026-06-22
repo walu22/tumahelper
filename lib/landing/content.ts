@@ -181,20 +181,27 @@ export const PLATFORM_OFFERINGS_INTRO = {
     "Choose a service, pick a verified worker, and book for a single visit or every week.",
 };
 
+/** TaskRabbit-style step copy — single line per step in the overlay card. */
 export const PLATFORM_BOOKING_STEPS = [
   {
-    title: "Choose a service",
-    description: "Pick nannies, cleaning, cooking, laundry, and more from the homepage.",
+    description: "Choose a helper by price, skills, and reviews.",
   },
   {
-    title: "Pick your worker",
-    description: "Browse verified profiles matched to your service and area.",
+    description: "Schedule a visit as early as today.",
   },
   {
-    title: "Book & pay securely",
-    description: "Pay via Airtel Money or cash, with proof upload after booking.",
+    description: "Book, pay, and review all in one place.",
   },
 ] as const;
+
+export const HOW_IT_WORKS_STEP_BADGE_COLORS = [
+  "bg-violet-200 text-foreground",
+  "bg-amber-100 text-foreground",
+  "bg-emerald-200 text-foreground",
+] as const;
+
+export const HOW_IT_WORKS_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1400&h=800&fit=crop&q=80";
 
 export const PLATFORM_TRUST_BAR = [
   "NRC identity checks",

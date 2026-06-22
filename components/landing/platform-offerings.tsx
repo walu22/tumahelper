@@ -1,51 +1,62 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import {
+  HOW_IT_WORKS_HERO_IMAGE,
+  HOW_IT_WORKS_STEP_BADGE_COLORS,
   PLATFORM_BOOKING_STEPS,
   PLATFORM_OFFERINGS_INTRO,
   PLATFORM_TRUST_BAR,
   PERMANENT_PLACEMENT_ROLES,
   PRICING_SECTION_HREF,
 } from "@/lib/landing/content";
+import { cn } from "@/lib/utils";
 
 export function PlatformOfferings() {
   return (
     <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-background border-t border-border">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
-            {PLATFORM_OFFERINGS_INTRO.eyebrow}
-          </p>
-          <h2 className="font-display text-3xl md:text-[2.75rem] font-bold text-balance leading-tight">
-            {PLATFORM_OFFERINGS_INTRO.headline}
-          </h2>
-          <p className="text-muted-foreground mt-5 leading-relaxed text-lg">
-            {PLATFORM_OFFERINGS_INTRO.subtitle}
-          </p>
+        <div className="relative overflow-hidden rounded-3xl bg-muted min-h-[22rem] md:min-h-[28rem]">
+          <Image
+            src={HOW_IT_WORKS_HERO_IMAGE}
+            alt="Person booking home help in a modern kitchen"
+            fill
+            className="object-cover object-[70%_center] md:object-right"
+            sizes="(max-width: 768px) 100vw, 1280px"
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent md:from-background/70 md:via-background/20 md:to-transparent"
+            aria-hidden
+          />
+
+          <div className="relative z-10 flex items-center min-h-[22rem] md:min-h-[28rem] p-5 sm:p-8 md:p-10 lg:p-12">
+            <div className="w-full max-w-md rounded-2xl bg-card shadow-xl border border-border/60 p-6 sm:p-8 md:p-10">
+              <span className="inline-block rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">
+                {PLATFORM_OFFERINGS_INTRO.eyebrow}
+              </span>
+
+              <ol className="mt-6 sm:mt-8 space-y-5 sm:space-y-6">
+                {PLATFORM_BOOKING_STEPS.map((step, index) => (
+                  <li key={step.description} className="flex items-start gap-4">
+                    <span
+                      className={cn(
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base font-bold",
+                        HOW_IT_WORKS_STEP_BADGE_COLORS[index]
+                      )}
+                    >
+                      {index + 1}
+                    </span>
+                    <p className="pt-1.5 text-base sm:text-lg text-foreground leading-snug">
+                      {step.description}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
         </div>
 
-        <ol className="grid md:grid-cols-3 gap-4 md:gap-6 mb-10 max-w-4xl mx-auto">
-          {PLATFORM_BOOKING_STEPS.map((step, index) => (
-            <li
-              key={step.title}
-              className="relative rounded-2xl border border-border bg-surface/60 p-5 md:p-6 text-center md:text-left"
-            >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold mb-3">
-                {index + 1}
-              </span>
-              <p className="font-semibold text-foreground mb-1">{step.title}</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
-              {index < PLATFORM_BOOKING_STEPS.length - 1 && (
-                <ArrowRight
-                  className="hidden md:block absolute top-1/2 -right-4 h-5 w-5 -translate-y-1/2 text-muted-foreground/50"
-                  aria-hidden
-                />
-              )}
-            </li>
-          ))}
-        </ol>
-
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mb-6 py-5 px-6 rounded-2xl border border-border bg-surface/50 text-sm text-muted-foreground max-w-3xl mx-auto">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 mt-10 mb-6 py-5 px-6 rounded-2xl border border-border bg-surface/50 text-sm text-muted-foreground max-w-3xl mx-auto">
           {PLATFORM_TRUST_BAR.map((signal) => (
             <span key={signal} className="inline-flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
@@ -73,8 +84,8 @@ export function PlatformOfferings() {
               Need someone permanently?
             </h3>
             <p className="text-muted-foreground leading-relaxed">
-              Many families book a worker several times, then hire full-time.
-              We can also help you find a live-in nanny or housekeeper directly.
+              Many families book a worker several times, then hire full-time. We can also help you
+              find a live-in nanny or housekeeper directly.
             </p>
           </div>
           <div className="grid sm:grid-cols-3 gap-4 mb-8">
