@@ -25,7 +25,14 @@ interface ServiceTypePickerProps {
   onSelect?: (categoryKey: ServiceCategoryKey, serviceTypeId: string) => void;
 }
 
-export function ServiceTypePicker(_props: ServiceTypePickerProps) {
+function bookHref(category: ServiceCategoryKey, typeId: string): string {
+  return buildBookUrl({
+    ...defaultServiceDetails(category),
+    serviceType: typeId,
+  });
+}
+
+export function ServiceTypePicker({ onSelect }: ServiceTypePickerProps) {
   const cleaningTypes = getResidentialCleaningTypes();
   const airbnbTypes = getAirbnbCleaningTypes();
   const housekeepingTypes = getHousekeepingTypes();
@@ -33,6 +40,15 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
   const laundryTypes = getLaundryTypes();
   const gardenTypes = getGardenTypes();
   const handymanTypes = getHandymanTypes();
+
+  const linkOrSelect = (category: ServiceCategoryKey) =>
+    onSelect
+      ? {
+          onChange: (typeId: string) => onSelect(category, typeId),
+        }
+      : {
+          getHref: (typeId: string) => bookHref(category, typeId),
+        };
 
   return (
     <div className="space-y-8">
@@ -47,13 +63,8 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         </p>
         <CleaningTypeTabs
           value={cleaningTypes[0]?.id ?? "standard"}
-          getHref={(typeId) =>
-            buildBookUrl({
-              ...defaultServiceDetails("cleaning"),
-              serviceType: typeId,
-            })
-          }
           showDetails={false}
+          {...linkOrSelect("cleaning")}
         />
       </section>
 
@@ -61,16 +72,7 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary mb-3">
           Nannies & childcare
         </p>
-        <NannyTypeTabs
-          value="day_nanny"
-          getHref={(typeId) =>
-            buildBookUrl({
-              ...defaultServiceDetails("nanny"),
-              serviceType: typeId,
-            })
-          }
-          showDetails={false}
-        />
+        <NannyTypeTabs value="day_nanny" showDetails={false} {...linkOrSelect("nanny")} />
       </section>
 
       <section>
@@ -79,13 +81,8 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         </p>
         <HousekeepingTypeTabs
           value={housekeepingTypes[0]?.id ?? "half_day"}
-          getHref={(typeId) =>
-            buildBookUrl({
-              ...defaultServiceDetails("housekeeping"),
-              serviceType: typeId,
-            })
-          }
           showDetails={false}
+          {...linkOrSelect("housekeeping")}
         />
       </section>
 
@@ -95,13 +92,8 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         </p>
         <CookingTypeTabs
           value={cookingTypes[0]?.id ?? "lunch"}
-          getHref={(typeId) =>
-            buildBookUrl({
-              ...defaultServiceDetails("cooking"),
-              serviceType: typeId,
-            })
-          }
           showDetails={false}
+          {...linkOrSelect("cooking")}
         />
       </section>
 
@@ -111,8 +103,10 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         </p>
         <AirbnbTypeTabs
           value={airbnbTypes[0]?.id ?? "guest_checkout"}
-          getHref={(typeId) => `/customer/book/airbnb?type=${typeId}`}
           showDetails={false}
+          {...(onSelect
+            ? { onChange: (typeId: string) => onSelect("cleaning", typeId) }
+            : { getHref: (typeId: string) => `/customer/book/airbnb?type=${typeId}` })}
         />
       </section>
 
@@ -122,13 +116,8 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         </p>
         <LaundryTypeTabs
           value={laundryTypes[0]?.id ?? "wash_fold"}
-          getHref={(typeId) =>
-            buildBookUrl({
-              ...defaultServiceDetails("laundry"),
-              serviceType: typeId,
-            })
-          }
           showDetails={false}
+          {...linkOrSelect("laundry")}
         />
       </section>
 
@@ -138,13 +127,8 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         </p>
         <GardenTypeTabs
           value={gardenTypes[0]?.id ?? "lawn_cutting"}
-          getHref={(typeId) =>
-            buildBookUrl({
-              ...defaultServiceDetails("garden"),
-              serviceType: typeId,
-            })
-          }
           showDetails={false}
+          {...linkOrSelect("garden")}
         />
       </section>
 
@@ -154,13 +138,8 @@ export function ServiceTypePicker(_props: ServiceTypePickerProps) {
         </p>
         <HandymanTypeTabs
           value={handymanTypes[0]?.id ?? "general_handyman"}
-          getHref={(typeId) =>
-            buildBookUrl({
-              ...defaultServiceDetails("handyman"),
-              serviceType: typeId,
-            })
-          }
           showDetails={false}
+          {...linkOrSelect("handyman")}
         />
       </section>
     </div>

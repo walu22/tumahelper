@@ -106,28 +106,43 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
     await expect(page.getByRole("tab", { name: "Lawn cutting" })).toBeVisible();
   });
 
-  test("book cooking without type redirects to homepage pills", async ({ page }) => {
+  test("book cooking without type starts guided flow with default visit", async ({ page }) => {
     await page.goto("/customer/book?category=cooking");
-    await expect(page).toHaveURL(/#hero-cooking-panel/);
+    await expect(page).toHaveURL(/\/customer\/book\?category=cooking/);
+    await expect(page.getByRole("heading", { name: "Book cooking & meals" })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
-  test("book laundry without type redirects to homepage pills", async ({ page }) => {
+  test("book laundry without type starts guided flow with default visit", async ({ page }) => {
     await page.goto("/customer/book?category=laundry");
-    await expect(page).toHaveURL(/#hero-laundry-panel/);
+    await expect(page).toHaveURL(/\/customer\/book\?category=laundry/);
+    await expect(page.getByRole("heading", { name: "Book laundry & ironing" })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
-  test("book garden without type redirects to homepage pills", async ({ page }) => {
+  test("book garden without type starts guided flow with default visit", async ({ page }) => {
     await page.goto("/customer/book?category=garden");
-    await expect(page).toHaveURL(/#hero-garden-panel/);
+    await expect(page).toHaveURL(/\/customer\/book\?category=garden/);
+    await expect(page.getByRole("heading", { name: "Book garden & yard work" })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
-  test("book cleaning without type redirects to homepage pills", async ({ page }) => {
+  test("book cleaning without type starts guided flow with default visit", async ({ page }) => {
     await page.goto("/customer/book?category=cleaning");
-    await expect(page).toHaveURL(/#hero-cleaning-panel/);
+    await expect(page).toHaveURL(/\/customer\/book\?category=cleaning/);
+    await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
-  test("book housekeeping without type redirects to homepage pills", async ({ page }) => {
+  test("book housekeeping without type starts guided flow with default visit", async ({ page }) => {
     await page.goto("/customer/book?category=housekeeping");
-    await expect(page).toHaveURL(/#hero-housekeeping-panel/);
+    await expect(page).toHaveURL(/\/customer\/book\?category=housekeeping/);
+    await expect(page.getByRole("heading", { name: "Book housekeeping" })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 });

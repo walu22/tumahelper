@@ -4,6 +4,7 @@ import {
   getPlumbingJobType,
   isPlumbingBookingBlocked,
   resolvePlumbingJob,
+  selectablePlumbingJobTypes,
   workerSkillsForPlumbingRoute,
 } from "./handyman-plumbing";
 import { defaultServiceDetails } from "./catalog";
@@ -33,13 +34,14 @@ describe("handyman plumbing routing", () => {
     })).toBe(true);
   });
 
-  it("escalates active uncontrollable pipe leaks to emergency routing", () => {
+  it("escalates active uncontrollable pipe leaks to specialist review when emergency is unavailable", () => {
     const resolved = resolvePlumbingJob("visible_pipe_leak", {
       activeLeak: true,
       waterShutoffAvailable: false,
     });
-    expect(resolved?.effectiveRoute).toBe("emergency_plumber");
-    expect(resolved?.blocked).toBe(true);
+    expect(resolved?.effectiveRoute).toBe("specialist_plumber");
+    expect(resolved?.effectiveBookingMode).toBe("specialist_quote_request");
+    expect(resolved?.blocked).toBe(false);
   });
 
   it("keeps general plumber skills backward compatible", () => {
@@ -47,6 +49,11 @@ describe("handyman plumbing routing", () => {
       "general_plumber",
       "plumbing",
     ]);
+  });
+
+  it("hides emergency flooding from the classifier when emergency is unavailable", () => {
+    const ids = selectablePlumbingJobTypes().map((job) => job.id);
+    expect(ids).not.toContain("emergency_flooding");
   });
 
   it("applies inspection addon for unclear jobs", () => {

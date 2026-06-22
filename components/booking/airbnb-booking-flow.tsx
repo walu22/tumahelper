@@ -72,6 +72,10 @@ interface AirbnbBookingFlowProps {
   onDescriptionChange: (value: string) => void;
   onFindWorker: () => void;
   lockServiceType?: boolean;
+  guestCheckoutTime?: string;
+  nextCheckIn?: string;
+  onGuestCheckoutTimeChange?: (value: string) => void;
+  onNextCheckInChange?: (value: string) => void;
 }
 
 function filterStartTimes(
@@ -109,6 +113,10 @@ export function AirbnbBookingFlow({
   onDescriptionChange,
   onFindWorker,
   lockServiceType = false,
+  guestCheckoutTime = "",
+  nextCheckIn = "",
+  onGuestCheckoutTimeChange,
+  onNextCheckInChange,
 }: AirbnbBookingFlowProps) {
   const [pendingCoords, setPendingCoords] = useState<LocationCoords | null>(null);
   const previewAddress = useMemo(
@@ -617,6 +625,33 @@ export function AirbnbBookingFlow({
               Suggested {recommendedHours}h
             </button>
           )}
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="guest-checkout-time" className="text-sm font-medium mb-2 block">
+            Guest check-out time (optional)
+          </label>
+          <Input
+            id="guest-checkout-time"
+            type="time"
+            value={guestCheckoutTime}
+            onChange={(e) => onGuestCheckoutTimeChange?.(e.target.value)}
+            className="rounded-xl"
+          />
+        </div>
+        <div>
+          <label htmlFor="next-check-in" className="text-sm font-medium mb-2 block">
+            Next check-in (optional)
+          </label>
+          <Input
+            id="next-check-in"
+            placeholder="e.g. Tomorrow 3pm"
+            value={nextCheckIn}
+            onChange={(e) => onNextCheckInChange?.(e.target.value)}
+            className="rounded-xl"
+          />
         </div>
       </div>
 

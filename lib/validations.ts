@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { nannyChildAgesComplete } from "@/lib/services/utils";
 
 export function normalizeZambianPhone(input: string): string {
   const cleaned = input.trim().replace(/[\s-]/g, "");
@@ -110,18 +111,55 @@ export const bookingSchema = z
     locationLng: z.number().optional(),
     description: z.string().max(1000).optional(),
     serviceDetails: serviceDetailsSchema.optional(),
-    amount: z.number().min(50).max(1000000),
+    amount: z.number().min(0).max(1000000),
     requiresAdminReview: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     const adminReview =
       data.requiresAdminReview || data.serviceDetails?.requiresAdminReview === true;
+
     if (!adminReview && !data.workerId) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Worker is required for this booking",
         path: ["workerId"],
       });
+    }
+
+    if (adminReview) {
+      if (data.amount !== 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Admin review bookings must use amount 0 until priced",
+          path: ["amount"],
+        });
+      }
+    } else if (data.amount < 50) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Minimum booking amount is 50 ngwee",
+        path: ["amount"],
+      });
+    }
+
+    const details = data.serviceDetails;
+    if (details?.category === "nanny" && !nannyChildAgesComplete(details)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Child age groups are required for nanny bookings",
+        path: ["serviceDetails", "childAgeGroups"],
+      });
+    }
+
+    if (details?.category === "handyman") {
+      const notes = data.description?.trim() ?? "";
+      if (notes.length < 10) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Handyman job notes must be at least 10 characters",
+          path: ["description"],
+        });
+      }
     }
   });
 

@@ -35,6 +35,7 @@ import {
   type ServiceDetails,
 } from "@/lib/services/catalog";
 import { suggestDuration } from "@/lib/services/utils";
+import { BookingJobPhotos } from "@/components/booking/booking-job-photos";
 
 interface HandymanBookingFlowProps {
   step: ServiceFlowStep;
@@ -56,10 +57,12 @@ interface HandymanBookingFlowProps {
   onFindWorker: () => void;
   onSubmitReviewRequest?: () => void;
   lockServiceType?: boolean;
+  jobPhotoFiles?: File[];
+  onJobPhotoFilesChange?: (files: File[]) => void;
 }
 
 const JOB_NOTES_PLACEHOLDER =
-  "What needs to be fixed? Is it broken, loose, leaking, or not working? How long has the issue been there? Are replacement parts already available? Include access notes and upload photos when you can.";
+  "What needs to be fixed? Is it broken, loose, leaking, or not working? How long has the issue been there? Are replacement parts already available? Include access notes and add photos below if you have them.";
 
 export function HandymanBookingFlow({
   step,
@@ -81,6 +84,8 @@ export function HandymanBookingFlow({
   onFindWorker,
   onSubmitReviewRequest,
   lockServiceType = false,
+  jobPhotoFiles = [],
+  onJobPhotoFilesChange,
 }: HandymanBookingFlowProps) {
   const isPlumbing = isPlumbingService(serviceDetails.serviceType);
   const flowSteps = getFlowSteps("handyman", serviceDetails.serviceType);
@@ -294,9 +299,12 @@ export function HandymanBookingFlow({
         />
         <p className="text-xs text-muted-foreground mt-2">
           Tip: mention if water is leaking, power is off, parts are on site, or access is difficult.
-          {isPlumbing && " Upload photos in your notes if you can — this helps us send the right plumber."}
         </p>
       </div>
+
+      {isPlumbing && onJobPhotoFilesChange && (
+        <BookingJobPhotos files={jobPhotoFiles} onChange={onJobPhotoFilesChange} />
+      )}
 
       {isPlumbing && (
         <>

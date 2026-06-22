@@ -37,7 +37,18 @@ import {
   resolveServiceDetailsForWorker,
   resolveServiceDetailsFromSearchParams,
 } from '@/lib/booking/worker-deep-link'
+import {
+  clearBookingDraft,
+  draftMatchesReturnUrl,
+  loadBookingDraft,
+  saveBookingDraft,
+} from '@/lib/booking/draft-persistence'
+import {
+  appendPhotoUrlsToDescription,
+  uploadBookingJobPhotos,
+} from '@/components/booking/booking-job-photos'
 import { skillsForServiceCategory } from '@/lib/workers/skills'
+import { customerCoordsForSorting, sortWorkersByProximity } from '@/lib/workers/proximity'
 import { workerMeetsHandymanVerification } from '@/lib/workers/handyman-skills'
 import { plumbingRequiresAdminReview } from '@/lib/services/handyman-plumbing'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
@@ -272,6 +283,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   const lockedAirbnb = isLockedAirbnbFlow(airbnbEntry, typeParam, funnelParam)
   const preselectedWorkerRef = useRef<string | null>(null)
   const urlInitDone = useRef(false)
+  const draftRestoredRef = useRef(false)
 
   const [step, setStep] = useState<number>(() => {
     if (airbnbEntry || isLockedAirbnbFlow(airbnbEntry, typeParam, funnelParam)) {
@@ -308,10 +320,37 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   const [guestCheckoutTime, setGuestCheckoutTime] = useState('')
   const [nextCheckIn, setNextCheckIn] = useState('')
   const [amount, setAmount] = useState('')
+  const [jobPhotoFiles, setJobPhotoFiles] = useState<File[]>([])
 
   const [serviceSubStep, setServiceSubStep] = useState<ServiceFlowStep>('address')
   const [streetAddress, setStreetAddress] = useState('')
   const [unitAddress, setUnitAddress] = useState('')
+
+  useEffect(() => {
+    if (draftRestoredRef.current || typeof window === 'undefined') return
+
+    const draft = loadBookingDraft()
+    const pathname = window.location.pathname
+    const search = window.location.search
+
+    if (!draft || !draftMatchesReturnUrl(draft, pathname, search)) return
+
+    draftRestoredRef.current = true
+    if (draft.serviceDetails) setServiceDetails(draft.serviceDetails)
+    setStep(draft.step)
+    setServiceSubStep(draft.serviceSubStep)
+    setServiceDate(draft.serviceDate)
+    setServiceTime(draft.serviceTime)
+    setLocationAddress(draft.locationAddress)
+    setLocationCoords(draft.locationCoords)
+    setStreetAddress(draft.streetAddress)
+    setUnitAddress(draft.unitAddress)
+    setDescription(draft.description)
+    setGuestCheckoutTime(draft.guestCheckoutTime)
+    setNextCheckIn(draft.nextCheckIn)
+    if (draft.amount) setAmount(draft.amount)
+    clearBookingDraft()
+  }, [])
 
   useEffect(() => {
     ;(async () => {
@@ -412,29 +451,23 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       window.location.assign("/#hero-short-stay-panel")
       return
     }
-    if (airbnbEntry || lockedAirbnb) return
-    if (categoryParam === "cleaning" && !typeParam && !funnelParam && !workerProfileId) {
-      window.location.assign("/#hero-cleaning-panel")
-    }
-    if (categoryParam === "nanny" && !typeParam && !funnelParam && !workerProfileId) {
-      window.location.assign("/#hero-nanny-panel")
-    }
-    if (categoryParam === "housekeeping" && !typeParam && !funnelParam && !workerProfileId) {
-      window.location.assign("/#hero-housekeeping-panel")
-    }
-    if (categoryParam === "cooking" && !typeParam && !funnelParam && !workerProfileId) {
-      window.location.assign("/#hero-cooking-panel")
-    }
-    if (categoryParam === "laundry" && !typeParam && !funnelParam && !workerProfileId) {
-      window.location.assign("/#hero-laundry-panel")
-    }
-    if (categoryParam === "garden" && !typeParam && !funnelParam && !workerProfileId) {
-      window.location.assign("/#hero-garden-panel")
-    }
-    if (categoryParam === "handyman" && !typeParam && !funnelParam && !workerProfileId) {
-      window.location.assign("/#hero-handyman-panel")
-    }
-  }, [airbnbEntry, lockedAirbnb, categoryParam, typeParam, funnelParam, workerProfileId])
+    if (airbnbEntry || lockedAirbnb || workerProfileId || typeParam || funnelParam) return
+
+    const key = paramToCategoryKey(categoryParam)
+    if (!key || serviceDetails?.category === key) return
+
+    setServiceDetails(defaultServiceDetails(key))
+    setServiceSubStep('address')
+    setStep(STEP.DETAILS)
+  }, [
+    airbnbEntry,
+    lockedAirbnb,
+    categoryParam,
+    typeParam,
+    funnelParam,
+    workerProfileId,
+    serviceDetails?.category,
+  ])
 
   useEffect(() => {
     if (urlInitDone.current || !workerProfileId || categoriesLoading || categories.length === 0) return
@@ -478,15 +511,20 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     setAmount(String(typical));
   }, [step, serviceDetails]);
 
-  const filteredWorkers = workers.filter((w) => {
-    if (!searchQuery) return true
-    const q = searchQuery.toLowerCase()
-    return (
-      w.full_name.toLowerCase().includes(q) ||
-      w.city.toLowerCase().includes(q) ||
-      w.area.toLowerCase().includes(q)
-    )
-  })
+  const customerCoords = customerCoordsForSorting(locationCoords, locationAddress)
+
+  const filteredWorkers = sortWorkersByProximity(
+    workers.filter((w) => {
+      if (!searchQuery) return true
+      const q = searchQuery.toLowerCase()
+      return (
+        w.full_name.toLowerCase().includes(q) ||
+        w.city.toLowerCase().includes(q) ||
+        w.area.toLowerCase().includes(q)
+      )
+    }),
+    customerCoords
+  )
 
   const goToStep = useCallback((s: number) => {
     setStep(s)
@@ -508,11 +546,47 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     } catch {
       // fall through to login redirect
     }
+
+    if (typeof window !== 'undefined') {
+      saveBookingDraft({
+        pathname: window.location.pathname,
+        search: window.location.search,
+        step,
+        serviceSubStep,
+        serviceDetails,
+        serviceDate,
+        serviceTime,
+        locationAddress,
+        locationCoords,
+        streetAddress,
+        unitAddress,
+        description,
+        guestCheckoutTime,
+        nextCheckIn,
+        amount,
+      })
+    }
+
     const returnTo = `${window.location.pathname}${window.location.search}`
     router.push(`/login?redirect=${encodeURIComponent(returnTo)}`)
     toast.message('Sign in to complete your booking')
     return false
-  }, [router])
+  }, [
+    router,
+    step,
+    serviceSubStep,
+    serviceDetails,
+    serviceDate,
+    serviceTime,
+    locationAddress,
+    locationCoords,
+    streetAddress,
+    unitAddress,
+    description,
+    guestCheckoutTime,
+    nextCheckIn,
+    amount,
+  ])
 
   const selectServiceType = useCallback(
     (categoryKey: ServiceCategoryKey, serviceTypeId: string) => {
@@ -590,6 +664,21 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
     setSubmitting(true)
     try {
+      let bookingDescription = buildBookingDescription(
+        description,
+        serviceDetails.serviceType,
+        guestCheckoutTime,
+        nextCheckIn
+      )
+
+      if (jobPhotoFiles.length > 0) {
+        const photoUrls = await uploadBookingJobPhotos(jobPhotoFiles)
+        bookingDescription = appendPhotoUrlsToDescription(
+          bookingDescription ?? '',
+          photoUrls
+        )
+      }
+
       const res = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -600,14 +689,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           locationAddress,
           locationLat: locationCoords?.lat,
           locationLng: locationCoords?.lng,
-          description: buildBookingDescription(
-            description,
-            serviceDetails.serviceType,
-            guestCheckoutTime,
-            nextCheckIn
-          ),
+          description: bookingDescription,
           serviceDetails,
-          amount: 50,
+          amount: 0,
           requiresAdminReview: true,
         }),
       })
@@ -626,6 +710,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       }
 
       toast.success('Request submitted. TumaHelper will review and follow up.')
+      clearBookingDraft()
+      setJobPhotoFiles([])
       router.push(`/customer/bookings/${data.data.id}`)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')
@@ -696,6 +782,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       }
 
       toast.success('Booking created. Complete payment on the next screen')
+      clearBookingDraft()
       router.push(`/customer/bookings/${data.data.id}`)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')
@@ -785,6 +872,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       onDateChange: setServiceDate,
       onTimeChange: setServiceTime,
       onDescriptionChange: setDescription,
+      guestCheckoutTime,
+      nextCheckIn,
+      onGuestCheckoutTimeChange: setGuestCheckoutTime,
+      onNextCheckInChange: setNextCheckIn,
+      jobPhotoFiles,
+      onJobPhotoFilesChange: setJobPhotoFiles,
       onFindWorker: () => {
         if (serviceDetails && plumbingRequiresAdminReview(serviceDetails)) {
           void handleSubmitReviewRequest()

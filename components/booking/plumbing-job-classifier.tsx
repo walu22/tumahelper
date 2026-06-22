@@ -7,12 +7,12 @@ import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
 import type { ServiceDetails } from "@/lib/services/catalog";
 import {
-  PLUMBING_JOB_TYPES,
   PLUMBING_SPECIALIST_NOTE,
   applyPlumbingJobToDetails,
   plumbingBookingModeDescription,
   plumbingBookingModeLabel,
   resolvePlumbingJob,
+  selectablePlumbingJobTypes,
 } from "@/lib/services/handyman-plumbing";
 
 interface PlumbingJobClassifierProps {
@@ -98,7 +98,7 @@ export function PlumbingJobClassifier({
           Choose the closest match. We will route your job to the right plumber or specialist.
         </p>
         <div className="grid sm:grid-cols-2 gap-3">
-          {PLUMBING_JOB_TYPES.map((job) => (
+          {selectablePlumbingJobTypes().map((job) => (
             <AirbnbOptionCard
               key={job.id}
               selected={selectedJobId === job.id}

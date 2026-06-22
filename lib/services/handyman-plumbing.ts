@@ -163,13 +163,14 @@ export function resolvePlumbingJob(
 
   if (job.id === "visible_pipe_leak" && followUp?.activeLeak) {
     if (followUp.waterShutoffAvailable === false) {
-      effectiveRoute = "emergency_plumber";
-      effectiveBookingMode = "emergency_request";
-      effectiveRequiresAdminReview = true;
-      if (!EMERGENCY_PLUMBING_AVAILABLE) {
-        blocked = true;
-        blockedReason =
-          "Emergency plumbing is not currently available on TumaHelper. Please contact a local emergency plumber immediately.";
+      if (EMERGENCY_PLUMBING_AVAILABLE) {
+        effectiveRoute = "emergency_plumber";
+        effectiveBookingMode = "emergency_request";
+        effectiveRequiresAdminReview = true;
+      } else {
+        effectiveRoute = "specialist_plumber";
+        effectiveBookingMode = "specialist_quote_request";
+        effectiveRequiresAdminReview = true;
       }
     }
   }
@@ -269,8 +270,14 @@ export function plumbingBookingModeDescription(mode: PlumbingBookingMode): strin
     case "inspection_only":
       return "Not sure what is wrong? A plumber will assess the issue, advise on parts, and recommend the next step.";
     case "specialist_quote_request":
-      return "This looks like a specialist job. Submit photos and details. TumaHelper will review and connect you with the right specialist.";
+      return "This looks like a specialist job. Describe the issue in detail and add photos if you have them. TumaHelper will review and connect you with the right specialist.";
     case "emergency_request":
       return "This may require urgent assistance. If water is actively damaging your home, turn off the main water supply if safe to do so.";
   }
+}
+
+/** Job types shown in the classifier (hides unavailable emergency options). */
+export function selectablePlumbingJobTypes(): PlumbingJobType[] {
+  if (EMERGENCY_PLUMBING_AVAILABLE) return PLUMBING_JOB_TYPES;
+  return PLUMBING_JOB_TYPES.filter((job) => job.bookingMode !== "emergency_request");
 }
