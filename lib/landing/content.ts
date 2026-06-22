@@ -184,13 +184,13 @@ export const PLATFORM_OFFERINGS_INTRO = {
 /** TaskRabbit-style step copy — single line per step in the overlay card. */
 export const PLATFORM_BOOKING_STEPS = [
   {
-    description: "Choose a helper by price, skills, and reviews.",
+    description: "Search for the service you need.",
   },
   {
-    description: "Schedule a visit as early as today.",
+    description: "Pick a verified helper and schedule your visit.",
   },
   {
-    description: "Book, pay, and review all in one place.",
+    description: "Pay via Airtel Money and leave a review after the visit.",
   },
 ] as const;
 
