@@ -146,6 +146,33 @@ export const PRICING_SECTION_ID = "pricing";
 /** In-page link to pricing & scope reference on the homepage. */
 export const PRICING_SECTION_HREF = `/#${PRICING_SECTION_ID}`;
 
+export const PERMANENT_HIRE_SECTION_ID = "permanent-hire";
+
+/** In-page link to permanent placement block on the homepage. */
+export const PERMANENT_HIRE_HREF = `/#${PERMANENT_HIRE_SECTION_ID}`;
+
+export function pricingTabHref(tabId: HeroCategoryId): string {
+  return `/#pricing-${tabId}`;
+}
+
+export const PERMANENT_PLACEMENT_STEPS = [
+  {
+    title: "Book first",
+    body: "Try a verified nanny or cleaner for a visit, or book them regularly.",
+  },
+  {
+    title: "Build trust",
+    body: "See reviews, trust scores, and how they work in your home.",
+  },
+  {
+    title: "Hire permanently",
+    body: "When you're ready, we'll help you move to full-time or live-in.",
+  },
+] as const;
+
+export const PERMANENT_HIRE_WHATSAPP_MESSAGE =
+  "Hi TumaHelper, I'm looking for permanent domestic help in Lusaka (full-time nanny / housekeeper / live-in). Can you help?";
+
 /** Primary header CTA — opens the homepage service picker. */
 export const HEADER_BOOK_CTA = {
   href: GET_HELP_HREF,
@@ -155,7 +182,7 @@ export const HEADER_BOOK_CTA = {
 /** Minimal header links (Option B — services live on homepage hero). */
 export const HEADER_NAV_LINKS = [
   { href: "/workers", label: "Find workers" },
-  { href: "/hire", label: "Permanent hire" },
+  { href: PERMANENT_HIRE_HREF, label: "Permanent hire" },
 ] as const;
 
 /** @deprecated Services are chosen on the homepage hero; use HEADER_NAV_LINKS in the header. */
@@ -167,7 +194,7 @@ export const PRIMARY_NAV_LINKS = [
   { href: SHORT_STAY_CLEAN_BOOK_HREF, label: "Short-stay cleaning" },
   { href: LAUNDRY_BOOK_HREF, label: "Laundry & ironing" },
   { href: GARDEN_BOOK_HREF, label: "Garden & yard work" },
-  { href: "/hire", label: "Permanent hire" },
+  { href: PERMANENT_HIRE_HREF, label: "Permanent hire" },
   { href: "/workers", label: "Find workers" },
 ] as const;
 

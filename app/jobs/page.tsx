@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/utils/formatters'
 import { MapPin, Briefcase, Eye } from 'lucide-react'
 import Link from 'next/link'
+import { PERMANENT_HIRE_HREF } from '@/lib/landing/content'
 
 async function getJobs() {
   const { createServerSupabaseClient } = await import('@/lib/supabase-server')
@@ -40,7 +41,7 @@ export default async function JobsPage() {
               book a verified worker
             </Link>{' '}
             or{' '}
-            <Link href="/hire" className="font-semibold text-primary hover:underline">
+            <Link href={PERMANENT_HIRE_HREF} className="font-semibold text-primary hover:underline">
               request a permanent placement
             </Link>
             . This page is for workers finding jobs.

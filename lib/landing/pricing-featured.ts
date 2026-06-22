@@ -20,23 +20,32 @@ import {
 } from "@/lib/services/catalog";
 import { buildBookUrl } from "@/lib/services/utils";
 
+export type PricingVisitType = {
+  id: string;
+  label: string;
+  description: string;
+  hoursLabel: string;
+  priceLabel: string;
+  included: string[];
+  bookHref: string;
+  bookLabel: string;
+};
+
+export type PricingAddon = {
+  label: string;
+  description: string;
+  priceHint: string;
+};
+
 export type PricingFeaturedCategory = {
   id: HeroCategoryId;
   icon: ServiceIconKey;
   tabLabel: string;
   categoryLabel: string;
   tagline: string;
-  featured: {
-    label: string;
-    description: string;
-    hoursLabel: string;
-    priceLabel: string;
-    included: string[];
-    bookHref: string;
-    bookLabel: string;
-  };
-  guideHref: string | null;
-  allTypesLabel: string;
+  featured: PricingVisitType;
+  moreTypes: PricingVisitType[];
+  addons: PricingAddon[];
 };
 
 const TAB_META = Object.fromEntries(
@@ -88,9 +97,20 @@ function tabLabel(tabId: HeroCategoryId): string {
   return TAB_META[tabId].label;
 }
 
-function guideHref(tabId: HeroCategoryId): string | null {
-  if (tabId === "short_stay") return "/customer/book/airbnb";
-  return `/services/${tabId}`;
+function toPricingVisitType(
+  tabId: HeroCategoryId,
+  type: ServiceTypeOption
+): PricingVisitType {
+  return {
+    id: type.id,
+    label: type.label,
+    description: type.description,
+    hoursLabel: `~${type.defaultHours}h`,
+    priceLabel: `K${type.priceHintMin}–${type.priceHintMax}`,
+    included: type.included,
+    bookHref: getBookHref(tabId, type),
+    bookLabel: `Book ${type.tabLabel ?? type.label}`,
+  };
 }
 
 export function getPricingFeaturedCategories(): PricingFeaturedCategory[] {
@@ -106,6 +126,8 @@ export function getPricingFeaturedCategories(): PricingFeaturedCategory[] {
     const catalogEntry =
       tabId === "short_stay" ? null : SERVICE_CATALOG[tabId as ServiceCategoryKey];
 
+    const visitTypes = types.map((entry) => toPricingVisitType(tabId, entry));
+
     return {
       id: tabId,
       icon: meta.icon,
@@ -113,17 +135,16 @@ export function getPricingFeaturedCategories(): PricingFeaturedCategory[] {
       categoryLabel: meta.label,
       tagline: catalogEntry?.tagline ?? meta.subtitle,
       featured: {
-        label: type.label,
-        description: type.description,
-        hoursLabel: `~${type.defaultHours}h`,
-        priceLabel: `K${type.priceHintMin}–${type.priceHintMax}`,
+        ...toPricingVisitType(tabId, type),
         included: type.included.slice(0, INCLUDED_PREVIEW_LIMIT),
-        bookHref: getBookHref(tabId, type),
-        bookLabel: `Book ${type.tabLabel ?? type.label}`,
       },
-      guideHref: guideHref(tabId),
-      allTypesLabel:
-        types.length === 1 ? "See full guide" : `All ${types.length} visit types`,
+      moreTypes: visitTypes.slice(1),
+      addons:
+        catalogEntry?.addons.map((addon) => ({
+          label: addon.label,
+          description: addon.description,
+          priceHint: `+ ~K${addon.priceHint}`,
+        })) ?? [],
     };
   });
 }

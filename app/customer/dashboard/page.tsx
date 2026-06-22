@@ -20,6 +20,7 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
+import { PERMANENT_HIRE_HREF } from "@/lib/landing/content";
 
 function greetingForHour(hour: number) {
   if (hour < 12) return "Good morning";
@@ -315,7 +316,7 @@ export default async function CustomerDashboard() {
                 <p className="text-sm text-muted-foreground mb-4">
                   Browse live-in nanny and long-term domestic roles.
                 </p>
-                <Link href="/hire">
+                <Link href={PERMANENT_HIRE_HREF}>
                   <Button size="sm" variant="outline" className="w-full rounded-full">
                     Explore permanent hire
                   </Button>

@@ -3,6 +3,7 @@ import { Shield, Star, MapPin } from "lucide-react";
 import { CategoryScroller } from "./category-scroller";
 import { HeroServiceSearch } from "./hero-service-search";
 import { LogoMark } from "@/components/brand/logo";
+import { PERMANENT_HIRE_HREF } from "@/lib/landing/content";
 
 const TRUST_POINTS = [
   { icon: Shield, label: "NRC verified workers" },
@@ -34,7 +35,7 @@ export function LandingHero() {
         <div className="text-center max-w-3xl mx-auto">
           <p className="mb-6 text-sm text-muted-foreground">
             Need someone permanently?{" "}
-            <Link href="/hire" className="font-semibold text-primary hover:underline">
+            <Link href={PERMANENT_HIRE_HREF} className="font-semibold text-primary hover:underline">
               Get in touch
             </Link>
           </p>
