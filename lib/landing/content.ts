@@ -254,9 +254,9 @@ export const SERVICES_DETAIL_INTRO = {
 
 export const WORKERS_SPOTLIGHT_INTRO = {
   eyebrow: "Available this week",
-  headline: "Meet helpers families in Lusaka are booking.",
+  headline: "Meet helpers Lusaka families are booking.",
   subtitle:
-    "Real profiles with areas, experience, and reviews. Pick someone during booking, or browse first.",
+    "Real profiles with service areas, experience, and reviews. Pick someone during booking, or browse first.",
   emptyHeadline: "Helpers are joining every week",
   emptySubtitle:
     "We are still growing the network. Check back soon, or WhatsApp us if you need help finding someone.",
