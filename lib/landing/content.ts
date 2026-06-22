@@ -301,13 +301,6 @@ export const PRICING_SECONDARY_TAB_ORDER: HeroCategoryId[] = [
 
 export const PRICING_COMPARE_TYPES_LABEL = "Need a different visit type? Pick from the homepage";
 
-export const WORKER_RECRUITMENT_INTRO = {
-  headline: "Are you a nanny, cleaner, cook, or housekeeper in Lusaka?",
-  subtitle:
-    "Apply to get verified, set your skills and availability, and receive bookings from families in your area.",
-  ctaLabel: "Apply as a worker",
-} as const;
-
 export const TRUST_SECTION_INTRO = {
   eyebrow: "Trust first",
   headline: "Know who is coming through your gate.",
@@ -352,23 +345,11 @@ export const FAQ_ITEMS = [
     a: "Message us on WhatsApp as soon as you can. We will help you rebook or follow up with the helper.",
   },
   {
-    q: "Can I book once or regularly?",
-    a: "Both. Book a single visit or keep booking the same helper. Many families try someone a few times before hiring full-time.",
-  },
-  {
-    q: "What about full-time or live-in help?",
-    a: "Book someone you like for a few visits first, or WhatsApp us for a permanent placement. We help with live-in nannies and housekeepers across Lusaka.",
-  },
-  {
     q: "Which areas do you cover?",
     a: "Most bookings are in Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, and Chelstone. Outside that? WhatsApp us and we will tell you honestly if we can help.",
   },
   {
-    q: "Can I book a cook for lunch or dinner?",
-    a: "Yes. Pick Cooking and meals on the homepage, choose lunch, dinner, or meal prep, then set your time. You provide ingredients unless you agree something else with your cook.",
-  },
-  {
-    q: "Do you clean short-stay rentals?",
-    a: "Yes. Guest checkout, same-day turnaround, deep cleans, and linen setup for Airbnbs and guesthouses.",
+    q: "Full-time or live-in help?",
+    a: "Book someone you like for a few visits first, or WhatsApp us for a permanent placement. We help with live-in nannies and housekeepers across Lusaka.",
   },
 ];

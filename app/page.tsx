@@ -4,7 +4,6 @@ import { PlatformOfferings } from "@/components/landing/platform-offerings";
 import { ServicesDetailSection } from "@/components/landing/services-detail";
 import { SweepStarsSection } from "@/components/landing/sweep-stars";
 import { TrustSection } from "@/components/landing/trust-section";
-import { WorkerRecruitment } from "@/components/landing/worker-recruitment";
 import { LandingFaqCta } from "@/components/landing/landing-faq-cta";
 import { WORKERS_SPOTLIGHT_LIMIT } from "@/lib/landing/content";
 import { PUBLIC_WORKER_AVAILABILITY, WORKER_STUB_AREA } from "@/lib/workers/public-listing";
@@ -55,7 +54,6 @@ export default async function HomePage() {
       <ServicesDetailSection />
       <TrustSection />
       <LandingFaqCta />
-      <WorkerRecruitment />
     </div>
   );
 }

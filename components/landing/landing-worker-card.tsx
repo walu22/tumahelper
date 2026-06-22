@@ -1,17 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, Shield, Star } from "lucide-react";
+import {
+  buildWorkerSpotlightBookUrl,
+  getWorkerSkillLabels,
+  getWorkerSpotlightStatusLine,
+  getWorkerStartingPriceLabel,
+} from "@/lib/landing/worker-card";
 import type { PublicWorkerProfile } from "@/types";
 
 function categoryLabel(category: PublicWorkerProfile["category"]) {
   return category === "nanny" ? "Nanny" : "House cleaner";
-}
-
-function skillLabel(skill: string) {
-  return skill
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
 }
 
 function verificationPillLabel(level: string): string | null {
@@ -56,13 +55,16 @@ export function LandingWorkerCard({
   const verificationLabel = verificationPillLabel(worker.verification_level);
   const isAvailable = worker.availability_status === "available";
   const isSpotlight = variant === "spotlight";
-  const skills = (worker.skills ?? []).slice(0, isSpotlight ? 4 : 0);
+  const skillLabels = getWorkerSkillLabels(worker, isSpotlight ? 4 : 0);
   const photoSize = isSpotlight ? "h-20 w-20" : "h-16 w-16";
   const imageSizes = isSpotlight ? "80px" : "64px";
+  const startingPrice = isSpotlight ? getWorkerStartingPriceLabel(worker) : null;
+  const spotlightStatus = isSpotlight ? getWorkerSpotlightStatusLine(worker) : null;
+  const href = isSpotlight ? buildWorkerSpotlightBookUrl(worker) : `/workers/${worker.id}`;
 
   return (
     <Link
-      href={`/workers/${worker.id}`}
+      href={href}
       className={`group flex h-full flex-col rounded-3xl border bg-card transition-all hover:border-primary/40 hover:shadow-lg ${
         isSpotlight ? "p-6 md:p-7" : "p-5"
       } ${featured ? "border-primary/30 ring-4 ring-primary/5" : "border-border"}`}
@@ -105,25 +107,25 @@ export function LandingWorkerCard({
             <MapPin className="h-3.5 w-3.5 shrink-0 text-primary/70" />
             <span className="truncate">{worker.area}, Lusaka</span>
           </p>
+          {isSpotlight && spotlightStatus && (
+            <p className="mt-2 text-sm font-semibold text-foreground">{spotlightStatus}</p>
+          )}
+          {isSpotlight && startingPrice && (
+            <p className="mt-1 text-sm font-semibold text-primary">{startingPrice}</p>
+          )}
         </div>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2 items-center">
         {isSpotlight ? (
-          skills.length > 0 ? (
-            skills.map((skill) => (
-              <span
-                key={skill}
-                className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-semibold text-foreground border border-border/50"
-              >
-                {skillLabel(skill)}
-              </span>
-            ))
-          ) : (
-            <span className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-semibold text-foreground border border-border/50">
-              {categoryLabel(worker.category)}
+          skillLabels.map((label) => (
+            <span
+              key={label}
+              className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-semibold text-foreground border border-border/50"
+            >
+              {label}
             </span>
-          )
+          ))
         ) : (
           <span className="inline-flex items-center rounded-full bg-surface px-3 py-1 text-xs font-bold text-foreground border border-border/50">
             {categoryLabel(worker.category)}
@@ -154,25 +156,6 @@ export function LandingWorkerCard({
           </span>
         )}
       </div>
-
-      {isSpotlight && (
-        <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
-          {worker.trust_score > 0 && (
-            <span>
-              Trust score{" "}
-              <strong className="text-foreground font-semibold">{worker.trust_score}</strong>
-            </span>
-          )}
-          {worker.total_jobs_completed > 0 && (
-            <span>
-              <strong className="text-foreground font-semibold">
-                {worker.total_jobs_completed}
-              </strong>{" "}
-              jobs completed
-            </span>
-          )}
-        </div>
-      )}
 
       {worker.bio && (
         <p
@@ -207,7 +190,7 @@ export function LandingWorkerCard({
           {isAvailable ? "Available now" : availabilityLabel(worker.availability_status)}
         </span>
         <span className="inline-flex items-center gap-1 text-xs font-bold text-primary group-hover:text-primary-hover transition-colors">
-          View profile
+          {isSpotlight ? "Book now" : "View profile"}
           <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
         </span>
       </div>

@@ -21,6 +21,12 @@ export function Footer({ className }: { className?: string }) {
             <p className="text-sm text-muted-foreground leading-relaxed">
               {FOOTER_TAGLINE}
             </p>
+            <p className="text-sm text-muted-foreground mt-4">
+              Are you a worker?{" "}
+              <Link href="/register?role=worker" className="font-semibold text-primary hover:underline">
+                Apply here
+              </Link>
+            </p>
           </div>
 
           <div>
