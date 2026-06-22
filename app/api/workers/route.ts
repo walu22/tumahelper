@@ -14,6 +14,10 @@ function mapPublicProfile(profile: Record<string, unknown>) {
     full_name: profile.full_name as string,
     city: profile.city as string,
     area: profile.area as string,
+    location_lat:
+      profile.location_lat != null ? Number(profile.location_lat) : null,
+    location_lng:
+      profile.location_lng != null ? Number(profile.location_lng) : null,
     bio: profile.bio as string | null,
     experience_years: profile.experience_years as number,
     category: profile.category as string,

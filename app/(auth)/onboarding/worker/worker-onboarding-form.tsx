@@ -311,6 +311,10 @@ export function WorkerOnboardingForm({ initialFullName }: WorkerOnboardingFormPr
                   }
                   placeholder="e.g., Kabulonga"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  We use your suburb to match you with nearby families. Exact home
+                  addresses are not shown on your public profile.
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">

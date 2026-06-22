@@ -1,9 +1,8 @@
 import {
-  coordsForLusakaArea,
   coordsFromLusakaAddress,
-  lusakaCenterCoords,
 } from "@/lib/lusaka/area-centroids";
 import type { LocationCoords } from "@/lib/lusaka/geolocation";
+import { workerCoordsForProximity } from "@/lib/workers/location";
 
 export function haversineDistanceKm(a: LocationCoords, b: LocationCoords): number {
   const toRad = (deg: number) => (deg * Math.PI) / 180;
@@ -17,11 +16,15 @@ export function haversineDistanceKm(a: LocationCoords, b: LocationCoords): numbe
   return 6371 * 2 * Math.asin(Math.sqrt(h));
 }
 
-export function workerCoords(worker: { area: string; city?: string }): LocationCoords {
-  return (
-    coordsForLusakaArea(worker.area) ??
-    (worker.city?.toLowerCase().includes("lusaka") ? lusakaCenterCoords() : lusakaCenterCoords())
-  );
+export function workerCoords(worker: {
+  area: string;
+  city?: string | null;
+  location_lat?: number | null;
+  location_lng?: number | null;
+  locationLat?: number | null;
+  locationLng?: number | null;
+}): LocationCoords {
+  return workerCoordsForProximity(worker);
 }
 
 export function customerCoordsForSorting(
@@ -32,10 +35,17 @@ export function customerCoordsForSorting(
   return coordsFromLusakaAddress(locationAddress);
 }
 
-export function sortWorkersByProximity<T extends { area: string; city?: string; trust_score?: number }>(
-  workers: T[],
-  customerCoords: LocationCoords | null
-): T[] {
+export function sortWorkersByProximity<
+  T extends {
+    area: string;
+    city?: string | null;
+    trust_score?: number;
+    location_lat?: number | null;
+    location_lng?: number | null;
+    locationLat?: number | null;
+    locationLng?: number | null;
+  },
+>(workers: T[], customerCoords: LocationCoords | null): T[] {
   if (!customerCoords) {
     return [...workers].sort((a, b) => (b.trust_score ?? 0) - (a.trust_score ?? 0));
   }

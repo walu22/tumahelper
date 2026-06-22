@@ -3,12 +3,20 @@ import { getRouteHandlerClient, getAdminClient } from "@/lib/supabase";
 import { requireRole, successResponse, errorResponse } from "@/lib/auth";
 import { workerProfileSchema } from "@/lib/validations";
 import { encrypt } from "@/lib/encryption";
+import { resolveWorkerStorageCoords } from "@/lib/workers/location";
 
 export async function POST(request: NextRequest) {
   try {
     const user = await requireRole("worker");
     const body = await request.json();
     const validated = workerProfileSchema.parse(body);
+
+    const coords = resolveWorkerStorageCoords({
+      area: validated.area,
+      city: validated.city,
+      locationLat: validated.locationLat ?? body.locationLat,
+      locationLng: validated.locationLng ?? body.locationLng,
+    });
 
     const supabase = getRouteHandlerClient();
     const adminClient = getAdminClient();
@@ -26,6 +34,8 @@ export async function POST(request: NextRequest) {
       gender: validated.gender,
       city: validated.city,
       area: validated.area,
+      location_lat: coords?.lat ?? null,
+      location_lng: coords?.lng ?? null,
       bio: validated.bio,
       experience_years: validated.experienceYears,
       expected_salary_min: validated.expectedSalaryMin,

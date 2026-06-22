@@ -32,6 +32,8 @@ export const workerProfileSchema = z.object({
   fullName: z.string().min(2).max(255),
   city: z.string().min(1).max(100),
   area: z.string().min(1).max(100),
+  locationLat: z.number().min(-90).max(90).optional(),
+  locationLng: z.number().min(-180).max(180).optional(),
   category: z.enum(["nanny", "house_cleaner"]),
   subcategory: z.string().max(100).optional(),
   bio: z.string().max(500).optional(),

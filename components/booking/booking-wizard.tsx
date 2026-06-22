@@ -108,6 +108,8 @@ interface WorkerSummary {
   full_name: string
   city: string
   area: string
+  location_lat?: number | null
+  location_lng?: number | null
   category: string
   profile_photo_url: string | null
   average_rating: number
@@ -177,6 +179,8 @@ function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
     full_name: w.full_name as string,
     city: w.city as string,
     area: w.area as string,
+    location_lat: w.location_lat != null ? Number(w.location_lat) : null,
+    location_lng: w.location_lng != null ? Number(w.location_lng) : null,
     category: w.category as string,
     profile_photo_url: (w.profile_photo_url as string | null) ?? null,
     average_rating: (w.average_rating as number) ?? 0,

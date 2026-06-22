@@ -326,7 +326,7 @@ The following issues from the external audit were **fixed** in commit `86c9522`:
 
 | Item | Notes |
 |------|-------|
-| Proximity accuracy | Uses worker `area` suburb centroids, not per-worker GPS |
+| Proximity accuracy | Uses `worker_profiles.location_lat/lng` (suburb centroid by default; optional explicit GPS on save) |
 | `BookingSummaryPanel` | Non-guided path still unreachable (all categories use guided flows) |
 | `EMERGENCY_PLUMBING_AVAILABLE` | Still `false` until emergency plumbers onboarded; option hidden from UI |
 

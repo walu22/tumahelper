@@ -69,6 +69,8 @@ export interface WorkerProfile {
   gender: string | null;
   city: string;
   area: string;
+  location_lat?: number | null;
+  location_lng?: number | null;
   bio: string | null;
   experience_years: number;
   expected_salary_min: number | null;
