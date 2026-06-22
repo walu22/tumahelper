@@ -61,7 +61,6 @@ export function HeroServiceSearch() {
         )}
       >
         <div className="flex flex-1 items-center min-w-0 pl-4 sm:pl-5">
-          <Search className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden />
           <input
             ref={inputRef}
             type="search"
