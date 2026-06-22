@@ -57,6 +57,7 @@ export function HeroServiceSearch() {
         className={cn(
           "flex items-center gap-2 rounded-full border-2 bg-card shadow-lg transition-shadow",
           "h-14 sm:h-[4.25rem] pl-5 sm:pl-6 pr-1.5 sm:pr-2",
+          "focus-within:outline-none focus-within:ring-0",
           open ? "border-primary shadow-primary/10" : "border-border"
         )}
       >
@@ -93,9 +94,11 @@ export function HeroServiceSearch() {
           aria-autocomplete="list"
           autoComplete="off"
           className={cn(
-            "min-w-0 flex-1 h-full bg-transparent border-0 outline-none ring-0 shadow-none",
+            "min-w-0 flex-1 h-full bg-transparent border-0 shadow-none",
             "text-base sm:text-lg placeholder:text-muted-foreground",
-            "appearance-none [-webkit-appearance:none]"
+            "appearance-none [-webkit-appearance:none]",
+            "outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0",
+            "focus:shadow-none [-webkit-tap-highlight-color:transparent]"
           )}
         />
         <button
@@ -106,7 +109,8 @@ export function HeroServiceSearch() {
           className={cn(
             "shrink-0 flex items-center justify-center rounded-full bg-primary text-primary-foreground",
             "h-10 w-10 sm:h-11 sm:w-11 transition-opacity",
-            "hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "hover:bg-primary/90 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0",
+            "[-webkit-tap-highlight-color:transparent]",
             "disabled:pointer-events-none disabled:opacity-50"
           )}
         >
@@ -131,6 +135,8 @@ export function HeroServiceSearch() {
                 onClick={() => goToResult(result)}
                 className={cn(
                   "w-full px-4 py-3 text-left hover:bg-surface transition-colors",
+                  "outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0",
+                  "[-webkit-tap-highlight-color:transparent]",
                   index === activeIndex && "bg-primary/5"
                 )}
               >
@@ -153,9 +159,13 @@ export function HeroServiceSearch() {
             onClick={() => {
               setQuery(term);
               setOpen(true);
-              inputRef.current?.focus();
             }}
-            className="rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-foreground hover:border-primary/40 hover:bg-primary/5 transition-colors"
+            className={cn(
+              "rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-medium text-foreground",
+              "hover:border-primary/40 hover:bg-primary/5 transition-colors",
+              "outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0",
+              "[-webkit-tap-highlight-color:transparent]"
+            )}
           >
             {term}
           </button>
