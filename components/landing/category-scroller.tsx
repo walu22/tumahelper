@@ -109,9 +109,6 @@ export function CategoryScroller() {
               >
                 {cat.label}
               </span>
-              <span className="text-[10px] text-muted-foreground text-center leading-snug px-1">
-                {cat.subtitle}
-              </span>
             </button>
           );
         })}
