@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   HERO_POPULAR_SEARCHES,
@@ -99,10 +99,10 @@ export function HeroServiceSearch() {
           type="button"
           onClick={submitSearch}
           disabled={results.length === 0}
-          className="h-14 sm:h-16 rounded-none rounded-r-[0.9rem] px-5 sm:px-8 text-base font-semibold shrink-0"
+          aria-label="Search"
+          className="h-14 sm:h-16 rounded-none rounded-r-[0.9rem] px-4 sm:px-5 shrink-0"
         >
-          <span className="hidden sm:inline">Get help</span>
-          <ArrowRight className="h-5 w-5 sm:hidden" aria-hidden />
+          <Search className="h-5 w-5" aria-hidden />
         </Button>
       </div>
 
