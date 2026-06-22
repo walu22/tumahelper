@@ -24,12 +24,13 @@ function parsePricingHash(hash: string): HeroCategoryId | null {
 function VisitTypeCard({ visit }: { visit: PricingVisitType }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
         <div>
           <p className="font-semibold text-foreground">{visit.label}</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            {visit.hoursLabel} · {visit.priceLabel}
+          <p className="font-display text-2xl font-bold text-foreground mt-2 tracking-tight">
+            {visit.priceLabel}
           </p>
+          <p className="text-sm text-muted-foreground mt-1">{visit.hoursLabel}</p>
         </div>
         <Link
           href={visit.bookHref}
@@ -69,12 +70,13 @@ function FeaturedVisitCard({ category }: { category: PricingFeaturedCategory }) 
       </div>
 
       <div className="rounded-2xl border border-border bg-surface/60 p-5 md:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
           <div>
             <p className="font-semibold text-lg text-foreground">{featured.label}</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              {featured.hoursLabel} · {featured.priceLabel}
+            <p className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2 tracking-tight">
+              {featured.priceLabel}
             </p>
+            <p className="text-sm text-muted-foreground mt-2">{featured.hoursLabel}</p>
           </div>
           <Link
             href={featured.bookHref}

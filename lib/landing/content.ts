@@ -238,9 +238,11 @@ export const PLATFORM_TRUST_BAR = [
 
 export const SERVICES_DETAIL_INTRO = {
   eyebrow: "Typical prices in Lusaka",
-  headline: "Most visits start between K200 and K550.",
-  subtitle: "Prices vary by area, hours, and worker. No surprises at checkout.",
-  footnote: "Final price depends on your address, duties, and chosen worker.",
+  headline: "Clear prices before they arrive.",
+  subtitle:
+    "Browse typical ranges by service. Final price is shown at checkout — no haggling at the gate.",
+  footnote:
+    "Ranges are a guide for Lusaka visits. Your exact price is confirmed at checkout before your helper is booked.",
 } as const;
 
 export const WORKERS_SPOTLIGHT_INTRO = {
