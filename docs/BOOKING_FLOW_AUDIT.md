@@ -299,31 +299,61 @@ On `/customer/bookings/{id}`: `components/booking/payment-instructions.tsx`
 | 6 | `/customer/book?category=handyman&type=electrical` | HandymanBookingFlow → skill-filtered workers |
 | 7 | `/customer/book?category=handyman&type=plumbing` + standard job (e.g. leaking tap) | Extra classify step → WORKER → plumber skill filter |
 | 8 | Plumbing specialist job (`requiresAdminReview: true`) | classify → scope → **submit review** (no worker step) |
-| 9 | Logged-out user at worker step | Redirect to login with return URL; resumes after auth |
-| 10 | `/customer/book?category=cooking` (no type) | Redirect to `/#hero-cooking-panel` on homepage |
+| 9 | Logged-out user at worker step | Redirect to login with return URL; **wizard state restored** from `sessionStorage` after auth |
+| 10 | `/customer/book?category=cooking` (no type) | Starts guided flow with **default visit type** (no homepage redirect) |
 
 ---
 
-## Known Issues / Backlog (not yet fixed)
+## Audit fix status (June 2026)
+
+The following issues from the external audit were **fixed** in commit `86c9522`:
+
+| Severity | Issue | Resolution |
+|----------|-------|------------|
+| P0 | Worker skill pagination before in-memory filter | `app/api/workers/route.ts` — fetch up to 500 when `skills` set, filter, then paginate |
+| P0 | State loss on login redirect | `lib/booking/draft-persistence.ts` — `sessionStorage` save/restore in wizard |
+| P0 | Missing server-side validation | `lib/validations.ts` — nanny ages + handyman notes enforced |
+| P0 | Admin review amount placeholder | `amount: 0` for admin review; schema allows 0 only when `requiresAdminReview` |
+| P1 | No proximity routing | `lib/workers/proximity.ts` — sort by Lusaka suburb distance (area centroids) |
+| P1 | Emergency plumbing dead-end | Hide emergency flooding; uncontrollable leaks → specialist review |
+| P1 | Missing plumbing photo upload | `BookingJobPhotos` + `/api/uploads/booking-photos` |
+| P2 | Dead Airbnb guest time state | Inputs wired in `AirbnbBookingFlow` |
+| P2 | Dead `BookingScheduleFields` | Component removed |
+| P2 | `ServiceTypePicker` ignores `onSelect` | Cold start uses callback navigation |
+| P2 | Bare category redirects | Default service type; stay in wizard |
+
+### Remaining limitations
+
+| Item | Notes |
+|------|-------|
+| Proximity accuracy | Uses worker `area` suburb centroids, not per-worker GPS |
+| `BookingSummaryPanel` | Non-guided path still unreachable (all categories use guided flows) |
+| `EMERGENCY_PLUMBING_AVAILABLE` | Still `false` until emergency plumbers onboarded; option hidden from UI |
+
+---
+
+## Known Issues / Backlog (historical — see fix status above)
+
+> **Historical snapshot** — most items below were resolved in `86c9522`. See **Audit fix status** above.
 
 | ID | Issue | Location |
 |----|-------|----------|
-| Dead state | `guestCheckoutTime`, `nextCheckIn` — no UI, only in `buildBookingDescription` | `booking-wizard.tsx` |
-| Dead code | `BookingScheduleFields`, unreachable non-guided `BookingSummaryPanel` path | booking components |
-| Plumbing photos | Copy mentions upload; no upload UI in classifier | `plumbing-job-classifier.tsx` |
-| Emergency plumbing | `EMERGENCY_PLUMBING_AVAILABLE = false` may block emergency jobs | `handyman-plumbing.ts` |
-| No proximity | `locationLat`/`locationLng` saved but workers sorted by trust only | API + wizard |
-| Admin review amount | Hardcoded `50` cents placeholder | `handleSubmitReviewRequest` |
-| Bare category redirects | Marketing links with only `?category=` bounce to homepage | intentional but can surprise |
-| Client-only validation | Child ages, handyman notes, etc. not in Zod | various flow components |
-| ServiceTypePicker | `onSelect` prop ignored; uses link navigation | `service-type-picker.tsx` |
+| ~~Dead state~~ | ~~`guestCheckoutTime`, `nextCheckIn`~~ | Fixed in `airbnb-booking-flow.tsx` |
+| ~~Dead code~~ | ~~`BookingScheduleFields`~~ | Removed |
+| ~~Plumbing photos~~ | ~~No upload UI~~ | `booking-job-photos.tsx` |
+| ~~Emergency plumbing~~ | ~~Dead-end block~~ | Specialist routing + hidden option |
+| ~~No proximity~~ | ~~Trust-only sort~~ | `lib/workers/proximity.ts` |
+| ~~Admin review amount~~ | ~~Hardcoded 50 ngwee~~ | Uses `amount: 0` |
+| ~~Bare category redirects~~ | ~~Homepage bounce~~ | Default type in wizard |
+| ~~Client-only validation~~ | ~~Not in Zod~~ | `lib/validations.ts` |
+| ~~ServiceTypePicker~~ | ~~Link-only navigation~~ | `onSelect` callback |
 
-### Discussed but not implemented
+### Discussed — partially addressed
 
-- **D:** Area-aware worker list (filter/sort by `worker.area`)
-- **E:** Airbnb guest check-in/out times OR remove dead state
-- **F:** Plumbing photo upload
-- **G:** Dead code cleanup
+- **D:** Area-aware worker list — **done** via suburb proximity sort (centroid-based)
+- **E:** Airbnb guest times — **done**
+- **F:** Plumbing photo upload — **done**
+- **G:** Dead code cleanup — **partial** (`BookingScheduleFields` removed; `BookingSummaryPanel` non-guided path remains unreachable)
 
 ---
 
