@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -7,6 +8,7 @@ import {
 } from "lucide-react";
 import {
   GET_HELP_HREF,
+  HOW_IT_WORKS_HERO_IMAGE,
   HOW_IT_WORKS_STEP_BADGE_COLORS,
   PERMANENT_HIRE_SECTION_ID,
   PERMANENT_HIRE_WHATSAPP_MESSAGE,
@@ -41,24 +43,44 @@ export function PlatformOfferings() {
           </p>
         </div>
 
-        <div className="max-w-xl mx-auto rounded-3xl border border-border bg-card p-6 sm:p-8 md:p-10 mb-10">
-          <ol className="space-y-5 sm:space-y-6">
-            {PLATFORM_BOOKING_STEPS.map((step, index) => (
-              <li key={step.description} className="flex items-start gap-4">
-                <span
-                  className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base font-bold",
-                    HOW_IT_WORKS_STEP_BADGE_COLORS[index]
-                  )}
-                >
-                  {index + 1}
-                </span>
-                <p className="pt-1.5 text-base sm:text-lg text-foreground leading-snug">
-                  {step.description}
-                </p>
-              </li>
-            ))}
-          </ol>
+        <div className="relative overflow-hidden rounded-3xl bg-muted min-h-[22rem] md:min-h-[28rem] mb-10">
+          <Image
+            src={HOW_IT_WORKS_HERO_IMAGE}
+            alt="Home help booking"
+            fill
+            className="object-cover object-[70%_center] md:object-right"
+            sizes="(max-width: 768px) 100vw, 1280px"
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent md:from-background/70 md:via-background/20 md:to-transparent"
+            aria-hidden
+          />
+
+          <div className="relative z-10 flex items-center min-h-[22rem] md:min-h-[28rem] p-5 sm:p-8 md:p-10 lg:p-12">
+            <div className="w-full max-w-md rounded-2xl bg-card shadow-xl border border-border/60 p-6 sm:p-8 md:p-10">
+              <span className="inline-block rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">
+                {PLATFORM_OFFERINGS_INTRO.eyebrow}
+              </span>
+
+              <ol className="mt-6 sm:mt-8 space-y-5 sm:space-y-6">
+                {PLATFORM_BOOKING_STEPS.map((step, index) => (
+                  <li key={step.description} className="flex items-start gap-4">
+                    <span
+                      className={cn(
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base font-bold",
+                        HOW_IT_WORKS_STEP_BADGE_COLORS[index]
+                      )}
+                    >
+                      {index + 1}
+                    </span>
+                    <p className="pt-1.5 text-base sm:text-lg text-foreground leading-snug">
+                      {step.description}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
         </div>
 
         <p className="text-center text-sm text-muted-foreground mb-14">

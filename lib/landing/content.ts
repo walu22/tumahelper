@@ -239,6 +239,10 @@ export const HOW_IT_WORKS_STEP_BADGE_COLORS = [
   "bg-emerald-200 text-foreground",
 ] as const;
 
+/** Placeholder until real Lusaka photography is available. */
+export const HOW_IT_WORKS_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1400&h=800&fit=crop&q=80";
+
 export const SERVICES_DETAIL_INTRO = {
   eyebrow: "Typical prices in Lusaka",
   headline: "Clear prices before they arrive.",
