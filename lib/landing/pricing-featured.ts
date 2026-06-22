@@ -23,36 +23,22 @@ import { buildBookUrl } from "@/lib/services/utils";
 export type PricingVisitType = {
   id: string;
   label: string;
-  description: string;
   hoursLabel: string;
   priceLabel: string;
-  included: string[];
   bookHref: string;
   bookLabel: string;
-};
-
-export type PricingAddon = {
-  label: string;
-  description: string;
-  priceHint: string;
 };
 
 export type PricingFeaturedCategory = {
   id: HeroCategoryId;
   icon: ServiceIconKey;
   tabLabel: string;
-  categoryLabel: string;
-  tagline: string;
   featured: PricingVisitType;
-  moreTypes: PricingVisitType[];
-  addons: PricingAddon[];
 };
 
 const TAB_META = Object.fromEntries(
   HERO_CATEGORIES.map((category) => [category.id, category])
 ) as Record<HeroCategoryId, (typeof HERO_CATEGORIES)[number]>;
-
-const INCLUDED_PREVIEW_LIMIT = 5;
 
 function getTypesForTab(tabId: HeroCategoryId): ServiceTypeOption[] {
   switch (tabId) {
@@ -104,10 +90,8 @@ function toPricingVisitType(
   return {
     id: type.id,
     label: type.label,
-    description: type.description,
-    hoursLabel: `~${type.defaultHours}h`,
+    hoursLabel: `~${type.defaultHours} hours`,
     priceLabel: `K${type.priceHintMin}–${type.priceHintMax}`,
-    included: type.included,
     bookHref: getBookHref(tabId, type),
     bookLabel: `Book ${type.tabLabel ?? type.label}`,
   };
@@ -123,28 +107,19 @@ export function getPricingFeaturedCategories(): PricingFeaturedCategory[] {
       throw new Error(`Missing featured visit type for ${tabId}`);
     }
 
-    const catalogEntry =
-      tabId === "short_stay" ? null : SERVICE_CATALOG[tabId as ServiceCategoryKey];
-
-    const visitTypes = types.map((entry) => toPricingVisitType(tabId, entry));
-
     return {
       id: tabId,
       icon: meta.icon,
       tabLabel: tabLabel(tabId),
-      categoryLabel: meta.label,
-      tagline: catalogEntry?.tagline ?? meta.subtitle,
-      featured: {
-        ...toPricingVisitType(tabId, type),
-        included: type.included.slice(0, INCLUDED_PREVIEW_LIMIT),
-      },
-      moreTypes: visitTypes.slice(1),
-      addons:
-        catalogEntry?.addons.map((addon) => ({
-          label: addon.label,
-          description: addon.description,
-          priceHint: `+ ~K${addon.priceHint}`,
-        })) ?? [],
+      featured: toPricingVisitType(tabId, type),
     };
   });
+}
+
+export function getPricingCategory(tabId: HeroCategoryId): PricingFeaturedCategory {
+  const category = getPricingFeaturedCategories().find((entry) => entry.id === tabId);
+  if (!category) {
+    throw new Error(`Unknown pricing category: ${tabId}`);
+  }
+  return category;
 }

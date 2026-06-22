@@ -277,6 +277,24 @@ export const SERVICE_DETAIL_TAB_ORDER: HeroCategoryId[] = [
   "short_stay",
 ];
 
+/** Shown as icon tabs in the pricing section — the most booked categories. */
+export const PRICING_PRIMARY_TAB_ORDER: HeroCategoryId[] = [
+  "cleaning",
+  "nanny",
+  "housekeeping",
+  "short_stay",
+  "handyman",
+];
+
+/** Linked as text below primary tabs; full visit-type picker lives on the hero. */
+export const PRICING_SECONDARY_TAB_ORDER: HeroCategoryId[] = [
+  "cooking",
+  "laundry",
+  "garden",
+];
+
+export const PRICING_COMPARE_TYPES_LABEL = "Compare visit types on the homepage";
+
 export const PERMANENT_PLACEMENT_ROLES = [
   {
     title: "Full-time nanny",
