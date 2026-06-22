@@ -205,7 +205,7 @@ export const HERO_INTRO = {
   eyebrow: "Home help in Lusaka",
   headline: "Get a nanny or cleaner you can actually trust.",
   founderNote:
-    "We built TumaHelper after one too many no-shows. If we would not send them to our own homes, they do not go on the platform.",
+    "We built TumaHelper after one too many no-shows. If we wouldn't send them to our own homes, they don't go on the platform.",
   searchPlaceholder: "Try Saturday nanny or Airbnb turnover",
   trustLine: "We check NRC and references before anyone gets booked.",
 } as const;
