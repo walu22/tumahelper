@@ -3,7 +3,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   HERO_POPULAR_SEARCHES,
   searchHeroServices,
@@ -56,55 +55,63 @@ export function HeroServiceSearch() {
     <div ref={containerRef} className="relative max-w-2xl mx-auto mb-10">
       <div
         className={cn(
-          "flex items-stretch rounded-2xl border-2 bg-card shadow-lg transition-shadow",
+          "flex items-center gap-2 rounded-full border-2 bg-card shadow-lg transition-shadow",
+          "h-14 sm:h-[4.25rem] pl-5 sm:pl-6 pr-1.5 sm:pr-2",
           open ? "border-primary shadow-primary/10" : "border-border"
         )}
       >
-        <div className="flex flex-1 items-center min-w-0 pl-4 sm:pl-5">
-          <input
-            ref={inputRef}
-            type="text"
-            inputMode="search"
-            enterKeyHint="search"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setOpen(true);
-            }}
-            onFocus={() => setOpen(true)}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowDown" && results.length > 0) {
-                e.preventDefault();
-                setActiveIndex((index) => Math.min(index + 1, results.length - 1));
-              } else if (e.key === "ArrowUp" && results.length > 0) {
-                e.preventDefault();
-                setActiveIndex((index) => Math.max(index - 1, 0));
-              } else if (e.key === "Enter") {
-                e.preventDefault();
-                submitSearch();
-              } else if (e.key === "Escape") {
-                setOpen(false);
-              }
-            }}
-            placeholder="What do you need help with?"
-            aria-label="Search for a home service"
-            role="combobox"
-            aria-expanded={showDropdown}
-            aria-controls={listId}
-            aria-autocomplete="list"
-            autoComplete="off"
-            className="h-14 sm:h-16 w-full bg-transparent px-0 sm:px-1 text-base sm:text-lg outline-none placeholder:text-muted-foreground appearance-none"
-          />
-        </div>
-        <Button
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="search"
+          enterKeyHint="search"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown" && results.length > 0) {
+              e.preventDefault();
+              setActiveIndex((index) => Math.min(index + 1, results.length - 1));
+            } else if (e.key === "ArrowUp" && results.length > 0) {
+              e.preventDefault();
+              setActiveIndex((index) => Math.max(index - 1, 0));
+            } else if (e.key === "Enter") {
+              e.preventDefault();
+              submitSearch();
+            } else if (e.key === "Escape") {
+              setOpen(false);
+            }
+          }}
+          placeholder="What do you need help with?"
+          aria-label="Search for a home service"
+          role="combobox"
+          aria-expanded={showDropdown}
+          aria-controls={listId}
+          aria-autocomplete="list"
+          autoComplete="off"
+          className={cn(
+            "min-w-0 flex-1 h-full bg-transparent border-0 outline-none ring-0 shadow-none",
+            "text-base sm:text-lg placeholder:text-muted-foreground",
+            "appearance-none [-webkit-appearance:none]"
+          )}
+        />
+        <button
           type="button"
           onClick={submitSearch}
           disabled={results.length === 0}
           aria-label="Search"
-          className="h-14 sm:h-16 rounded-none rounded-r-[0.9rem] px-4 sm:px-5 shrink-0"
+          className={cn(
+            "shrink-0 flex items-center justify-center rounded-full bg-primary text-primary-foreground",
+            "h-10 w-10 sm:h-11 sm:w-11 transition-opacity",
+            "hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "disabled:pointer-events-none disabled:opacity-50"
+          )}
         >
           <Search className="h-5 w-5" aria-hidden />
-        </Button>
+        </button>
       </div>
 
       {showDropdown && (
