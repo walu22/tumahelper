@@ -30,13 +30,19 @@ import { TaskServiceBookingFlow } from '@/components/booking/task-service-bookin
 import { ServiceBookingSummary } from '@/components/booking/service-booking-summary'
 import type { ServiceFlowStep, LocationCoords } from '@/lib/booking/shared-flow'
 import { getBookingPageTitle } from '@/lib/booking/shared-flow'
+import {
+  CONFIRM_BOOKING_INTRO,
+  CONFIRM_BOOKING_STEP_LABEL,
+  getWorkerSelectionHeading,
+  resolveServiceDetailsForWorker,
+  resolveServiceDetailsFromSearchParams,
+} from '@/lib/booking/worker-deep-link'
 import { skillsForServiceCategory } from '@/lib/workers/skills'
 import { workerMeetsHandymanVerification } from '@/lib/workers/handyman-skills'
 import { plumbingRequiresAdminReview } from '@/lib/services/handyman-plumbing'
 import { ServiceTypePicker } from '@/components/booking/service-type-picker'
 import {
   categoryKeyToDbSlug,
-  categorySlugToKey,
   defaultBetweenGuestServiceDetails,
   defaultServiceDetails,
   isAirbnbCleaningType,
@@ -48,10 +54,10 @@ import {
   type ServiceDetails,
 } from '@/lib/services/catalog'
 import {
-  parseServiceDetailsFromParams,
   resolveFunnelParam,
   suggestPrice,
 } from '@/lib/services/utils'
+import type { PublicWorkerProfile, WorkerCategory } from '@/types'
 
 function guidePriceHint(details: ServiceDetails): string {
   if (isAirbnbCleaningType(details.serviceType)) {
@@ -113,14 +119,45 @@ const categoryParamToSlug: Record<string, string> = {
   handyman: 'house-cleaning',
 }
 
-/** 0 = pick service (optional prelude), 1 = Details, 2 = Worker, 3 = Payment */
+/** 0 = pick service (optional prelude), 1 = Details, 2 = Worker, 3 = Confirm booking */
 const STEP = { PICK: 0, DETAILS: 1, WORKER: 2, PAYMENT: 3 } as const
 
 const PROGRESS_STEPS = [
   { num: STEP.DETAILS, label: 'Details' },
   { num: STEP.WORKER, label: 'Worker' },
-  { num: STEP.PAYMENT, label: 'Payment' },
+  { num: STEP.PAYMENT, label: CONFIRM_BOOKING_STEP_LABEL },
 ]
+
+function mapApiWorkerProfile(w: Record<string, unknown>): PublicWorkerProfile {
+  return {
+    id: w.id as string,
+    user_id: w.user_id as string,
+    full_name: w.full_name as string,
+    city: w.city as string,
+    area: w.area as string,
+    bio: (w.bio as string | null) ?? null,
+    experience_years: (w.experience_years as number) ?? 0,
+    category: w.category as WorkerCategory,
+    subcategory: (w.subcategory as string | null) ?? null,
+    profile_photo_url: (w.profile_photo_url as string | null) ?? null,
+    trust_score: (w.trust_score as number) ?? 0,
+    trust_score_label: (w.trust_score_label as string) ?? '',
+    trust_score_color: (w.trust_score_color as string) ?? '',
+    is_provisional: (w.is_provisional as boolean) ?? false,
+    verification_level: (w.verification_level as PublicWorkerProfile['verification_level']) ?? 'none',
+    average_rating: (w.average_rating as number) ?? 0,
+    total_jobs_completed: (w.total_jobs_completed as number) ?? 0,
+    total_reviews: (w.total_reviews as number) ?? 0,
+    languages: (w.languages as string[]) ?? [],
+    skills: (w.skills as string[]) ?? [],
+    employment_types: (w.employment_types as PublicWorkerProfile['employment_types']) ?? [],
+    availability_status:
+      (w.availability_status as PublicWorkerProfile['availability_status']) ?? 'available',
+    expected_salary_min: (w.expected_salary_min as number | null) ?? null,
+    expected_salary_max: (w.expected_salary_max as number | null) ?? null,
+    is_featured: (w.is_featured as boolean) ?? false,
+  }
+}
 
 function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
   return {
@@ -140,14 +177,21 @@ function mapApiWorker(w: Record<string, unknown>): WorkerSummary {
   }
 }
 
-function resolveCategoryFromParams(
+function initServiceDetailsFromParams(
+  searchParams: URLSearchParams,
   categoryParam: string | null,
-  funnelParam: string | null
-): ServiceCategoryKey | null {
-  const fromCategory = paramToCategoryKey(categoryParam)
-  if (fromCategory) return fromCategory
-  const funnel = resolveFunnelParam(funnelParam)
-  return funnel?.category ?? null
+  funnelParam: string | null,
+  workerProfileId: string | null
+): ServiceDetails | null {
+  const fromParams = resolveServiceDetailsFromSearchParams(
+    searchParams,
+    categoryParam,
+    funnelParam
+  )
+  if (fromParams) return fromParams
+  if (workerProfileId) return null
+
+  return null
 }
 
 function getInitialStep(
@@ -156,33 +200,8 @@ function getInitialStep(
   workerProfileId: string | null
 ) {
   if (workerProfileId) return STEP.DETAILS
-  if (resolveCategoryFromParams(categoryParam, funnelParam)) return STEP.DETAILS
+  if (paramToCategoryKey(categoryParam) || resolveFunnelParam(funnelParam)) return STEP.DETAILS
   return STEP.PICK
-}
-
-function initServiceDetailsFromParams(
-  searchParams: URLSearchParams,
-  categoryParam: string | null,
-  funnelParam: string | null,
-  workerProfileId: string | null
-): ServiceDetails | null {
-  if (workerProfileId) return null
-
-  const key = resolveCategoryFromParams(categoryParam, funnelParam)
-    ?? (searchParams.get('type') && isAirbnbCleaningType(normalizeServiceType('cleaning', searchParams.get('type')!))
-      ? 'cleaning'
-      : null)
-  if (!key) return null
-
-  const parsed = parseServiceDetailsFromParams(searchParams)
-  const funnel = resolveFunnelParam(funnelParam)
-  let details = parsed ?? defaultServiceDetails(key)
-  if (funnel?.type) details = { ...details, serviceType: normalizeServiceType(key, funnel.type) }
-
-  const typeOption = getServiceType(key, details.serviceType)
-  if (typeOption) details.durationHours = typeOption.defaultHours
-
-  return details
 }
 
 function workerCategorySlug(category: ServiceCategoryKey) {
@@ -430,12 +449,17 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           return
         }
         const w = mapApiWorker(res.data)
-        const slug = categoryKeyToDbSlug(w.category === 'nanny' ? 'nanny' : 'cleaning')
+        const profile = mapApiWorkerProfile(res.data)
+        const details = resolveServiceDetailsForWorker(
+          profile,
+          searchParams,
+          categoryParam,
+          funnelParam
+        )
+        const slug = categoryKeyToDbSlug(details.category)
         const cat = categories.find((c) => c.slug === slug)
-        const key = categorySlugToKey(slug)!
-        const parsed = parseServiceDetailsFromParams(searchParams)
         if (cat) setSelectedCategory(cat)
-        setServiceDetails(parsed ?? defaultServiceDetails(key))
+        setServiceDetails(details)
         preselectedWorkerRef.current = w.user_id
         setSelectedWorker(w)
         setStep(STEP.DETAILS)
@@ -446,7 +470,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         setStep(STEP.WORKER)
       })
       .finally(() => setDeepLinkLoading(false))
-  }, [workerProfileId, categories, categoriesLoading, searchParams])
+  }, [workerProfileId, categories, categoriesLoading, searchParams, categoryParam, funnelParam])
 
   useEffect(() => {
     if (step !== STEP.PAYMENT || !serviceDetails) return;
@@ -920,15 +944,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
             <Card>
               <CardContent className="p-6 space-y-4">
                 <h2 className="text-xl font-semibold">
-                  {serviceDetails?.category === 'nanny'
-                    ? 'Choose your nanny'
-                    : serviceDetails?.category === 'housekeeping'
-                      ? 'Choose your housekeeper'
-                      : serviceDetails?.category === 'cooking'
-                        ? 'Choose your cook'
-                        : serviceDetails?.category === 'handyman'
-                          ? 'Choose your helper'
-                          : 'Choose your cleaner'}
+                  {serviceDetails
+                    ? getWorkerSelectionHeading(
+                        serviceDetails.category,
+                        serviceDetails.serviceType
+                      )
+                    : 'Choose your helper'}
                 </h2>
 
                 <div className="relative">
@@ -1067,9 +1088,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
             <Card>
               <CardContent className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-xl font-semibold">Confirm & pay</h2>
+                  <h2 className="text-xl font-semibold">{CONFIRM_BOOKING_INTRO.title}</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Review the guide price and confirm your booking.
+                    {CONFIRM_BOOKING_INTRO.subtitle}
                   </p>
                 </div>
 
