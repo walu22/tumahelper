@@ -63,7 +63,9 @@ export function HeroServiceSearch() {
         <div className="flex flex-1 items-center min-w-0 pl-4 sm:pl-5">
           <input
             ref={inputRef}
-            type="search"
+            type="text"
+            inputMode="search"
+            enterKeyHint="search"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -91,7 +93,7 @@ export function HeroServiceSearch() {
             aria-controls={listId}
             aria-autocomplete="list"
             autoComplete="off"
-            className="h-14 sm:h-16 w-full bg-transparent px-3 sm:px-4 text-base sm:text-lg outline-none placeholder:text-muted-foreground"
+            className="h-14 sm:h-16 w-full bg-transparent px-0 sm:px-1 text-base sm:text-lg outline-none placeholder:text-muted-foreground appearance-none"
           />
         </div>
         <Button
