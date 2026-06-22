@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
-import { FAQ_CTA_INTRO, FAQ_ITEMS, GET_HELP_HREF } from "@/lib/landing/content";
+import { FAQ_CTA_INTRO, FAQ_ITEMS, GET_HELP_HREF, HERO_WHATSAPP_MESSAGE } from "@/lib/landing/content";
 
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "260970000000";
-const whatsappHref = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent("Hi TumaHelper, I need help finding a worker in Lusaka.")}`;
+const whatsappHref = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
+  HERO_WHATSAPP_MESSAGE
+)}`;
 
 export function LandingFaqCta() {
   return (
@@ -33,7 +35,7 @@ export function LandingFaqCta() {
 
         <div className="rounded-3xl border border-border bg-card p-8 sm:p-10 shadow-lg flex flex-col justify-center">
           <div className="mb-8">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
+            <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
               {FAQ_CTA_INTRO.eyebrow}
             </p>
             <h2 className="font-display text-3xl font-bold mb-4 text-balance text-foreground">

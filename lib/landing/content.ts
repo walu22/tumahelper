@@ -171,7 +171,7 @@ export const PERMANENT_PLACEMENT_STEPS = [
 ] as const;
 
 export const PERMANENT_HIRE_WHATSAPP_MESSAGE =
-  "Hi TumaHelper, I'm looking for permanent domestic help in Lusaka (full-time nanny / housekeeper / live-in). Can you help?";
+  "Hi TumaHelper, I need full-time or live-in help in Lusaka. Can you help me find someone?";
 
 /** Primary header CTA — opens the homepage service picker. */
 export const HEADER_BOOK_CTA = {
@@ -199,25 +199,37 @@ export const PRIMARY_NAV_LINKS = [
 ] as const;
 
 export const FOOTER_TAGLINE =
-  "Connecting Lusaka families with trusted, verified home help: nannies, cleaners, housekeepers, cooks, laundry, gardeners, and short-stay turnover cleaning.";
+  "Verified nannies, cleaners, and home help for families in Lusaka. We reply on WhatsApp, usually the same day.";
+
+export const HERO_INTRO = {
+  eyebrow: "Home help in Lusaka",
+  headline: "Get a nanny or cleaner you can actually trust.",
+  founderNote:
+    "We built TumaHelper after one too many no-shows. If we would not send them to our own homes, they do not go on the platform.",
+  searchPlaceholder: "Try Saturday nanny or Airbnb turnover",
+  trustLine: "We check NRC and references before anyone gets booked.",
+} as const;
+
+export const HERO_WHATSAPP_MESSAGE =
+  "Hi, I'm in Lusaka and need help at home. Can you point me in the right direction?";
 
 export const PLATFORM_OFFERINGS_INTRO = {
   eyebrow: "How it works",
-  headline: "One place to book trusted help at home.",
+  headline: "Three steps to book help at home.",
   subtitle:
-    "Choose a service, pick a verified worker, and book for a single visit or every week.",
+    "Like a referral from someone in your estate, but we check NRC and references before they come through your gate.",
 };
 
-/** TaskRabbit-style step copy — single line per step in the overlay card. */
+/** Single line per step in the how-it-works card. */
 export const PLATFORM_BOOKING_STEPS = [
   {
-    description: "Search for the service you need.",
+    description: "Search for what you need, or pick a service below.",
   },
   {
-    description: "Pick a verified helper and schedule your visit.",
+    description: "Choose a helper and pick a time that works for you.",
   },
   {
-    description: "Pay via Airtel Money and leave a review after the visit.",
+    description: "Pay on Airtel Money after booking. Leave a review when the visit is done.",
   },
 ] as const;
 
@@ -227,41 +239,31 @@ export const HOW_IT_WORKS_STEP_BADGE_COLORS = [
   "bg-emerald-200 text-foreground",
 ] as const;
 
-export const HOW_IT_WORKS_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1400&h=800&fit=crop&q=80";
-
-export const PLATFORM_TRUST_BAR = [
-  "NRC identity checks",
-  "Reference verification",
-  "Reviews & trust scores",
-] as const;
-
 export const SERVICES_DETAIL_INTRO = {
   eyebrow: "Typical prices in Lusaka",
   headline: "Clear prices before they arrive.",
   subtitle:
-    "Browse typical ranges by service. Final price is shown at checkout — no haggling at the gate.",
+    "Browse typical ranges by service. You see the final price at checkout. No haggling at the gate.",
   footnote:
     "Ranges are a guide for Lusaka visits. Your exact price is confirmed at checkout before your helper is booked.",
 } as const;
 
 export const WORKERS_SPOTLIGHT_INTRO = {
-  eyebrow: "Real profiles",
-  headline: "Helpers families in Lusaka already book.",
+  eyebrow: "Available this week",
+  headline: "Meet helpers families in Lusaka are booking.",
   subtitle:
-    "NRC-checked profiles with areas, experience, and reviews. Choose during booking or browse first.",
-  emptyHeadline: "Verified helpers joining every week",
+    "Real profiles with areas, experience, and reviews. Pick someone during booking, or browse first.",
+  emptyHeadline: "Helpers are joining every week",
   emptySubtitle:
-    "We're growing Lusaka's trusted home-help network. Browse profiles as more helpers go live.",
+    "We are still growing the network. Check back soon, or WhatsApp us if you need help finding someone.",
 } as const;
 
 export const WORKERS_SPOTLIGHT_LIMIT = 3;
 
 export const FAQ_CTA_INTRO = {
   eyebrow: "Still deciding?",
-  headline: "Book help when you're ready.",
-  subtitle:
-    "Browse profiles first, or jump straight into booking from the homepage.",
+  headline: "Book when you are ready.",
+  subtitle: "Browse profiles first, or start from the homepage. We are happy to help on WhatsApp.",
   bookLabel: "Book a service",
   browseLabel: "Browse all workers",
 } as const;
@@ -293,7 +295,22 @@ export const PRICING_SECONDARY_TAB_ORDER: HeroCategoryId[] = [
   "garden",
 ];
 
-export const PRICING_COMPARE_TYPES_LABEL = "Compare visit types on the homepage";
+export const PRICING_COMPARE_TYPES_LABEL = "Need a different visit type? Pick from the homepage";
+
+export const WORKER_RECRUITMENT_INTRO = {
+  headline: "Are you a nanny, cleaner, cook, or housekeeper in Lusaka?",
+  subtitle:
+    "Apply to get verified, set your skills and availability, and receive bookings from families in your area.",
+  ctaLabel: "Apply as a worker",
+} as const;
+
+export const TRUST_SECTION_INTRO = {
+  eyebrow: "Trust first",
+  headline: "Know who is coming through your gate.",
+  subtitle:
+    "In Lusaka, hiring help often means a WhatsApp forward and hoping they show up. We check NRC, call references, and track reviews so you know who you are letting in.",
+  linkLabel: "Browse helpers",
+} as const;
 
 export const PERMANENT_PLACEMENT_ROLES = [
   {
@@ -311,39 +328,43 @@ export const PERMANENT_PLACEMENT_ROLES = [
 ];
 
 export const SAFETY_SIGNALS = [
-  "NRC identity checks on every worker",
-  "Employer reference verification before profiles go live",
-  "Trust scores updated after each completed job",
-  "Pay via Airtel Money or cash, with proof upload",
+  "NRC check on every worker before their profile goes live",
+  "We call previous employers for references",
+  "Trust scores update after each completed visit",
+  "Pay on Airtel Money or cash. Upload proof if you pay in the app",
 ];
 
 export const FAQ_ITEMS = [
   {
     q: "How are workers verified?",
-    a: "Every worker passes NRC identity checks and employer reference verification. Top performers earn trust scores and verification badges based on completed jobs and reviews.",
+    a: "We check NRC and call previous employers before a profile goes live. After each visit, families leave reviews and trust scores update.",
   },
   {
     q: "How do I pay?",
-    a: "After booking, pay via Airtel Money and upload your confirmation screenshot. Cash on arrival works too. Just agree with your worker beforehand.",
+    a: "Pay on Airtel Money and upload your confirmation screenshot in the app. Cash on the day is fine too. Just agree with your helper beforehand.",
+  },
+  {
+    q: "What if they do not show up?",
+    a: "Message us on WhatsApp as soon as you can. We will help you rebook or follow up with the helper.",
   },
   {
     q: "Can I book once or regularly?",
-    a: "Both. Book a single visit or schedule recurring help with the same verified worker. Many families book regularly before moving to permanent hire.",
+    a: "Both. Book a single visit or keep booking the same helper. Many families try someone a few times before hiring full-time.",
   },
   {
     q: "What about full-time or live-in help?",
-    a: "Start by booking a worker you like, or contact us for a permanent placement. We help match live-in nannies, housekeepers, and long-term domestic workers in Lusaka.",
+    a: "Book someone you like for a few visits first, or WhatsApp us for a permanent placement. We help with live-in nannies and housekeepers across Lusaka.",
   },
   {
     q: "Which areas do you cover?",
-    a: "We serve households across Lusaka, including Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, Chelstone, and surrounding areas.",
+    a: "Most bookings are in Kabulonga, Woodlands, Roma, Meanwood, Ibex Hill, and Chelstone. Outside that? WhatsApp us and we will tell you honestly if we can help.",
   },
   {
     q: "Can I book a cook for lunch or dinner?",
-    a: "Yes. Choose Cooking & meals on the homepage, pick lunch, dinner, meal prep, or weekly cooking, then set your schedule. You provide ingredients unless you agree otherwise with your cook.",
+    a: "Yes. Pick Cooking and meals on the homepage, choose lunch, dinner, or meal prep, then set your time. You provide ingredients unless you agree something else with your cook.",
   },
   {
     q: "Do you clean short-stay rentals?",
-    a: "Yes. Short-stay cleaning covers Airbnbs, guesthouses, and furnished rentals: guest checkout, same-day turnaround, deep cleans, and linen setup.",
+    a: "Yes. Guest checkout, same-day turnaround, deep cleans, and linen setup for Airbnbs and guesthouses.",
   },
 ];

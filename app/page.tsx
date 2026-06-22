@@ -50,12 +50,12 @@ export default async function HomePage() {
   return (
     <div className="overflow-x-hidden bg-background">
       <LandingHero />
+      <SweepStarsSection workers={featuredWorkers} availableCount={availableCount} />
       <PlatformOfferings />
       <ServicesDetailSection />
-      <SweepStarsSection workers={featuredWorkers} availableCount={availableCount} />
       <TrustSection />
-      <WorkerRecruitment />
       <LandingFaqCta />
+      <WorkerRecruitment />
     </div>
   );
 }

@@ -16,13 +16,13 @@ function formatAvailabilityLine(
   ).slice(0, 3);
 
   if (areas.length === 0) {
-    return `${availableCount} available now · across Lusaka`;
+    return `${availableCount} helpers available across Lusaka`;
   }
 
   const areaText =
-    availableCount > areas.length ? `${areas.join(", ")} & more` : areas.join(", ");
+    availableCount > areas.length ? `${areas.join(", ")} and more` : areas.join(", ");
 
-  return `${availableCount} available now · ${areaText}`;
+  return `${availableCount} helpers available in ${areaText}`;
 }
 
 export function SweepStarsSection({
@@ -39,7 +39,7 @@ export function SweepStarsSection({
     return (
       <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-surface border-t border-border">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
+          <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
             {WORKERS_SPOTLIGHT_INTRO.eyebrow}
           </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-balance">
@@ -64,7 +64,7 @@ export function SweepStarsSection({
     <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-surface border-t border-border">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-6 md:mb-8">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
+          <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
             {WORKERS_SPOTLIGHT_INTRO.eyebrow}
           </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-balance">

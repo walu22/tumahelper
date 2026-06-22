@@ -3,6 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import { HERO_INTRO } from "@/lib/landing/content";
 import {
   HERO_POPULAR_SEARCHES,
   searchHeroServices,
@@ -86,7 +87,7 @@ export function HeroServiceSearch() {
               setOpen(false);
             }
           }}
-          placeholder="What do you need help with?"
+          placeholder={HERO_INTRO.searchPlaceholder}
           aria-label="Search for a home service"
           role="combobox"
           aria-expanded={showDropdown}

@@ -1,15 +1,8 @@
 import Link from "next/link";
-import { Shield, Star, MapPin } from "lucide-react";
 import { CategoryScroller } from "./category-scroller";
 import { HeroServiceSearch } from "./hero-service-search";
 import { LogoMark } from "@/components/brand/logo";
-import { PERMANENT_HIRE_HREF } from "@/lib/landing/content";
-
-const TRUST_POINTS = [
-  { icon: Shield, label: "NRC verified workers" },
-  { icon: Star, label: "Real reviews" },
-  { icon: MapPin, label: "Across Lusaka" },
-];
+import { HERO_INTRO, PERMANENT_HIRE_HREF } from "@/lib/landing/content";
 
 export function LandingHero() {
   return (
@@ -20,11 +13,14 @@ export function LandingHero() {
             <LogoMark size={56} />
           </div>
           <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
-            Trusted home help in Lusaka
+            {HERO_INTRO.eyebrow}
           </p>
-          <h1 className="font-display text-[2.75rem] sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.05] text-balance text-foreground mb-8">
-            Book verified home help.
+          <h1 className="font-display text-[2.75rem] sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.05] text-balance text-foreground mb-6">
+            {HERO_INTRO.headline}
           </h1>
+          <p className="text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
+            {HERO_INTRO.founderNote}
+          </p>
           <HeroServiceSearch />
         </div>
 
@@ -34,30 +30,25 @@ export function LandingHero() {
 
         <div className="text-center max-w-3xl mx-auto">
           <p className="mb-6 text-sm text-muted-foreground">
-            Need someone permanently?{" "}
+            {HERO_INTRO.trustLine}
+          </p>
+
+          <p className="mb-4 text-sm text-muted-foreground">
+            Need someone full-time?{" "}
             <Link href={PERMANENT_HIRE_HREF} className="font-semibold text-primary hover:underline">
-              Get in touch
+              WhatsApp us
             </Link>
           </p>
 
-          <p className="mb-8 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Are you a worker?{" "}
             <Link
               href="/register?role=worker"
               className="font-semibold text-primary hover:underline"
             >
-              Apply now
+              Apply here
             </Link>
           </p>
-
-          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            {TRUST_POINTS.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-2">
-                <Icon className="h-4 w-4 text-primary" />
-                {label}
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>

@@ -9,7 +9,7 @@ export function ServicesDetailSection() {
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary mb-4">
+          <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
             {SERVICES_DETAIL_INTRO.eyebrow}
           </p>
           <h2 className="font-display text-3xl md:text-[2.75rem] font-bold text-balance leading-tight">
