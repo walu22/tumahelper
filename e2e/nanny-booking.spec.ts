@@ -80,7 +80,7 @@ test.describe("Nanny booking end-to-end", () => {
     await expect(page.getByText("Sarah Mulenga")).toBeVisible();
 
     await page.getByRole("button", { name: /Sarah Mulenga/i }).click();
-    await expect(page.getByRole("heading", { name: "Confirm & pay" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Confirm your booking" })).toBeVisible();
 
     await expect(page.getByText(/Guide price \(ZMW\)/i)).toBeVisible();
     await expect(page.getByText(/^K\d+$/).first()).toBeVisible();

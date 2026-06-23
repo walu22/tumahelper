@@ -72,7 +72,7 @@ test.describe("Housekeeping booking end-to-end", () => {
     await expect(page.getByText("Grace Phiri")).toBeVisible();
     await page.getByRole("button", { name: /Grace Phiri/i }).click();
 
-    await expect(page.getByRole("heading", { name: "Confirm & pay" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Confirm your booking" })).toBeVisible();
     await expect(page.getByText("Duties", { exact: true })).toBeVisible();
 
     await Promise.all([
