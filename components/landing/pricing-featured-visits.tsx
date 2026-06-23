@@ -10,7 +10,7 @@ import {
   PRICING_PRIMARY_TAB_ORDER,
   PRICING_SECONDARY_TAB_ORDER,
   PRICING_SECTION_ID,
-  SERVICES_DETAIL_INTRO,
+  PRICING_FOOTNOTE,
   type HeroCategoryId,
 } from "@/lib/landing/content";
 import {
@@ -157,7 +157,7 @@ export function PricingFeaturedVisits() {
       </p>
 
       <p className="text-center text-sm text-muted-foreground mt-6 max-w-2xl mx-auto leading-relaxed">
-        {SERVICES_DETAIL_INTRO.footnote}
+        {PRICING_FOOTNOTE}
       </p>
     </div>
   );
