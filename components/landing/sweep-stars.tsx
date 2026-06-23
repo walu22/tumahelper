@@ -1,51 +1,26 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { LandingWorkerCard } from "@/components/landing/landing-worker-card";
-import {
-  WORKERS_SPOTLIGHT_INTRO,
-  WORKERS_SPOTLIGHT_LIMIT,
-} from "@/lib/landing/content";
+import { WORKERS_SPOTLIGHT_INTRO, WORKERS_SPOTLIGHT_LIMIT } from "@/lib/landing/content";
 import type { PublicWorkerProfile } from "@/types";
-
-function formatAvailabilityLine(
-  workers: PublicWorkerProfile[],
-  availableCount: number
-): string {
-  const areas = Array.from(
-    new Set(workers.map((worker) => worker.area).filter(Boolean))
-  ).slice(0, 3);
-
-  if (areas.length === 0) {
-    return `${availableCount} helpers available across Lusaka`;
-  }
-
-  const areaText =
-    availableCount > areas.length ? `${areas.join(", ")} and more` : areas.join(", ");
-
-  return `${availableCount} helpers available in ${areaText}`;
-}
 
 export function SweepStarsSection({
   workers,
-  availableCount,
+  reviewQuotes,
 }: {
   workers: PublicWorkerProfile[] | null;
-  availableCount?: number | null;
+  reviewQuotes?: Record<string, string>;
 }) {
   const listed = workers?.slice(0, WORKERS_SPOTLIGHT_LIMIT) ?? [];
-  const count = availableCount ?? listed.length;
 
   if (listed.length === 0) {
     return (
-      <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-surface border-t border-border">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
-            {WORKERS_SPOTLIGHT_INTRO.eyebrow}
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-balance">
+      <section className="border-t border-border bg-surface px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="mb-4 font-display text-3xl font-bold text-balance md:text-4xl">
             {WORKERS_SPOTLIGHT_INTRO.emptyHeadline}
           </h2>
-          <p className="text-muted-foreground leading-relaxed mb-8">
+          <p className="mb-8 leading-relaxed text-muted-foreground">
             {WORKERS_SPOTLIGHT_INTRO.emptySubtitle}
           </p>
           <Link
@@ -61,36 +36,27 @@ export function SweepStarsSection({
   }
 
   return (
-    <section className="py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-surface border-t border-border">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-6 md:mb-8">
-          <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
-            {WORKERS_SPOTLIGHT_INTRO.eyebrow}
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-balance">
+    <section className="border-t border-border bg-surface px-4 py-16 sm:px-6 md:py-20 lg:px-8">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-8 text-center md:mb-10">
+          <h2 className="font-display text-3xl font-bold text-balance md:text-4xl">
             {WORKERS_SPOTLIGHT_INTRO.headline}
           </h2>
-          <p className="text-muted-foreground mt-4 leading-relaxed max-w-2xl mx-auto">
+          <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-muted-foreground">
             {WORKERS_SPOTLIGHT_INTRO.subtitle}
           </p>
         </div>
 
-        {count > 0 && (
-          <p className="text-center text-sm text-muted-foreground mb-8 md:mb-10">
-            {formatAvailabilityLine(listed, count)}
-          </p>
-        )}
-
-        <ul className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:overflow-visible md:gap-5 mb-10">
+        <ul className="-mx-4 mb-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-hide md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0">
           {listed.map((worker) => (
             <li
               key={worker.id}
-              className="snap-start shrink-0 w-[min(88vw,22rem)] md:w-auto md:min-w-0 min-h-[220px]"
+              className="w-[min(88vw,22rem)] shrink-0 snap-start md:w-auto md:min-w-0"
             >
               <LandingWorkerCard
                 worker={worker}
-                featured={!!worker.is_featured}
                 variant="spotlight"
+                reviewQuote={reviewQuotes?.[worker.user_id]}
               />
             </li>
           ))}

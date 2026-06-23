@@ -240,10 +240,8 @@ export const HOW_IT_WORKS_HERO_IMAGE =
   "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1400&h=800&fit=crop&q=80";
 
 export const WORKERS_SPOTLIGHT_INTRO = {
-  eyebrow: "Available this week",
-  headline: "Meet helpers Lusaka families are booking.",
-  subtitle:
-    "Real profiles with service areas, experience, and reviews. Pick someone during booking, or browse first.",
+  headline: "Families in Lusaka are already booking trusted helpers.",
+  subtitle: "Tap a profile to book, or browse everyone.",
   emptyHeadline: "Helpers are joining every week",
   emptySubtitle:
     "We are still growing the network. Check back soon, or WhatsApp us if you need help finding someone.",
