@@ -1,5 +1,5 @@
 import { redirect, notFound } from "next/navigation";
-import { pricingTabHref } from "@/lib/landing/content";
+import { heroCategoryPanelHref } from "@/lib/landing/content";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 
 const VALID: ServiceCategoryKey[] = [
@@ -12,7 +12,7 @@ const VALID: ServiceCategoryKey[] = [
   "handyman",
 ];
 
-/** Legacy route — service guides live in the homepage pricing section. */
+/** Legacy route — opens the matching homepage service panel. */
 export default function ServiceCategoryPage({
   params,
 }: {
@@ -21,5 +21,5 @@ export default function ServiceCategoryPage({
   const key = params.category as ServiceCategoryKey;
   if (!VALID.includes(key)) notFound();
 
-  redirect(pricingTabHref(key));
+  redirect(heroCategoryPanelHref(key));
 }

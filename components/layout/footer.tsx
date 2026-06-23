@@ -4,7 +4,6 @@ import {
   FOOTER_TAGLINE,
   GET_HELP_HREF,
   PERMANENT_HIRE_HREF,
-  PRICING_SECTION_HREF,
   SHORT_STAY_CLEAN_BOOK_HREF,
 } from "@/lib/landing/content";
 import { cn } from "@/lib/utils";
@@ -34,7 +33,6 @@ export function Footer({ className }: { className?: string }) {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href={GET_HELP_HREF} className="hover:text-primary transition-colors">Book a service</Link></li>
               <li><Link href="/workers" className="hover:text-primary transition-colors">Find a worker</Link></li>
-              <li><Link href={PRICING_SECTION_HREF} className="hover:text-primary transition-colors">Typical prices</Link></li>
               <li><Link href={PERMANENT_HIRE_HREF} className="hover:text-primary transition-colors">Permanent hire</Link></li>
               <li><Link href={SHORT_STAY_CLEAN_BOOK_HREF} className="hover:text-primary transition-colors">Short-stay cleaning</Link></li>
             </ul>

@@ -16,7 +16,6 @@ import {
   PERMANENT_PLACEMENT_STEPS,
   PLATFORM_BOOKING_STEPS,
   PLATFORM_OFFERINGS_INTRO,
-  PRICING_SECTION_HREF,
 } from "@/lib/landing/content";
 import { cn } from "@/lib/utils";
 
@@ -82,13 +81,6 @@ export function PlatformOfferings() {
             </div>
           </div>
         </div>
-
-        <p className="text-center text-sm text-muted-foreground mb-14">
-          Want typical prices first?{" "}
-          <Link href={PRICING_SECTION_HREF} className="font-semibold text-primary hover:underline">
-            See typical Lusaka prices
-          </Link>
-        </p>
 
         <div
           id={PERMANENT_HIRE_SECTION_ID}

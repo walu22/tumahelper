@@ -141,18 +141,13 @@ export const PRIMARY_BOOK_HREF = NANNY_BOOK_HREF;
 
 export const GET_HELP_HREF = "/#choose-service";
 
-export const PRICING_SECTION_ID = "pricing";
-
-/** In-page link to pricing & scope reference on the homepage. */
-export const PRICING_SECTION_HREF = `/#${PRICING_SECTION_ID}`;
-
 export const PERMANENT_HIRE_SECTION_ID = "permanent-hire";
 
 /** In-page link to permanent placement block on the homepage. */
 export const PERMANENT_HIRE_HREF = `/#${PERMANENT_HIRE_SECTION_ID}`;
 
-export function pricingTabHref(tabId: HeroCategoryId): string {
-  return `/#pricing-${tabId}`;
+export function heroCategoryPanelHref(tabId: HeroCategoryId): string {
+  return `/#${HERO_CATEGORY_PANEL_IDS[tabId]}`;
 }
 
 export const PERMANENT_PLACEMENT_STEPS = [
@@ -243,9 +238,6 @@ export const HOW_IT_WORKS_STEP_BADGE_COLORS = [
 export const HOW_IT_WORKS_HERO_IMAGE =
   "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1400&h=800&fit=crop&q=80";
 
-export const PRICING_FOOTNOTE =
-  "Ranges are a guide for Lusaka visits. Your exact price is confirmed at checkout before your helper is booked." as const;
-
 export const WORKERS_SPOTLIGHT_INTRO = {
   eyebrow: "Available this week",
   headline: "Meet helpers Lusaka families are booking.",
@@ -265,35 +257,6 @@ export const FAQ_CTA_INTRO = {
   bookLabel: "Book a service",
   browseLabel: "Browse all workers",
 } as const;
-
-export const SERVICE_DETAIL_TAB_ORDER: HeroCategoryId[] = [
-  "nanny",
-  "cleaning",
-  "housekeeping",
-  "cooking",
-  "laundry",
-  "garden",
-  "handyman",
-  "short_stay",
-];
-
-/** Shown as icon tabs in the pricing section — the most booked categories. */
-export const PRICING_PRIMARY_TAB_ORDER: HeroCategoryId[] = [
-  "cleaning",
-  "nanny",
-  "housekeeping",
-  "short_stay",
-  "handyman",
-];
-
-/** Linked as text below primary tabs; full visit-type picker lives on the hero. */
-export const PRICING_SECONDARY_TAB_ORDER: HeroCategoryId[] = [
-  "cooking",
-  "laundry",
-  "garden",
-];
-
-export const PRICING_COMPARE_TYPES_LABEL = "Need a different visit type? Pick from the homepage";
 
 export const TRUST_SECTION_INTRO = {
   eyebrow: "Trust first",
