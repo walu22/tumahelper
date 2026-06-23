@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { searchHeroServices } from "./hero-search";
+import {
+  resolvePopularHeroSearch,
+  searchHeroServices,
+} from "./hero-search";
 
 describe("searchHeroServices", () => {
-  it("returns popular categories when the query is empty", () => {
+  it("returns popular bookable services when the query is empty", () => {
     const results = searchHeroServices("");
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0]?.categoryLabel).toBe("Browse services");
+    expect(results[0]?.href).toMatch(/^\/customer\/book/);
   });
 
   it("finds plumbing-related services", () => {
@@ -27,5 +30,14 @@ describe("searchHeroServices", () => {
   it("finds short-stay cleaning from airbnb queries", () => {
     const results = searchHeroServices("airbnb");
     expect(results.length).toBeGreaterThan(0);
+  });
+});
+
+describe("resolvePopularHeroSearch", () => {
+  it("links popular pills straight into booking", () => {
+    expect(resolvePopularHeroSearch("Plumbing")?.href).toContain("handyman");
+    expect(resolvePopularHeroSearch("Plumbing")?.href).toContain("plumbing");
+    expect(resolvePopularHeroSearch("Short-stay cleaning")?.href).toContain("airbnb");
+    expect(resolvePopularHeroSearch("Nanny")?.href).toContain("category=nanny");
   });
 });

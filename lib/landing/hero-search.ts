@@ -153,9 +153,7 @@ export function searchHeroServices(query: string, limit = 8): HeroSearchResult[]
   const index = buildHeroSearchIndex();
 
   if (!normalized) {
-    return index
-      .filter((item) => item.id.startsWith("category-"))
-      .slice(0, limit);
+    return getDefaultHeroSearchResults(limit);
   }
 
   const seen = new Set<string>();
@@ -181,3 +179,85 @@ export const HERO_POPULAR_SEARCHES = [
   "Electrical",
   "Garden",
 ] as const;
+
+const POPULAR_SEARCH_TARGETS: Record<
+  (typeof HERO_POPULAR_SEARCHES)[number],
+  { category: ServiceCategoryKey; serviceType: string; label: string; categoryLabel: string }
+> = {
+  "House cleaning": {
+    category: "cleaning",
+    serviceType: "standard",
+    label: "House cleaning",
+    categoryLabel: "Cleaning",
+  },
+  Nanny: {
+    category: "nanny",
+    serviceType: "day_nanny",
+    label: "Nanny",
+    categoryLabel: "Nannies",
+  },
+  Plumbing: {
+    category: "handyman",
+    serviceType: "plumbing",
+    label: "Plumbing",
+    categoryLabel: "Handyman",
+  },
+  Cooking: {
+    category: "cooking",
+    serviceType: "dinner",
+    label: "Cooking",
+    categoryLabel: "Cooking & meals",
+  },
+  Laundry: {
+    category: "laundry",
+    serviceType: "wash_fold",
+    label: "Laundry",
+    categoryLabel: "Laundry & ironing",
+  },
+  "Short-stay cleaning": {
+    category: "cleaning",
+    serviceType: "guest_checkout",
+    label: "Short-stay cleaning",
+    categoryLabel: "Short-stay cleaning",
+  },
+  Electrical: {
+    category: "handyman",
+    serviceType: "electrical",
+    label: "Electrical",
+    categoryLabel: "Handyman",
+  },
+  Garden: {
+    category: "garden",
+    serviceType: "lawn_cutting",
+    label: "Garden",
+    categoryLabel: "Garden & yard",
+  },
+};
+
+export function resolvePopularHeroSearch(
+  term: (typeof HERO_POPULAR_SEARCHES)[number] | string
+): HeroSearchResult | null {
+  const target = POPULAR_SEARCH_TARGETS[term as (typeof HERO_POPULAR_SEARCHES)[number]];
+  if (target) {
+    return {
+      id: `popular-${target.category}-${target.serviceType}`,
+      label: target.label,
+      categoryLabel: target.categoryLabel,
+      href: bookHref(target.category, target.serviceType),
+      searchText: term.toLowerCase(),
+    };
+  }
+
+  const results = searchHeroServices(term, 12);
+  return (
+    results.find((item) => item.href.startsWith("/customer/book")) ??
+    results[0] ??
+    null
+  );
+}
+
+export function getDefaultHeroSearchResults(limit = 8): HeroSearchResult[] {
+  return HERO_POPULAR_SEARCHES.map((term) => resolvePopularHeroSearch(term))
+    .filter((result): result is HeroSearchResult => result != null)
+    .slice(0, limit);
+}

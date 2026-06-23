@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { HERO_INTRO } from "@/lib/landing/content";
 import {
   HERO_POPULAR_SEARCHES,
+  resolvePopularHeroSearch,
   searchHeroServices,
   type HeroSearchResult,
 } from "@/lib/landing/hero-search";
@@ -158,6 +159,11 @@ export function HeroServiceSearch() {
             key={term}
             type="button"
             onClick={() => {
+              const result = resolvePopularHeroSearch(term);
+              if (result) {
+                goToResult(result);
+                return;
+              }
               setQuery(term);
               setOpen(true);
             }}
