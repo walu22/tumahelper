@@ -156,6 +156,62 @@ export function getWorkerStartingPriceLabel(worker: PublicWorkerProfile): string
   return `From K${type.priceHintMin}`;
 }
 
+export function getWorkerFirstName(fullName: string): string {
+  const first = fullName.trim().split(/\s+/)[0];
+  return first || fullName;
+}
+
+export function getWorkerSpotlightRoleLabel(worker: PublicWorkerProfile): string {
+  if (worker.category === "nanny") {
+    if (
+      worker.employment_types?.includes("live_in") ||
+      worker.subcategory === "live_in_nanny"
+    ) {
+      return "Live-in nanny";
+    }
+    return "Nanny";
+  }
+  return "House cleaner";
+}
+
+export function getWorkerSpotlightLocationRole(worker: PublicWorkerProfile): string {
+  return `${worker.area} · ${getWorkerSpotlightRoleLabel(worker)}`;
+}
+
+export function getWorkerSpotlightProofLine(worker: PublicWorkerProfile): string {
+  const parts: string[] = [];
+
+  if (worker.average_rating > 0 && worker.total_reviews > 0) {
+    parts.push(`★ ${worker.average_rating.toFixed(1)} (${worker.total_reviews})`);
+  } else if (worker.total_jobs_completed > 0) {
+    parts.push(
+      worker.total_jobs_completed === 1
+        ? "Booked 1 time"
+        : `Booked ${worker.total_jobs_completed} times`
+    );
+  }
+
+  const price = getWorkerStartingPriceLabel(worker);
+  if (price) parts.push(price);
+
+  return parts.join(" · ");
+}
+
+export function pickSpotlightReviewQuote(
+  bio: string | null,
+  reviewQuote?: string | null
+): string | null {
+  const quote = reviewQuote?.trim();
+  if (quote) return quote;
+
+  const fallback = bio?.trim();
+  if (!fallback) return null;
+  if (fallback.length <= 110) return fallback;
+
+  const shortened = fallback.slice(0, 110).replace(/\s+\S*$/, "").trim();
+  return shortened ? `${shortened}…` : null;
+}
+
 export function getWorkerSpotlightStatusLine(worker: PublicWorkerProfile): string {
   if (worker.total_jobs_completed > 0) {
     const count = worker.total_jobs_completed;

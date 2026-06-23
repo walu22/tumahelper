@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   buildWorkerSpotlightBookUrl,
+  getWorkerFirstName,
   getWorkerSkillLabels,
+  getWorkerSpotlightLocationRole,
+  getWorkerSpotlightProofLine,
   getWorkerSpotlightStatusLine,
   getWorkerStartingPriceLabel,
+  pickSpotlightReviewQuote,
 } from "./worker-card";
 import type { PublicWorkerProfile } from "@/types";
 
@@ -58,5 +62,34 @@ describe("worker-card helpers", () => {
 
   it("shows a starting price from the inferred main service", () => {
     expect(getWorkerStartingPriceLabel(worker())).toMatch(/^From K\d+/);
+  });
+
+  it("uses the first name for spotlight CTAs", () => {
+    expect(getWorkerFirstName("Ruth Mwila")).toBe("Ruth");
+  });
+
+  it("formats location and role for spotlight cards", () => {
+    expect(
+      getWorkerSpotlightLocationRole(
+        worker({ area: "Ibex Hill", category: "nanny", employment_types: ["live_in"] })
+      )
+    ).toBe("Ibex Hill · Live-in nanny");
+  });
+
+  it("builds a proof line with rating and price", () => {
+    expect(
+      getWorkerSpotlightProofLine(
+        worker({ average_rating: 4.9, total_reviews: 18, skills: ["deep_cleaning"] })
+      )
+    ).toMatch(/★ 4\.9 \(18\)/);
+    expect(getWorkerSpotlightProofLine(worker({ average_rating: 4.9, total_reviews: 18, skills: ["deep_cleaning"] }))).toMatch(
+      /From K\d+/
+    );
+  });
+
+  it("prefers review quotes over bios for spotlight cards", () => {
+    expect(
+      pickSpotlightReviewQuote("Long bio text", "Ruth is wonderful with babies.")
+    ).toBe("Ruth is wonderful with babies.");
   });
 });
