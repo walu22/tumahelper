@@ -9,7 +9,7 @@ import { BookingFlowProgress } from "@/components/booking/booking-flow-progress"
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import { NannyTypeTabs } from "@/components/booking/nanny-type-tabs";
-import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
+import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 import {
   EMPTY_NANNY_CARE_ANSWERS,
   formatNannyCareAnswers,
@@ -170,7 +170,11 @@ export function NannyBookingFlow({
   const lockedTypeSummary =
     lockServiceType && selectedType && step === "address" ? (
       <div className="mb-6">
-        <ServiceScopeTeaser category="nanny" serviceType={serviceDetails.serviceType} />
+        <ServiceDetailsCard
+          category="nanny"
+          serviceType={serviceDetails.serviceType}
+          variant="selection"
+        />
       </div>
     ) : null;
 
@@ -198,6 +202,12 @@ export function NannyBookingFlow({
     return (
       <div>
         <BookingFlowProgress steps={flowSteps} current="plan" />
+        <ServiceDetailsCard
+          category="nanny"
+          serviceType={serviceDetails.serviceType}
+          variant="plan"
+          className="mb-6"
+        />
         <SchedulePlanSection
           category="nanny"
           serviceType={serviceDetails.serviceType}
@@ -221,6 +231,12 @@ export function NannyBookingFlow({
   return (
     <div className="space-y-8">
       <BookingFlowProgress steps={flowSteps} current="scope" />
+
+      <ServiceDetailsCard
+        category="nanny"
+        serviceType={serviceDetails.serviceType}
+        variant="scope"
+      />
 
       <div className="rounded-2xl border border-border bg-surface/40 px-4 py-3 text-sm">
         <p className="font-semibold text-foreground">

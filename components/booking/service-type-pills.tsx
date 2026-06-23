@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { getServiceType, type ServiceCategoryKey, type ServiceTypeOption } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
+import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 
 interface ServiceTypePillsProps {
   category: ServiceCategoryKey;
@@ -107,14 +108,11 @@ export function ServiceTypePills({
       )}
 
       {showDetails && selected && (
-        <div className="rounded-xl border border-border bg-surface/40 p-4 text-sm">
-          <p className="font-semibold text-foreground">{selected.label}</p>
-          <p className="text-muted-foreground mt-1 leading-relaxed">{selected.description}</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            {selected.pricingHint ??
-              `Typical K${selected.priceHintMin} – K${selected.priceHintMax} · ~${selected.defaultHours}h`}
-          </p>
-        </div>
+        <ServiceDetailsCard
+          category={category}
+          serviceType={selected.id}
+          variant="selection"
+        />
       )}
     </div>
   );

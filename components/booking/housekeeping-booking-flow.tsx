@@ -9,7 +9,7 @@ import { BookingFlowProgress } from "@/components/booking/booking-flow-progress"
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
 import { HousekeepingTypeTabs } from "@/components/booking/housekeeping-type-tabs";
 import { CookingTypeTabs } from "@/components/booking/cooking-type-tabs";
-import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
+import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
   formatVisitCadence,
@@ -192,7 +192,11 @@ export function HousekeepingBookingFlow({
   const lockedTypeSummary =
     lockServiceType && selectedType && step === "address" ? (
       <div className="mb-6">
-        <ServiceScopeTeaser category={category} serviceType={serviceDetails.serviceType} />
+        <ServiceDetailsCard
+          category={category}
+          serviceType={serviceDetails.serviceType}
+          variant="selection"
+        />
         <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{copy.lockedSummary}</p>
       </div>
     ) : null;
@@ -224,6 +228,12 @@ export function HousekeepingBookingFlow({
     return (
       <div>
         <BookingFlowProgress steps={flowSteps} current="plan" />
+        <ServiceDetailsCard
+          category={category}
+          serviceType={serviceDetails.serviceType}
+          variant="plan"
+          className="mb-6"
+        />
         <SchedulePlanSection
           category={category}
           serviceType={serviceDetails.serviceType}
@@ -252,6 +262,12 @@ export function HousekeepingBookingFlow({
   return (
     <div className="space-y-8">
       <BookingFlowProgress steps={flowSteps} current="scope" />
+
+      <ServiceDetailsCard
+        category={category}
+        serviceType={serviceDetails.serviceType}
+        variant="scope"
+      />
 
       {lockServiceType && selectedType && (
         <div className="rounded-xl border border-border bg-card px-4 py-3">

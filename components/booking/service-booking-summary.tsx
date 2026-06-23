@@ -12,8 +12,6 @@ import {
 } from "@/lib/booking/shared-flow";
 import { formatLinenPreferences } from "@/lib/booking/airbnb-flow";
 import { ServiceScopeDetails } from "@/components/booking/service-scope-details";
-import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
-import { AirbnbScopeTeaser } from "@/components/booking/airbnb-scope-teaser";
 import { formatBookingTime } from "@/lib/booking/time-slots";
 
 interface ServiceBookingSummaryProps {
@@ -160,17 +158,6 @@ export function ServiceBookingSummary({
             <p className="text-foreground leading-snug">{linenLabel}</p>
           </div>
         )}
-
-        {step === "plan" &&
-          (isAirbnb ? (
-            <AirbnbScopeTeaser embedded />
-          ) : (
-            <ServiceScopeTeaser
-              embedded
-              category={details.category}
-              serviceType={details.serviceType}
-            />
-          ))}
 
         {step === "address" && !hasWhere && (
           <p className="text-sm text-muted-foreground flex items-start gap-2">

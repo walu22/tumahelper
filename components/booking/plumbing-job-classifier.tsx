@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import { BookingStepFooter } from "@/components/booking/booking-step-footer";
-import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
+import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 import type { ServiceDetails } from "@/lib/services/catalog";
 import {
   PLUMBING_SPECIALIST_NOTE,
@@ -86,7 +86,7 @@ export function PlumbingJobClassifier({
 
   return (
     <div className="space-y-8">
-      <ServiceScopeTeaser category="handyman" serviceType="plumbing" />
+      <ServiceDetailsCard category="handyman" serviceType="plumbing" variant="selection" />
 
       <div className="rounded-2xl border border-amber-200/80 bg-amber-50/80 dark:bg-amber-950/20 dark:border-amber-900/40 px-4 py-3 text-sm text-muted-foreground leading-relaxed">
         {PLUMBING_SPECIALIST_NOTE}

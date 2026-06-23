@@ -19,7 +19,7 @@ import { UseCurrentLocationButton } from "@/components/booking/use-current-locat
 import { AirbnbFlowProgress } from "@/components/booking/airbnb-flow-progress";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import { AirbnbTypeTabs } from "@/components/booking/airbnb-type-tabs";
-import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
+import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 import {
   formatAirbnbAddress,
   formatTurnoverCadence,
@@ -238,7 +238,11 @@ export function AirbnbBookingFlow({
   const lockedTypeSummary =
     lockServiceType && selectedType && step === "address" ? (
       <div className="mb-6">
-        <ServiceScopeTeaser category="cleaning" serviceType={serviceDetails.serviceType} />
+        <ServiceDetailsCard
+          category="cleaning"
+          serviceType={serviceDetails.serviceType}
+          variant="selection"
+        />
       </div>
     ) : null;
 
@@ -321,6 +325,11 @@ export function AirbnbBookingFlow({
     return (
       <div className="space-y-8">
         <AirbnbFlowProgress current="plan" />
+        <ServiceDetailsCard
+          category="cleaning"
+          serviceType={serviceDetails.serviceType}
+          variant="plan"
+        />
         <div>
           <h2 className="text-2xl font-semibold">How often?</h2>
           <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
@@ -459,6 +468,12 @@ export function AirbnbBookingFlow({
   return (
     <div className="space-y-8">
       <AirbnbFlowProgress current="scope" />
+
+      <ServiceDetailsCard
+        category="cleaning"
+        serviceType={serviceDetails.serviceType}
+        variant="scope"
+      />
 
       <div className="rounded-2xl border border-border bg-surface/40 px-4 py-3 text-sm">
         <p className="font-semibold text-foreground">

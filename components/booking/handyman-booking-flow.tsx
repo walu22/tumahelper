@@ -7,7 +7,7 @@ import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
-import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
+import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import { HandymanTypeTabs } from "@/components/booking/handyman-type-tabs";
 import { PlumbingJobClassifier } from "@/components/booking/plumbing-job-classifier";
@@ -180,7 +180,11 @@ export function HandymanBookingFlow({
   const lockedTypeSummary =
     lockServiceType && selectedType && step === "address" ? (
       <div className="mb-6">
-        <ServiceScopeTeaser category="handyman" serviceType={serviceDetails.serviceType} />
+        <ServiceDetailsCard
+          category="handyman"
+          serviceType={serviceDetails.serviceType}
+          variant="selection"
+        />
       </div>
     ) : null;
 
@@ -222,6 +226,12 @@ export function HandymanBookingFlow({
     return (
       <div>
         <BookingFlowProgress steps={flowSteps} current="plan" />
+        <ServiceDetailsCard
+          category="handyman"
+          serviceType={serviceDetails.serviceType}
+          variant="plan"
+          className="mb-6"
+        />
         <SchedulePlanSection
           category="handyman"
           serviceType={serviceDetails.serviceType}
@@ -245,6 +255,12 @@ export function HandymanBookingFlow({
   return (
     <div className="space-y-8">
       <BookingFlowProgress steps={flowSteps} current="scope" />
+
+      <ServiceDetailsCard
+        category="handyman"
+        serviceType={serviceDetails.serviceType}
+        variant="scope"
+      />
 
       {lockServiceType && selectedType && (
         <div className="rounded-xl border border-border bg-card px-4 py-3">

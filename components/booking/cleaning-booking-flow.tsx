@@ -8,7 +8,7 @@ import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
-import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
+import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
   formatVisitCadence,
@@ -154,7 +154,11 @@ export function CleaningBookingFlow({
   const lockedTypeSummary =
     lockServiceType && selectedType && step === "address" ? (
       <div className="mb-6">
-        <ServiceScopeTeaser category="cleaning" serviceType={serviceDetails.serviceType} />
+        <ServiceDetailsCard
+          category="cleaning"
+          serviceType={serviceDetails.serviceType}
+          variant="selection"
+        />
       </div>
     ) : null;
 
@@ -182,6 +186,12 @@ export function CleaningBookingFlow({
     return (
       <div>
         <BookingFlowProgress steps={flowSteps} current="plan" />
+        <ServiceDetailsCard
+          category="cleaning"
+          serviceType={serviceDetails.serviceType}
+          variant="plan"
+          className="mb-6"
+        />
         <SchedulePlanSection
           category="cleaning"
           serviceType={serviceDetails.serviceType}
@@ -205,6 +215,12 @@ export function CleaningBookingFlow({
   return (
     <div className="space-y-8">
       <BookingFlowProgress steps={flowSteps} current="scope" />
+
+      <ServiceDetailsCard
+        category="cleaning"
+        serviceType={serviceDetails.serviceType}
+        variant="scope"
+      />
 
       {lockServiceType && selectedType && (
         <div className="rounded-xl border border-border bg-card px-4 py-3">

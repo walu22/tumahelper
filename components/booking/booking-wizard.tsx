@@ -17,6 +17,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { BookingStepShell } from '@/components/booking/booking-step-shell'
+import { ServiceDetailsCard } from '@/components/booking/service-details-card'
 import { BookingSummaryPanel } from '@/components/booking/booking-summary-panel'
 import { BookingPaymentTotals } from '@/components/booking/booking-payment-totals'
 import { AirbnbBookingFlow } from '@/components/booking/airbnb-booking-flow'
@@ -1190,6 +1191,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
                     {CONFIRM_BOOKING_INTRO.subtitle}
                   </p>
                 </div>
+
+                <ServiceDetailsCard
+                  category={serviceDetails.category}
+                  serviceType={serviceDetails.serviceType}
+                  variant="confirm"
+                />
 
                 {!selectedWorker && (
                   <Button variant="outline" onClick={() => goToStep(STEP.WORKER)}>

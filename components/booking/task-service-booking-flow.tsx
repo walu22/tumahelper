@@ -7,7 +7,7 @@ import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
-import { ServiceScopeTeaser } from "@/components/booking/service-scope-teaser";
+import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import { LaundryTypeTabs } from "@/components/booking/laundry-type-tabs";
 import { GardenTypeTabs } from "@/components/booking/garden-type-tabs";
@@ -159,7 +159,11 @@ export function TaskServiceBookingFlow({
   const lockedTypeSummary =
     lockServiceType && selectedType && step === "address" ? (
       <div className="mb-6">
-        <ServiceScopeTeaser category={category} serviceType={serviceDetails.serviceType} />
+        <ServiceDetailsCard
+          category={category}
+          serviceType={serviceDetails.serviceType}
+          variant="selection"
+        />
       </div>
     ) : null;
 
@@ -187,6 +191,12 @@ export function TaskServiceBookingFlow({
     return (
       <div>
         <BookingFlowProgress steps={flowSteps} current="plan" />
+        <ServiceDetailsCard
+          category={category}
+          serviceType={serviceDetails.serviceType}
+          variant="plan"
+          className="mb-6"
+        />
         <SchedulePlanSection
           category={category as ServiceCategoryKey}
           serviceType={serviceDetails.serviceType}
@@ -210,6 +220,12 @@ export function TaskServiceBookingFlow({
   return (
     <div className="space-y-8">
       <BookingFlowProgress steps={flowSteps} current="scope" />
+
+      <ServiceDetailsCard
+        category={category}
+        serviceType={serviceDetails.serviceType}
+        variant="scope"
+      />
 
       {lockServiceType && selectedType && (
         <div className="rounded-xl border border-border bg-card px-4 py-3">

@@ -25,6 +25,10 @@ export interface ServiceTypeOption {
   notIncluded?: string[];
   /** Customer-facing pricing copy shown in booking (overrides numeric range when set). */
   pricingHint?: string;
+  /** Short copy on service selection (no full checklist). */
+  selectionSummary?: string;
+  priceDrivers?: string[];
+  prepareBeforeVisit?: string[];
   defaultHours: number;
   priceHintMin: number;
   priceHintMax: number;
@@ -279,7 +283,21 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "House cleaning",
         tabLabel: "House cleaning",
         description:
-          "Regular cleaning for homes, including floors, kitchen, bathroom, bedrooms, and general tidying.",
+          "For general home cleaning, including bedrooms, bathrooms, kitchen, and living areas.",
+        selectionSummary:
+          "Includes basic cleaning of common home areas. Extras like oven, fridge, laundry, or deep cleaning can be added later.",
+        priceDrivers: [
+          "Number of bedrooms and bathrooms",
+          "Type of cleaning selected",
+          "Extra tasks added",
+          "Length of visit",
+          "Your area in Lusaka",
+        ],
+        prepareBeforeVisit: [
+          "Please make sure cleaning supplies are available",
+          "Keep valuables safely stored",
+          "Let us know about pets, parking, or access instructions",
+        ],
         included: [
           "Sweeping and mopping floors",
           "Dusting visible surfaces",
