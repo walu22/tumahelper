@@ -198,7 +198,8 @@ export const FOOTER_TAGLINE =
 
 export const HERO_INTRO = {
   eyebrow: "Home help in Lusaka",
-  headline: "Get a nanny or cleaner you can actually trust.",
+  headlineLine1: "Book trusted help",
+  headlineLine2: "for home tasks",
   founderNote:
     "We built TumaHelper after one too many no-shows. If we wouldn't send them to our own homes, they don't go on the platform.",
   searchPlaceholder: "What do you need help with?",

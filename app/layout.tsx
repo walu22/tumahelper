@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Figtree, Bricolage_Grotesque } from "next/font/google";
+import { Figtree, Bricolage_Grotesque, Inter } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -18,6 +18,12 @@ const sans = Figtree({
 const display = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-display",
+  display: "swap",
+});
+
+const hero = Inter({
+  subsets: ["latin"],
+  variable: "--font-hero",
   display: "swap",
 });
 
@@ -49,7 +55,7 @@ export default function RootLayout({
       <head>
         <ThemeScript />
       </head>
-      <body className={`${sans.variable} ${display.variable} font-sans`}>
+      <body className={`${sans.variable} ${display.variable} ${hero.variable} font-sans`}>
         <ThemeProvider>
           {!isAdmin && <HeaderAuth />}
           <main className={isAdmin ? "" : "min-h-screen pb-safe-nav md:pb-0"}>{children}</main>

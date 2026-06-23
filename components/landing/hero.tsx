@@ -15,8 +15,9 @@ export function LandingHero() {
           <p className="text-sm font-semibold text-primary mb-4 tracking-wide">
             {HERO_INTRO.eyebrow}
           </p>
-          <h1 className="font-display text-[2.75rem] sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.05] text-balance text-foreground mb-6">
-            {HERO_INTRO.headline}
+          <h1 className="font-hero text-[2.75rem] sm:text-6xl lg:text-[4.25rem] font-bold leading-[1.05] tracking-tight text-balance text-foreground mb-6">
+            <span className="block">{HERO_INTRO.headlineLine1}</span>
+            <span className="block">{HERO_INTRO.headlineLine2}</span>
           </h1>
           <p className="text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
             {HERO_INTRO.founderNote}
