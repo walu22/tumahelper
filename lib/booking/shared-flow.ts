@@ -1,4 +1,8 @@
 import { finalizeLusakaAddress } from "@/lib/lusaka/places";
+import {
+  getLusakaTodayIsoDate,
+  getLusakaTomorrowIsoDate,
+} from "@/lib/booking/lusaka-schedule-time";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 import { isAirbnbCleaningType, TURNOVER_FREQUENCY_OPTIONS } from "@/lib/services/catalog";
 
@@ -88,13 +92,11 @@ export function formatServiceAddress(street: string, unit?: string): string {
 }
 
 export function todayIsoDate(): string {
-  return new Date().toISOString().split("T")[0];
+  return getLusakaTodayIsoDate();
 }
 
 export function tomorrowIsoDate(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().split("T")[0];
+  return getLusakaTomorrowIsoDate();
 }
 
 export function formatWhenPreference(pref?: WhenPreference): string {

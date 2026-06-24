@@ -60,10 +60,9 @@ describe("schedule feasibility", () => {
     expect(isStartTimeValidForDuration("17:00", 4, "nanny", "babysitter")).toBe(true);
   });
 
-  it("leaves no same-day slots for a 4-hour garden visit after 4 PM", () => {
-    const now = new Date();
-    now.setHours(16, 7, 0, 0);
-    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  it("leaves no same-day slots for a 4-hour garden visit after 4 PM Lusaka time", () => {
+    const now = new Date("2026-06-20T14:07:00.000Z");
+    const today = "2026-06-20";
     const slots = getAvailableStartTimes({
       category: "garden",
       serviceType: "lawn_cutting",
@@ -73,6 +72,16 @@ describe("schedule feasibility", () => {
     });
 
     expect(slots).toEqual([]);
+    expect(
+      isScheduleBookable({
+        serviceDate: today,
+        startTime: "16:00",
+        durationHours: 4,
+        category: "garden",
+        serviceType: "lawn_cutting",
+        now,
+      })
+    ).toBe(false);
     expect(
       isScheduleBookable({
         serviceDate: today,

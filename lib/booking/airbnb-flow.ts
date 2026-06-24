@@ -1,4 +1,8 @@
 import { finalizeLusakaAddress } from "@/lib/lusaka/places";
+import {
+  getLusakaTodayIsoDate,
+  getLusakaTomorrowIsoDate,
+} from "@/lib/booking/lusaka-schedule-time";
 
 export type AirbnbFlowStep = "address" | "plan" | "scope";
 
@@ -17,13 +21,11 @@ export function formatAirbnbAddress(street: string, unit?: string): string {
 }
 
 export function todayIsoDate(): string {
-  return new Date().toISOString().split("T")[0];
+  return getLusakaTodayIsoDate();
 }
 
 export function tomorrowIsoDate(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().split("T")[0];
+  return getLusakaTomorrowIsoDate();
 }
 
 export function formatWhenPreference(pref?: AirbnbWhenPreference): string {

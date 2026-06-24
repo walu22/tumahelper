@@ -1,15 +1,19 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { bookingSchema } from "@/lib/validations";
 import { defaultServiceDetails } from "@/lib/services/catalog";
 
 const baseBooking = {
   categoryId: "00000000-0000-4000-8000-000000000001",
-  serviceDate: "2026-06-20",
+  serviceDate: "2026-12-20",
   serviceTime: "09:00",
   locationAddress: "Plot 10, Kabulonga, Lusaka",
   workerId: "00000000-0000-4000-8000-000000000002",
   amount: 45000,
 };
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("bookingSchema", () => {
   it("requires child age groups for nanny bookings", () => {
@@ -103,5 +107,21 @@ describe("bookingSchema", () => {
       },
     });
     expect(result.success).toBe(true);
+  });
+
+  it("rejects same-day bookings with a start time that has already passed in Lusaka", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-20T14:07:00.000Z"));
+
+    const result = bookingSchema.safeParse({
+      ...baseBooking,
+      serviceDate: "2026-06-20",
+      serviceTime: "16:00",
+      serviceDetails: {
+        ...defaultServiceDetails("garden"),
+        durationHours: 4,
+      },
+    });
+    expect(result.success).toBe(false);
   });
 });

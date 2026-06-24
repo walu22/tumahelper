@@ -1,6 +1,11 @@
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 import { isAirbnbCleaningType } from "@/lib/services/catalog";
 import { DURATION_OPTIONS } from "@/lib/services/catalog";
+import {
+  getLusakaNowMinutes,
+  getLusakaTodayIsoDate,
+  isLusakaSameDay,
+} from "@/lib/booking/lusaka-schedule-time";
 
 export interface StartTimeOption {
   /** Stored on the booking (HH:mm) */
@@ -150,15 +155,15 @@ export function getMinStartMinutesForToday(
   minLeadMinutes: number = SAME_DAY_MIN_LEAD_MINUTES,
   now: Date = new Date()
 ): number {
-  const minStart = now.getHours() * 60 + now.getMinutes() + minLeadMinutes;
+  const minStart = getLusakaNowMinutes(now) + minLeadMinutes;
   return Math.ceil(minStart / 30) * 30;
 }
 
 export function isSameDayDate(
   serviceDate: string,
-  todayIsoDate: () => string = defaultTodayIsoDate
+  now: Date = new Date()
 ): boolean {
-  return serviceDate === todayIsoDate();
+  return isLusakaSameDay(serviceDate, now);
 }
 
 export function isStartTimeInPastForDate(
@@ -167,7 +172,7 @@ export function isStartTimeInPastForDate(
   minLeadMinutes: number = SAME_DAY_MIN_LEAD_MINUTES,
   now: Date = new Date()
 ): boolean {
-  if (!isSameDayDate(serviceDate)) return false;
+  if (!isLusakaSameDay(serviceDate, now)) return false;
   return parseTimeToMinutes(startTime) < getMinStartMinutesForToday(minLeadMinutes, now);
 }
 
@@ -176,10 +181,9 @@ export function filterSameDaySlots(
   times: StartTimeOption[],
   serviceDate: string,
   minLeadMinutes: number = SAME_DAY_MIN_LEAD_MINUTES,
-  now: Date = new Date(),
-  todayIsoDate: () => string = defaultTodayIsoDate
+  now: Date = new Date()
 ): StartTimeOption[] {
-  if (!isSameDayDate(serviceDate, todayIsoDate)) return times;
+  if (!isLusakaSameDay(serviceDate, now)) return times;
   const minMinutes = getMinStartMinutesForToday(minLeadMinutes, now);
   return times.filter((slot) => parseTimeToMinutes(slot.value) >= minMinutes);
 }
@@ -187,11 +191,10 @@ export function filterSameDaySlots(
 export function filterUrgentSameDaySlots(
   times: StartTimeOption[],
   serviceDate: string,
-  whenPreference?: WhenPreference,
-  todayIsoDate: () => string = defaultTodayIsoDate
+  whenPreference?: WhenPreference
 ): StartTimeOption[] {
   void whenPreference;
-  return filterSameDaySlots(times, serviceDate, SAME_DAY_MIN_LEAD_MINUTES, new Date(), todayIsoDate);
+  return filterSameDaySlots(times, serviceDate);
 }
 
 export function isScheduleBookable(options: {
@@ -220,11 +223,6 @@ export function isScheduleBookable(options: {
     return false;
   }
   return true;
-}
-
-function defaultTodayIsoDate(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 export function getAvailableStartTimes(options: {
@@ -360,7 +358,7 @@ export function getScheduleFeasibility(options: {
     !!serviceDate && isStartTimeInPastForDate(serviceDate, startTime, SAME_DAY_MIN_LEAD_MINUTES, now);
   const noSlotsLeftToday =
     !!serviceDate &&
-    isSameDayDate(serviceDate) &&
+    isLusakaSameDay(serviceDate, now) &&
     getAvailableStartTimes({
       category,
       serviceType,

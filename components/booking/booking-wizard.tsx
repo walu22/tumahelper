@@ -653,7 +653,14 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!amount &&
-    parseFloat(amount) >= 1
+    parseFloat(amount) >= 1 &&
+    canProceedWithSchedule(
+      serviceDate,
+      serviceTime,
+      serviceDetails.durationHours,
+      serviceDetails.category,
+      serviceDetails.serviceType
+    )
 
   const amountInCents = Math.round(parseFloat(amount || '0') * 100)
   const platformFee = Math.round(amountInCents * 0.1)
@@ -675,6 +682,21 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     }
     if (!serviceDate || !serviceTime || locationAddress.length < 5) {
       toast.error('Please complete your booking details')
+      goToStep(STEP.DETAILS)
+      return
+    }
+    if (
+      !canProceedWithSchedule(
+        serviceDate,
+        serviceTime,
+        serviceDetails.durationHours,
+        serviceDetails.category,
+        serviceDetails.serviceType
+      )
+    ) {
+      toast.error(
+        'That start time is no longer available for today. Go back and pick a new time or date.'
+      )
       goToStep(STEP.DETAILS)
       return
     }
@@ -757,6 +779,21 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     }
     if (!serviceDate || !serviceTime || locationAddress.length < 5 || !amount) {
       toast.error('Please complete your booking details')
+      goToStep(STEP.DETAILS)
+      return
+    }
+    if (
+      !canProceedWithSchedule(
+        serviceDate,
+        serviceTime,
+        serviceDetails.durationHours,
+        serviceDetails.category,
+        serviceDetails.serviceType
+      )
+    ) {
+      toast.error(
+        'That start time is no longer available for today. Go back and pick a new time or date.'
+      )
       goToStep(STEP.DETAILS)
       return
     }
