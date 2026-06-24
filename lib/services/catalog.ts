@@ -40,6 +40,8 @@ export interface ServiceAddonOption {
   description: string;
   priceHint: number;
   allowedTypes?: string[];
+  /** Hide this add-on for service types where the scope is already included. */
+  excludedTypes?: string[];
 }
 
 export interface ServiceCatalogEntry {
@@ -637,6 +639,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         description: "Glass and frames inside",
         priceHint: 100,
         allowedTypes: [...HOME_CLEAN_ADDON_TYPES, ...AIRBNB_ADDON_TYPES],
+        excludedTypes: ["spring", "move"],
       },
       {
         id: "cabinets",
@@ -700,6 +703,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         description: "Detailed report of visible damages or missing items",
         priceHint: 40,
         allowedTypes: [...AIRBNB_ADDON_TYPES],
+        excludedTypes: ["guest_checkout", "same_day_turnaround"],
       },
       {
         id: "extra_bedroom",
@@ -887,12 +891,14 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Homework supervision",
         description: "Focused homework support",
         priceHint: 60,
+        excludedTypes: ["after_school"],
       },
       {
         id: "meal_prep",
         label: "Simple child meal preparation",
         description: "Prepare children's meals or snacks",
         priceHint: 60,
+        excludedTypes: ["day_nanny"],
       },
       {
         id: "extra_child",
@@ -923,6 +929,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Bottle washing",
         description: "Wash bottles and child feeding items",
         priceHint: 40,
+        excludedTypes: ["day_nanny"],
       },
       {
         id: "child_laundry",
@@ -977,8 +984,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         included: [
           "Up to 8 hours at your home",
           "Multiple household duties in one visit",
-          "Cleaning, laundry, dishes, and tidying",
-          "Meal prep or ironing if selected",
+          "Pick the tasks you want from the duty list below",
           "Flexible priorities you set on the day",
         ],
         notIncluded: [
@@ -1004,8 +1010,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
           "Recurring weekly visit",
           "Your chosen household duties each week",
           "Consistent help for busy families",
-          "Cleaning, laundry, and tidying as needed",
-          "Same-day priorities you can adjust",
+          "Flexible task list each visit",
         ],
         notIncluded: [
           "Live-in domestic work",
@@ -1028,10 +1033,9 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
           "Monthly visits are typically longer. Price depends on home size, duties, and how much needs doing.",
         included: [
           "Scheduled monthly visit",
-          "Broader household duties in one session",
+          "Broader household reset in one session",
           "Deep tidying and organisation time",
-          "Laundry, bedding, and kitchen catch-up",
-          "Flexible task list for the day",
+          "Kitchen catch-up and flexible duties",
         ],
         notIncluded: [
           "Weekly or daily live-in help",
@@ -1063,6 +1067,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Laundry",
         description: "Wash, fold, and organise household laundry",
         priceHint: 40,
+        excludedTypes: ["monthly"],
       },
       {
         id: "ironing",
@@ -1075,6 +1080,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Bedding & linen",
         description: "Change beds, refresh towels, and tidy linen cupboards",
         priceHint: 40,
+        excludedTypes: ["monthly"],
       },
       {
         id: "meal_prep",
@@ -1087,6 +1093,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Tidying & organising",
         description: "Organise visible clutter, cupboards, and living areas",
         priceHint: 0,
+        excludedTypes: ["half_day"],
       },
       {
         id: "outside_sweep",
@@ -1219,6 +1226,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Kitchen cleanup",
         description: "Wash pots, wipe surfaces, and tidy the cooking area",
         priceHint: 0,
+        excludedTypes: ["lunch", "dinner", "meal_prep", "weekly_cooking"],
       },
       {
         id: "packed_lunch",
@@ -1528,6 +1536,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
         label: "Green waste bagging",
         description: "Extra bagging and stacking of clippings or leaves",
         priceHint: 50,
+        excludedTypes: ["lawn_cutting", "garden_cleanup"],
       },
       {
         id: "verandah_sweep",
@@ -1662,9 +1671,11 @@ export function getAddon(category: ServiceCategoryKey, addonId: string) {
 }
 
 export function getAvailableAddons(category: ServiceCategoryKey, serviceType: string) {
-  return SERVICE_CATALOG[category].addons.filter(
-    (addon) => !addon.allowedTypes || addon.allowedTypes.includes(serviceType)
-  );
+  return SERVICE_CATALOG[category].addons.filter((addon) => {
+    if (addon.allowedTypes && !addon.allowedTypes.includes(serviceType)) return false;
+    if (addon.excludedTypes?.includes(serviceType)) return false;
+    return true;
+  });
 }
 
 export function sanitizeAddons(
