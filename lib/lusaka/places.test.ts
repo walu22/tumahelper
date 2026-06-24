@@ -17,6 +17,21 @@ describe("searchLusakaPlaces", () => {
     expect(buildAddressWithArea("Plot 10", "Kabulonga")).toBe("Plot 10, Kabulonga");
     expect(buildAddressWithArea("", "Roma")).toBe("Roma");
   });
+
+  it("does not prepend a single-letter area search to the selected suburb", () => {
+    expect(buildAddressWithArea("J", "Jesmondine")).toBe("Jesmondine");
+    expect(buildAddressWithArea("J", "Chilenje")).toBe("Chilenje");
+  });
+
+  it("does not prepend a short area search prefix to the selected suburb", () => {
+    expect(buildAddressWithArea("wood", "Woodlands")).toBe("Woodlands");
+  });
+
+  it("returns area-only fill values for partial suburb searches", () => {
+    const results = searchLusakaPlaces("J");
+    const jesmondine = results.find((r) => r.area === "Jesmondine");
+    expect(jesmondine?.fillValue).toBe("Jesmondine");
+  });
 });
 
 describe("finalizeLusakaAddress", () => {

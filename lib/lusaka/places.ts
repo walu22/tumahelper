@@ -50,10 +50,32 @@ function normalize(value: string): string {
   return value.trim().toLowerCase();
 }
 
+/** True when the user has typed a street/plot fragment, not just an area search prefix. */
+function looksLikeStreetOrPlot(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  if (/\d/.test(trimmed)) return true;
+  if (trimmed.includes(",")) return true;
+  if (trimmed.split(/\s+/).length >= 2) return true;
+  return false;
+}
+
+/** True when the typed text is only helping filter area names in autocomplete. */
+function isAreaSearchQuery(current: string, area: string): boolean {
+  const currentLower = normalize(current);
+  const areaLower = normalize(area);
+  if (!currentLower) return true;
+  if (looksLikeStreetOrPlot(current)) return false;
+  if (areaLower.startsWith(currentLower)) return true;
+  if (currentLower.length <= 3 && areaLower.includes(currentLower)) return true;
+  return false;
+}
+
 export function buildAddressWithArea(current: string, area: string): string {
   const trimmed = current.trim();
   if (!trimmed) return area;
   if (normalize(trimmed).includes(normalize(area))) return trimmed;
+  if (isAreaSearchQuery(trimmed, area)) return area;
   if (trimmed.endsWith(",")) return `${trimmed} ${area}`;
   return `${trimmed}, ${area}`;
 }

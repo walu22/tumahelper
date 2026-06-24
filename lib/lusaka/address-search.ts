@@ -142,7 +142,7 @@ export function areaSuggestionsToAddressSuggestions(
 ): AddressSuggestion[] {
   return areas.map((area) => ({
     id: `area-${area.area.toLowerCase().replace(/\s+/g, "-")}`,
-    label: area.fillValue,
+    label: area.area,
     sublabel: `${area.area}, Lusaka`,
     fillValue: area.fillValue,
     source: "area" as const,
