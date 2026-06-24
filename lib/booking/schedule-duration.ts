@@ -3,21 +3,45 @@ import { DURATION_OPTIONS } from "@/lib/services/catalog";
 import {
   clampStartTimeForDuration,
   getAllowedDurations,
+  isScheduleBookable,
 } from "@/lib/booking/time-slots";
+
+export function canProceedWithSchedule(
+  serviceDate: string,
+  serviceTime: string,
+  durationHours: number,
+  category: ServiceCategoryKey,
+  serviceType: string
+): boolean {
+  return isScheduleBookable({
+    serviceDate,
+    startTime: serviceTime,
+    durationHours,
+    category,
+    serviceType,
+  });
+}
 
 export function stepBookingDuration(
   current: number,
   delta: number,
   serviceTime: string,
   category: ServiceCategoryKey,
-  serviceType: string
+  serviceType: string,
+  serviceDate?: string
 ): { durationHours: number; serviceTime: string } {
   const allowed = getAllowedDurations(serviceTime, category, serviceType);
   const fallback = allowed.length > 0 ? allowed : [...DURATION_OPTIONS];
   const idx = Math.max(0, fallback.indexOf(current as (typeof DURATION_OPTIONS)[number]));
   const nextIdx = Math.max(0, Math.min(fallback.length - 1, idx + delta));
   const durationHours = fallback[nextIdx] ?? current;
-  const nextTime = clampStartTimeForDuration(serviceTime, durationHours, category, serviceType);
+  const nextTime = clampStartTimeForDuration(
+    serviceTime,
+    durationHours,
+    category,
+    serviceType,
+    serviceDate
+  );
   return { durationHours, serviceTime: nextTime };
 }
 
@@ -25,7 +49,8 @@ export function resolveDurationForSchedule(
   durationHours: number,
   serviceTime: string,
   category: ServiceCategoryKey,
-  serviceType: string
+  serviceType: string,
+  serviceDate?: string
 ): { durationHours: number; serviceTime: string } {
   const allowed = getAllowedDurations(serviceTime, category, serviceType);
   const resolved =
@@ -34,7 +59,13 @@ export function resolveDurationForSchedule(
       : allowed.includes(durationHours as (typeof DURATION_OPTIONS)[number])
         ? durationHours
         : allowed[allowed.length - 1];
-  const nextTime = clampStartTimeForDuration(serviceTime, resolved, category, serviceType);
+  const nextTime = clampStartTimeForDuration(
+    serviceTime,
+    resolved,
+    category,
+    serviceType,
+    serviceDate
+  );
   return { durationHours: resolved, serviceTime: nextTime };
 }
 

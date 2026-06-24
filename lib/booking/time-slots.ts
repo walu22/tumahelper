@@ -11,6 +11,8 @@ export interface StartTimeOption {
 
 export type WhenPreference = "today" | "last_minute" | "tomorrow_later";
 
+export const SAME_DAY_MIN_LEAD_MINUTES = 60;
+
 export interface ScheduleFeasibility {
   valid: boolean;
   endTimeLabel: string;
@@ -18,6 +20,7 @@ export interface ScheduleFeasibility {
   latestStartValue: string | null;
   latestStartLabel: string | null;
   message: string | null;
+  noSlotsLeftToday: boolean;
 }
 
 function padTime(hour: number, minute: number) {
@@ -143,21 +146,80 @@ export function filterStartTimesByDuration(
   );
 }
 
+export function getMinStartMinutesForToday(
+  minLeadMinutes: number = SAME_DAY_MIN_LEAD_MINUTES,
+  now: Date = new Date()
+): number {
+  const minStart = now.getHours() * 60 + now.getMinutes() + minLeadMinutes;
+  return Math.ceil(minStart / 30) * 30;
+}
+
+export function isSameDayDate(
+  serviceDate: string,
+  todayIsoDate: () => string = defaultTodayIsoDate
+): boolean {
+  return serviceDate === todayIsoDate();
+}
+
+export function isStartTimeInPastForDate(
+  serviceDate: string,
+  startTime: string,
+  minLeadMinutes: number = SAME_DAY_MIN_LEAD_MINUTES,
+  now: Date = new Date()
+): boolean {
+  if (!isSameDayDate(serviceDate)) return false;
+  return parseTimeToMinutes(startTime) < getMinStartMinutesForToday(minLeadMinutes, now);
+}
+
+/** Drop start slots that are already in the past when the visit is booked for today. */
+export function filterSameDaySlots(
+  times: StartTimeOption[],
+  serviceDate: string,
+  minLeadMinutes: number = SAME_DAY_MIN_LEAD_MINUTES,
+  now: Date = new Date(),
+  todayIsoDate: () => string = defaultTodayIsoDate
+): StartTimeOption[] {
+  if (!isSameDayDate(serviceDate, todayIsoDate)) return times;
+  const minMinutes = getMinStartMinutesForToday(minLeadMinutes, now);
+  return times.filter((slot) => parseTimeToMinutes(slot.value) >= minMinutes);
+}
+
 export function filterUrgentSameDaySlots(
   times: StartTimeOption[],
   serviceDate: string,
   whenPreference?: WhenPreference,
   todayIsoDate: () => string = defaultTodayIsoDate
 ): StartTimeOption[] {
-  if (serviceDate !== todayIsoDate()) return times;
-  if (whenPreference !== "last_minute") return times;
+  void whenPreference;
+  return filterSameDaySlots(times, serviceDate, SAME_DAY_MIN_LEAD_MINUTES, new Date(), todayIsoDate);
+}
 
-  const minHour = new Date().getHours() + 1;
-  const filtered = times.filter((slot) => {
-    const hour = parseInt(slot.value.split(":")[0] ?? "0", 10);
-    return hour >= minHour;
-  });
-  return filtered.length > 0 ? filtered : times.slice(-3);
+export function isScheduleBookable(options: {
+  serviceDate: string;
+  startTime: string;
+  durationHours: number;
+  category?: ServiceCategoryKey;
+  serviceType?: string;
+  minLeadMinutes?: number;
+  now?: Date;
+}): boolean {
+  const {
+    serviceDate,
+    startTime,
+    durationHours,
+    category,
+    serviceType,
+    minLeadMinutes = SAME_DAY_MIN_LEAD_MINUTES,
+    now = new Date(),
+  } = options;
+  if (!serviceDate || !startTime || !durationHours) return false;
+  if (!isStartTimeValidForDuration(startTime, durationHours, category, serviceType)) {
+    return false;
+  }
+  if (isStartTimeInPastForDate(serviceDate, startTime, minLeadMinutes, now)) {
+    return false;
+  }
+  return true;
 }
 
 function defaultTodayIsoDate(): string {
@@ -171,9 +233,11 @@ export function getAvailableStartTimes(options: {
   serviceDate?: string;
   whenPreference?: WhenPreference;
   durationHours?: number;
+  now?: Date;
 }): StartTimeOption[] {
+  const now = options.now ?? new Date();
   let times = getStartTimeOptions(options.category, options.serviceType);
-  times = filterUrgentSameDaySlots(times, options.serviceDate ?? "", options.whenPreference);
+  times = filterSameDaySlots(times, options.serviceDate ?? "", SAME_DAY_MIN_LEAD_MINUTES, now);
   if (options.durationHours && options.durationHours > 0) {
     times = filterStartTimesByDuration(
       times,
@@ -227,19 +291,45 @@ export function clampStartTimeForDuration(
   startTime: string,
   durationHours: number,
   category?: ServiceCategoryKey,
-  serviceType?: string
+  serviceType?: string,
+  serviceDate?: string,
+  now: Date = new Date()
 ): string {
   if (!startTime || !durationHours) return startTime;
-  if (isStartTimeValidForDuration(startTime, durationHours, category, serviceType)) {
+  if (
+    serviceDate &&
+    isScheduleBookable({
+      serviceDate,
+      startTime,
+      durationHours,
+      category,
+      serviceType,
+      now,
+    })
+  ) {
+    return startTime;
+  }
+  if (
+    !serviceDate &&
+    isStartTimeValidForDuration(startTime, durationHours, category, serviceType)
+  ) {
     return startTime;
   }
 
-  const valid = filterStartTimesByDuration(
-    getStartTimeOptions(category, serviceType),
-    durationHours,
-    category,
-    serviceType
-  );
+  const valid = serviceDate
+    ? getAvailableStartTimes({
+        category,
+        serviceType,
+        serviceDate,
+        durationHours,
+        now,
+      })
+    : filterStartTimesByDuration(
+        getStartTimeOptions(category, serviceType),
+        durationHours,
+        category,
+        serviceType
+      );
   if (valid.length === 0) return startTime;
 
   const startMins = parseTimeToMinutes(startTime);
@@ -255,15 +345,49 @@ export function getScheduleFeasibility(options: {
   durationHours: number;
   category?: ServiceCategoryKey;
   serviceType?: string;
+  serviceDate?: string;
+  now?: Date;
 }): ScheduleFeasibility {
-  const { startTime, durationHours, category, serviceType } = options;
-  const valid = isStartTimeValidForDuration(startTime, durationHours, category, serviceType);
+  const { startTime, durationHours, category, serviceType, serviceDate, now = new Date() } =
+    options;
+  const durationValid = isStartTimeValidForDuration(
+    startTime,
+    durationHours,
+    category,
+    serviceType
+  );
+  const pastForToday =
+    !!serviceDate && isStartTimeInPastForDate(serviceDate, startTime, SAME_DAY_MIN_LEAD_MINUTES, now);
+  const noSlotsLeftToday =
+    !!serviceDate &&
+    isSameDayDate(serviceDate) &&
+    getAvailableStartTimes({
+      category,
+      serviceType,
+      serviceDate,
+      durationHours,
+      now,
+    }).length === 0;
+  const valid =
+    !!serviceDate &&
+    isScheduleBookable({
+      serviceDate,
+      startTime,
+      durationHours,
+      category,
+      serviceType,
+      now,
+    });
   const endTimeLabel = formatEstimatedEnd(startTime, durationHours);
   const serviceWindowLabel = getServiceWindowLabel(category, serviceType, startTime);
   const latest = getLatestStartForDuration(durationHours, category, serviceType);
 
   let message: string | null = null;
-  if (!valid) {
+  if (noSlotsLeftToday) {
+    message = `No arrival times are left today for a ${durationHours}-hour visit. Pick another day or shorten the visit.`;
+  } else if (pastForToday) {
+    message = "That start time has already passed for today. Pick a later slot or another day.";
+  } else if (!durationValid) {
     const latestLabel = latest ? formatBookingTime(latest.value) : null;
     message = latestLabel
       ? `${durationHours}-hour visits must start by ${latestLabel}.`
@@ -277,6 +401,7 @@ export function getScheduleFeasibility(options: {
     latestStartValue: latest?.value ?? null,
     latestStartLabel: latest ? formatBookingTime(latest.value) : null,
     message,
+    noSlotsLeftToday,
   };
 }
 

@@ -4,8 +4,10 @@ import {
   filterStartTimesByDuration,
   formatEstimatedEnd,
   getAllowedDurations,
+  getAvailableStartTimes,
   getLatestStartForDuration,
   getScheduleFeasibility,
+  isScheduleBookable,
   isStartTimeValidForDuration,
 } from "./time-slots";
 
@@ -16,6 +18,7 @@ describe("schedule feasibility", () => {
       durationHours: 8,
       category: "cleaning",
       serviceType: "standard",
+      serviceDate: "2026-06-20",
     });
 
     expect(feasibility.valid).toBe(false);
@@ -55,5 +58,30 @@ describe("schedule feasibility", () => {
     expect(getAllowedDurations("17:00", "nanny", "babysitter")).toEqual([3, 4]);
     expect(isStartTimeValidForDuration("17:00", 6, "nanny", "babysitter")).toBe(false);
     expect(isStartTimeValidForDuration("17:00", 4, "nanny", "babysitter")).toBe(true);
+  });
+
+  it("leaves no same-day slots for a 4-hour garden visit after 4 PM", () => {
+    const now = new Date();
+    now.setHours(16, 7, 0, 0);
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const slots = getAvailableStartTimes({
+      category: "garden",
+      serviceType: "lawn_cutting",
+      serviceDate: today,
+      durationHours: 4,
+      now,
+    });
+
+    expect(slots).toEqual([]);
+    expect(
+      isScheduleBookable({
+        serviceDate: today,
+        startTime: "08:00",
+        durationHours: 4,
+        category: "garden",
+        serviceType: "lawn_cutting",
+        now,
+      })
+    ).toBe(false);
   });
 });

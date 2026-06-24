@@ -28,6 +28,7 @@ import {
 import { suggestDuration, getDurationHelperText } from "@/lib/services/utils";
 import {
   canIncreaseDuration,
+  canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
 } from "@/lib/booking/schedule-duration";
@@ -136,7 +137,8 @@ export function TaskServiceBookingFlow({
       delta,
       serviceTime,
       category,
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -147,7 +149,8 @@ export function TaskServiceBookingFlow({
       hours,
       serviceTime,
       category,
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -161,7 +164,17 @@ export function TaskServiceBookingFlow({
   const canContinuePlan =
     !!whenPreference && repeatCadenceChosen && !!serviceDate && !!serviceTime;
   const canChooseWorker =
-    !!serviceDate && !!serviceTime && locationAddress.length >= 5 && !!whenPreference;
+    !!serviceDate &&
+    !!serviceTime &&
+    locationAddress.length >= 5 &&
+    !!whenPreference &&
+    canProceedWithSchedule(
+      serviceDate,
+      serviceTime,
+      serviceDetails.durationHours,
+      category,
+      serviceDetails.serviceType
+    );
 
   const TypeTabs = category === "laundry" ? LaundryTypeTabs : GardenTypeTabs;
 
@@ -333,10 +346,11 @@ export function TaskServiceBookingFlow({
             {getDurationHelperText(category, serviceDetails.durationHours)}
           </p>
         </div>
-        {serviceTime && (
+        {serviceTime && serviceDate && (
           <ScheduleFeasibilityNotice
             category={category}
             serviceType={serviceDetails.serviceType}
+            serviceDate={serviceDate}
             serviceTime={serviceTime}
             durationHours={serviceDetails.durationHours}
             className="mt-4"

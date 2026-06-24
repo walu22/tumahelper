@@ -45,6 +45,7 @@ import {
   saveBookingDraft,
 } from '@/lib/booking/draft-persistence'
 import { clampStartTimeForDuration } from '@/lib/booking/time-slots'
+import { canProceedWithSchedule } from '@/lib/booking/schedule-duration'
 import {
   appendPhotoUrlsToDescription,
   uploadBookingJobPhotos,
@@ -358,17 +359,18 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   }, [])
 
   useEffect(() => {
-    if (!serviceDetails || !serviceTime) return
+    if (!serviceDetails || !serviceTime || !serviceDate) return
     const clamped = clampStartTimeForDuration(
       serviceTime,
       serviceDetails.durationHours,
       serviceDetails.category,
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     )
     if (clamped !== serviceTime) {
       setServiceTime(clamped)
     }
-  }, [serviceDetails, serviceTime])
+  }, [serviceDetails, serviceTime, serviceDate])
 
   useEffect(() => {
     ;(async () => {
@@ -897,6 +899,24 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       jobPhotoFiles,
       onJobPhotoFilesChange: setJobPhotoFiles,
       onFindWorker: () => {
+        if (
+          serviceDetails &&
+          serviceDate &&
+          serviceTime &&
+          !canProceedWithSchedule(
+            serviceDate,
+            serviceTime,
+            serviceDetails.durationHours,
+            serviceDetails.category,
+            serviceDetails.serviceType
+          )
+        ) {
+          toast.error(
+            'Choose a start time that fits your visit length and is still available.'
+          )
+          goToStep(STEP.DETAILS)
+          return
+        }
         if (serviceDetails && plumbingRequiresAdminReview(serviceDetails)) {
           void handleSubmitReviewRequest()
           return

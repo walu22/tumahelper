@@ -47,9 +47,11 @@ import {
   formatBookingTime,
   getAvailableStartTimes,
   getLatestStartForDuration,
+  isScheduleBookable,
 } from "@/lib/booking/time-slots";
 import {
   canIncreaseDuration,
+  canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
 } from "@/lib/booking/schedule-duration";
@@ -135,11 +137,36 @@ export function AirbnbBookingFlow({
   );
 
   useEffect(() => {
-    if (!serviceTime || startTimes.length === 0) return;
-    if (!startTimes.some((slot) => slot.value === serviceTime)) {
-      onTimeChange(startTimes[0]?.value ?? serviceTime);
+    if (startTimes.length === 0) {
+      if (serviceTime) onTimeChange("");
+      return;
+    }
+    if (!serviceTime || !startTimes.some((slot) => slot.value === serviceTime)) {
+      onTimeChange(startTimes[0]?.value ?? "");
     }
   }, [startTimes, serviceTime, onTimeChange]);
+
+  function pickStartTimesForDate(date: string, pref: AirbnbWhenPreference) {
+    let slots = getAvailableStartTimes({
+      category: "cleaning",
+      serviceType: serviceDetails.serviceType,
+      serviceDate: date,
+      whenPreference: pref,
+      durationHours: serviceDetails.durationHours,
+    });
+    if ((pref === "today" || pref === "last_minute") && date === todayIsoDate() && slots.length === 0) {
+      const tomorrow = tomorrowIsoDate();
+      slots = getAvailableStartTimes({
+        category: "cleaning",
+        serviceType: serviceDetails.serviceType,
+        serviceDate: tomorrow,
+        whenPreference: "tomorrow_later",
+        durationHours: serviceDetails.durationHours,
+      });
+      return { date: tomorrow, preference: "tomorrow_later" as const, time: slots[0]?.value ?? "" };
+    }
+    return { date, preference: pref, time: slots[0]?.value ?? "" };
+  }
   const recommendedHours = suggestDuration(serviceDetails);
   const isRepeat = serviceDetails.frequency !== "once";
   const whenPreference = serviceDetails.whenPreference;
@@ -159,20 +186,19 @@ export function AirbnbBookingFlow({
   }
 
   function setWhenPreference(pref: AirbnbWhenPreference) {
-    update({ whenPreference: pref });
     if (pref === "today" || pref === "last_minute") {
-      onDateChange(todayIsoDate());
-      const slots = getAvailableStartTimes({
-        category: "cleaning",
-        serviceType: serviceDetails.serviceType,
-        serviceDate: todayIsoDate(),
-        whenPreference: pref,
-        durationHours: serviceDetails.durationHours,
-      });
-      onTimeChange(slots[0]?.value ?? "09:00");
-    } else if (!serviceDate || serviceDate === todayIsoDate()) {
-      onDateChange(tomorrowIsoDate());
-      onTimeChange("09:00");
+      const picked = pickStartTimesForDate(todayIsoDate(), pref);
+      update({ whenPreference: picked.preference });
+      onDateChange(picked.date);
+      onTimeChange(picked.time);
+      return;
+    }
+
+    update({ whenPreference: pref });
+    if (!serviceDate || serviceDate === todayIsoDate()) {
+      const picked = pickStartTimesForDate(tomorrowIsoDate(), pref);
+      onDateChange(picked.date);
+      onTimeChange(picked.time);
     }
   }
 
@@ -210,7 +236,8 @@ export function AirbnbBookingFlow({
       delta,
       serviceTime,
       "cleaning",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -221,7 +248,8 @@ export function AirbnbBookingFlow({
       hours,
       serviceTime,
       "cleaning",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -233,13 +261,30 @@ export function AirbnbBookingFlow({
   }
 
   const canContinuePlan =
-    !!whenPreference && repeatCadenceChosen && !!serviceDate && !!serviceTime;
+    !!whenPreference &&
+    repeatCadenceChosen &&
+    !!serviceDate &&
+    !!serviceTime &&
+    isScheduleBookable({
+      serviceDate,
+      startTime: serviceTime,
+      durationHours: serviceDetails.durationHours,
+      category: "cleaning",
+      serviceType: serviceDetails.serviceType,
+    });
   const canChooseCleaner =
     !!serviceDate &&
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!whenPreference &&
-    linenPreferences.length > 0;
+    linenPreferences.length > 0 &&
+    canProceedWithSchedule(
+      serviceDate,
+      serviceTime,
+      serviceDetails.durationHours,
+      "cleaning",
+      serviceDetails.serviceType
+    );
 
   const selectedType = getServiceType("cleaning", serviceDetails.serviceType);
   const availableAddons = getAvailableAddons("cleaning", serviceDetails.serviceType);
@@ -487,10 +532,11 @@ export function AirbnbBookingFlow({
                 Showing later slots today for urgent same-day cleans.
               </p>
             )}
-            {serviceTime && serviceDetails.durationHours > 0 && (
+            {serviceTime && serviceDetails.durationHours > 0 && serviceDate && (
               <ScheduleFeasibilityNotice
                 category="cleaning"
                 serviceType={serviceDetails.serviceType}
+                serviceDate={serviceDate}
                 serviceTime={serviceTime}
                 durationHours={serviceDetails.durationHours}
               />
@@ -692,10 +738,11 @@ export function AirbnbBookingFlow({
             </button>
           )}
         </div>
-        {serviceTime && (
+        {serviceTime && serviceDate && (
           <ScheduleFeasibilityNotice
             category="cleaning"
             serviceType={serviceDetails.serviceType}
+            serviceDate={serviceDate}
             serviceTime={serviceTime}
             durationHours={serviceDetails.durationHours}
             className="mt-4"

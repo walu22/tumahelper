@@ -27,6 +27,7 @@ import {
 import { suggestDuration, getCleaningDurationHelperText } from "@/lib/services/utils";
 import {
   canIncreaseDuration,
+  canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
 } from "@/lib/booking/schedule-duration";
@@ -121,7 +122,8 @@ export function CleaningBookingFlow({
       delta,
       serviceTime,
       "cleaning",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -132,7 +134,8 @@ export function CleaningBookingFlow({
       hours,
       serviceTime,
       "cleaning",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -152,7 +155,14 @@ export function CleaningBookingFlow({
     !!serviceDate &&
     !!serviceTime &&
     locationAddress.length >= 5 &&
-    !!whenPreference;
+    !!whenPreference &&
+    canProceedWithSchedule(
+      serviceDate,
+      serviceTime,
+      serviceDetails.durationHours,
+      "cleaning",
+      serviceDetails.serviceType
+    );
 
   function handleCleaningTypeChange(typeId: string) {
     const type = getServiceType("cleaning", typeId);
@@ -366,10 +376,11 @@ export function CleaningBookingFlow({
             {getCleaningDurationHelperText(serviceDetails.durationHours)}
           </p>
         </div>
-        {serviceTime && (
+        {serviceTime && serviceDate && (
           <ScheduleFeasibilityNotice
             category="cleaning"
             serviceType={serviceDetails.serviceType}
+            serviceDate={serviceDate}
             serviceTime={serviceTime}
             durationHours={serviceDetails.durationHours}
             className="mt-4"

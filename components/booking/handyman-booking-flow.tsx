@@ -37,6 +37,7 @@ import {
 import { suggestDuration } from "@/lib/services/utils";
 import {
   canIncreaseDuration,
+  canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
 } from "@/lib/booking/schedule-duration";
@@ -127,7 +128,8 @@ export function HandymanBookingFlow({
       delta,
       serviceTime,
       "handyman",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -138,7 +140,8 @@ export function HandymanBookingFlow({
       hours,
       serviceTime,
       "handyman",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -184,7 +187,14 @@ export function HandymanBookingFlow({
     !!whenPreference &&
     description.trim().length >= 10 &&
     (!isPlumbing || !!serviceDetails.partsAvailable) &&
-    (!isPlumbing || !!serviceDetails.plumberBuyParts);
+    (!isPlumbing || !!serviceDetails.plumberBuyParts) &&
+    canProceedWithSchedule(
+      serviceDate,
+      serviceTime,
+      serviceDetails.durationHours,
+      "handyman",
+      serviceDetails.serviceType
+    );
 
   const typePicker =
     !lockServiceType && step === "address" ? (
@@ -457,10 +467,11 @@ export function HandymanBookingFlow({
             </button>
           )}
         </div>
-        {serviceTime && (
+        {serviceTime && serviceDate && (
           <ScheduleFeasibilityNotice
             category="handyman"
             serviceType={serviceDetails.serviceType}
+            serviceDate={serviceDate}
             serviceTime={serviceTime}
             durationHours={serviceDetails.durationHours}
             className="mt-4"

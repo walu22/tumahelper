@@ -33,6 +33,7 @@ import {
 import { nannyChildAgesComplete, suggestDuration, getDurationHelperText } from "@/lib/services/utils";
 import {
   canIncreaseDuration,
+  canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
 } from "@/lib/booking/schedule-duration";
@@ -134,7 +135,8 @@ export function NannyBookingFlow({
       delta,
       serviceTime,
       "nanny",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -145,7 +147,8 @@ export function NannyBookingFlow({
       hours,
       serviceTime,
       "nanny",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      serviceDate
     );
     update({ durationHours });
     if (nextTime !== serviceTime) onTimeChange(nextTime);
@@ -169,7 +172,14 @@ export function NannyBookingFlow({
     locationAddress.length >= 5 &&
     !!whenPreference &&
     nannyChildAgesComplete(serviceDetails) &&
-    !!careAnswers.emergencyContact.trim();
+    !!careAnswers.emergencyContact.trim() &&
+    canProceedWithSchedule(
+      serviceDate,
+      serviceTime,
+      serviceDetails.durationHours,
+      "nanny",
+      serviceDetails.serviceType
+    );
 
   function handleCleaningTypeChange(typeId: string) {
     const type = getServiceType("nanny", typeId);
@@ -420,10 +430,11 @@ export function NannyBookingFlow({
             {getDurationHelperText("nanny", serviceDetails.durationHours)}
           </p>
         </div>
-        {serviceTime && (
+        {serviceTime && serviceDate && (
           <ScheduleFeasibilityNotice
             category="nanny"
             serviceType={serviceDetails.serviceType}
+            serviceDate={serviceDate}
             serviceTime={serviceTime}
             durationHours={serviceDetails.durationHours}
             className="mt-4"

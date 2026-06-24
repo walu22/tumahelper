@@ -18,6 +18,7 @@ import {
   getAvailableStartTimes,
   getLatestStartForDuration,
   formatBookingTime,
+  isScheduleBookable,
 } from "@/lib/booking/time-slots";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
@@ -77,13 +78,68 @@ export function SchedulePlanSection({
     () => getLatestStartForDuration(durationHours, category, serviceType),
     [durationHours, category, serviceType]
   );
+  const noSlotsLeftToday =
+    !!serviceDate &&
+    serviceDate === todayIsoDate() &&
+    !!whenPreference &&
+    startTimes.length === 0;
+  const scheduleReady =
+    !!serviceDate &&
+    !!serviceTime &&
+    isScheduleBookable({
+      serviceDate,
+      startTime: serviceTime,
+      durationHours,
+      category,
+      serviceType,
+    });
 
   useEffect(() => {
-    if (!serviceTime || startTimes.length === 0) return;
-    if (!startTimes.some((slot) => slot.value === serviceTime)) {
-      onTimeChange(startTimes[0]?.value ?? serviceTime);
+    if (startTimes.length === 0) {
+      if (serviceTime) onTimeChange("");
+      return;
+    }
+    if (!serviceTime || !startTimes.some((slot) => slot.value === serviceTime)) {
+      onTimeChange(startTimes[0]?.value ?? "");
     }
   }, [startTimes, serviceTime, onTimeChange]);
+
+  function pickStartTimesForDate(
+    date: string,
+    pref: WhenPreference
+  ): { date: string; preference: WhenPreference; time: string } {
+    let slots = getAvailableStartTimes({
+      category,
+      serviceType,
+      serviceDate: date,
+      whenPreference: pref,
+      durationHours,
+    });
+    if (
+      (pref === "today" || pref === "last_minute") &&
+      date === todayIsoDate() &&
+      slots.length === 0
+    ) {
+      const tomorrow = tomorrowIsoDate();
+      slots = getAvailableStartTimes({
+        category,
+        serviceType,
+        serviceDate: tomorrow,
+        whenPreference: "tomorrow_later",
+        durationHours,
+      });
+      return {
+        date: tomorrow,
+        preference: "tomorrow_later",
+        time: slots[0]?.value ?? "",
+      };
+    }
+    return {
+      date,
+      preference: pref,
+      time: slots[0]?.value ?? "",
+    };
+  }
 
   function update(patch: Partial<ServiceDetails>) {
     onServiceDetailsChange({ ...serviceDetails, ...patch });
@@ -96,28 +152,19 @@ export function SchedulePlanSection({
   }
 
   function setWhenPreference(pref: WhenPreference) {
-    update({ whenPreference: pref });
     if (pref === "today" || pref === "last_minute") {
-      onDateChange(todayIsoDate());
-      const slots = getAvailableStartTimes({
-        category,
-        serviceType,
-        serviceDate: todayIsoDate(),
-        whenPreference: pref,
-        durationHours,
-      });
-      onTimeChange(slots[0]?.value ?? "09:00");
-    } else if (!serviceDate || serviceDate === todayIsoDate()) {
-      onDateChange(tomorrowIsoDate());
-      onTimeChange(
-        getAvailableStartTimes({
-          category,
-          serviceType,
-          serviceDate: tomorrowIsoDate(),
-          whenPreference: pref,
-          durationHours,
-        })[0]?.value ?? "09:00"
-      );
+      const picked = pickStartTimesForDate(todayIsoDate(), pref);
+      update({ whenPreference: picked.preference });
+      onDateChange(picked.date);
+      onTimeChange(picked.time);
+      return;
+    }
+
+    update({ whenPreference: pref });
+    if (!serviceDate || serviceDate === todayIsoDate()) {
+      const picked = pickStartTimesForDate(tomorrowIsoDate(), pref);
+      onDateChange(picked.date);
+      onTimeChange(picked.time);
     }
   }
 
@@ -255,15 +302,22 @@ export function SchedulePlanSection({
               </select>
             </div>
           </div>
-          {whenPreference === "last_minute" && serviceDate === todayIsoDate() && (
+          {noSlotsLeftToday && (
+            <p className="text-sm text-amber-800 leading-relaxed">
+              No arrival times are left today for a {durationHours}-hour visit. Pick another day
+              or shorten the visit on the next step.
+            </p>
+          )}
+          {whenPreference === "last_minute" && serviceDate === todayIsoDate() && !noSlotsLeftToday && (
             <p className="text-xs text-muted-foreground">
               Showing later slots today for urgent same-day visits.
             </p>
           )}
-          {serviceTime && durationHours > 0 && (
+          {serviceTime && durationHours > 0 && serviceDate && (
             <ScheduleFeasibilityNotice
               category={category}
               serviceType={serviceType}
+              serviceDate={serviceDate}
               serviceTime={serviceTime}
               durationHours={durationHours}
             />
@@ -286,7 +340,7 @@ export function SchedulePlanSection({
         onBack={onBack}
         primaryLabel="Continue"
         onPrimary={onContinue}
-        primaryDisabled={!canContinue}
+        primaryDisabled={!canContinue || !scheduleReady || noSlotsLeftToday}
       />
     </div>
   );

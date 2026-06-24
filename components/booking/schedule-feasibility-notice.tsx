@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 interface ScheduleFeasibilityNoticeProps {
   category: ServiceCategoryKey;
   serviceType: string;
+  serviceDate: string;
   serviceTime: string;
   durationHours: number;
   className?: string;
@@ -17,6 +18,7 @@ interface ScheduleFeasibilityNoticeProps {
 export function ScheduleFeasibilityNotice({
   category,
   serviceType,
+  serviceDate,
   serviceTime,
   durationHours,
   className,
@@ -28,11 +30,12 @@ export function ScheduleFeasibilityNotice({
         durationHours,
         category,
         serviceType,
+        serviceDate,
       }),
-    [serviceTime, durationHours, category, serviceType]
+    [serviceTime, durationHours, category, serviceType, serviceDate]
   );
 
-  if (!serviceTime || !durationHours) return null;
+  if (!serviceTime || !durationHours || !serviceDate) return null;
 
   return (
     <div

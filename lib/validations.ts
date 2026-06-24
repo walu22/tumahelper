@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isStartTimeValidForDuration } from "@/lib/booking/time-slots";
+import { isScheduleBookable } from "@/lib/booking/time-slots";
 import { nannyChildAgesComplete } from "@/lib/services/utils";
 
 export function normalizeZambianPhone(input: string): string {
@@ -167,16 +167,17 @@ export const bookingSchema = z
 
     if (
       details &&
-      !isStartTimeValidForDuration(
-        data.serviceTime,
-        details.durationHours,
-        details.category,
-        details.serviceType
-      )
+      !isScheduleBookable({
+        serviceDate: data.serviceDate,
+        startTime: data.serviceTime,
+        durationHours: details.durationHours,
+        category: details.category,
+        serviceType: details.serviceType,
+      })
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Start time and visit length do not fit within standard visit hours",
+        message: "Start time and visit length do not fit within available visit hours",
         path: ["serviceTime"],
       });
     }
