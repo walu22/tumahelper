@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Clock } from "lucide-react";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 import { getScheduleFeasibility } from "@/lib/booking/time-slots";
+import { useScheduleClock } from "@/lib/booking/use-schedule-clock";
 import { cn } from "@/lib/utils";
 
 interface ScheduleFeasibilityNoticeProps {
@@ -23,6 +24,7 @@ export function ScheduleFeasibilityNotice({
   durationHours,
   className,
 }: ScheduleFeasibilityNoticeProps) {
+  const scheduleNow = useScheduleClock();
   const feasibility = useMemo(
     () =>
       getScheduleFeasibility({
@@ -31,8 +33,9 @@ export function ScheduleFeasibilityNotice({
         category,
         serviceType,
         serviceDate,
+        now: scheduleNow,
       }),
-    [serviceTime, durationHours, category, serviceType, serviceDate]
+    [serviceTime, durationHours, category, serviceType, serviceDate, scheduleNow]
   );
 
   if (!serviceTime || !durationHours || !serviceDate) return null;

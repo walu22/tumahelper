@@ -11,7 +11,8 @@ export function canProceedWithSchedule(
   serviceTime: string,
   durationHours: number,
   category: ServiceCategoryKey,
-  serviceType: string
+  serviceType: string,
+  now?: Date
 ): boolean {
   return isScheduleBookable({
     serviceDate,
@@ -19,6 +20,7 @@ export function canProceedWithSchedule(
     durationHours,
     category,
     serviceType,
+    now,
   });
 }
 

@@ -124,4 +124,20 @@ describe("bookingSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("rejects bookings on calendar dates before today in Lusaka", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-20T14:07:00.000Z"));
+
+    const result = bookingSchema.safeParse({
+      ...baseBooking,
+      serviceDate: "2026-06-19",
+      serviceTime: "10:00",
+      serviceDetails: {
+        ...defaultServiceDetails("garden"),
+        durationHours: 4,
+      },
+    });
+    expect(result.success).toBe(false);
+  });
 });

@@ -46,6 +46,7 @@ import {
 } from '@/lib/booking/draft-persistence'
 import { clampStartTimeForDuration } from '@/lib/booking/time-slots'
 import { canProceedWithSchedule } from '@/lib/booking/schedule-duration'
+import { useScheduleClock } from '@/lib/booking/use-schedule-clock'
 import {
   appendPhotoUrlsToDescription,
   uploadBookingJobPhotos,
@@ -331,6 +332,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   const [serviceSubStep, setServiceSubStep] = useState<ServiceFlowStep>('address')
   const [streetAddress, setStreetAddress] = useState('')
   const [unitAddress, setUnitAddress] = useState('')
+  const scheduleNow = useScheduleClock()
 
   useEffect(() => {
     if (draftRestoredRef.current || typeof window === 'undefined') return
@@ -359,18 +361,20 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   }, [])
 
   useEffect(() => {
-    if (!serviceDetails || !serviceTime || !serviceDate) return
+    if (!serviceDetails || !serviceDate) return
+    if (!serviceTime) return
     const clamped = clampStartTimeForDuration(
       serviceTime,
       serviceDetails.durationHours,
       serviceDetails.category,
       serviceDetails.serviceType,
-      serviceDate
+      serviceDate,
+      scheduleNow
     )
     if (clamped !== serviceTime) {
       setServiceTime(clamped)
     }
-  }, [serviceDetails, serviceTime, serviceDate])
+  }, [serviceDetails, serviceTime, serviceDate, scheduleNow])
 
   useEffect(() => {
     ;(async () => {
@@ -635,12 +639,37 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         goToStep(STEP.DETAILS)
         return
       }
+      if (
+        serviceDetails &&
+        !canProceedWithSchedule(
+          serviceDate,
+          serviceTime,
+          serviceDetails.durationHours,
+          serviceDetails.category,
+          serviceDetails.serviceType,
+          scheduleNow
+        )
+      ) {
+        toast.error(
+          'That start time is no longer available for today. Go back and pick a new time or date.'
+        )
+        goToStep(STEP.DETAILS)
+        return
+      }
       const signedIn = await ensureSignedInForBooking()
       if (!signedIn) return
       setSelectedWorker(worker)
       goToStep(STEP.PAYMENT)
     },
-    [goToStep, serviceDate, serviceTime, locationAddress, ensureSignedInForBooking]
+    [
+      goToStep,
+      serviceDate,
+      serviceTime,
+      locationAddress,
+      ensureSignedInForBooking,
+      serviceDetails,
+      scheduleNow,
+    ]
   )
 
   const hasScheduleDetails =
@@ -659,7 +688,8 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       serviceTime,
       serviceDetails.durationHours,
       serviceDetails.category,
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      scheduleNow
     )
 
   const amountInCents = Math.round(parseFloat(amount || '0') * 100)

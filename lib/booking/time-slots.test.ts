@@ -54,6 +54,34 @@ describe("schedule feasibility", () => {
     ).toBe("09:00");
   });
 
+  it("clears the start time when no valid same-day slots remain", () => {
+    const now = new Date("2026-06-20T14:07:00.000Z");
+    expect(
+      clampStartTimeForDuration(
+        "16:00",
+        4,
+        "garden",
+        "lawn_cutting",
+        "2026-06-20",
+        now
+      )
+    ).toBe("");
+  });
+
+  it("rejects bookings on calendar dates before today in Lusaka", () => {
+    const now = new Date("2026-06-20T14:07:00.000Z");
+    expect(
+      isScheduleBookable({
+        serviceDate: "2026-06-19",
+        startTime: "10:00",
+        durationHours: 4,
+        category: "garden",
+        serviceType: "lawn_cutting",
+        now,
+      })
+    ).toBe(false);
+  });
+
   it("limits evening nanny visits to 4 hours", () => {
     expect(getAllowedDurations("17:00", "nanny", "babysitter")).toEqual([3, 4]);
     expect(isStartTimeValidForDuration("17:00", 6, "nanny", "babysitter")).toBe(false);

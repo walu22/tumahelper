@@ -5,6 +5,7 @@ import {
   getLusakaNowMinutes,
   getLusakaTodayIsoDate,
   isLusakaSameDay,
+  isServiceDateBeforeToday,
 } from "@/lib/booking/lusaka-schedule-time";
 
 export interface StartTimeOption {
@@ -216,6 +217,7 @@ export function isScheduleBookable(options: {
     now = new Date(),
   } = options;
   if (!serviceDate || !startTime || !durationHours) return false;
+  if (isServiceDateBeforeToday(serviceDate, now)) return false;
   if (!isStartTimeValidForDuration(startTime, durationHours, category, serviceType)) {
     return false;
   }
@@ -328,7 +330,7 @@ export function clampStartTimeForDuration(
         category,
         serviceType
       );
-  if (valid.length === 0) return startTime;
+  if (valid.length === 0) return "";
 
   const startMins = parseTimeToMinutes(startTime);
   const atOrBefore = valid.filter((slot) => parseTimeToMinutes(slot.value) <= startMins);

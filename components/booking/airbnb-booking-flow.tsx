@@ -56,6 +56,7 @@ import {
   resolveDurationForSchedule,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
+import { useScheduleClock } from "@/lib/booking/use-schedule-clock";
 import { suggestDuration } from "@/lib/services/utils";
 import { cn } from "@/lib/utils";
 
@@ -114,6 +115,7 @@ export function AirbnbBookingFlow({
   onGuestCheckoutTimeChange,
   onNextCheckInChange,
 }: AirbnbBookingFlowProps) {
+  const scheduleNow = useScheduleClock();
   const [pendingCoords, setPendingCoords] = useState<LocationCoords | null>(null);
   const previewAddress = useMemo(
     () => formatAirbnbAddress(streetAddress, unitAddress),
@@ -128,8 +130,15 @@ export function AirbnbBookingFlow({
         serviceDate,
         whenPreference: serviceDetails.whenPreference,
         durationHours: serviceDetails.durationHours,
+        now: scheduleNow,
       }),
-    [serviceDate, serviceDetails.whenPreference, serviceDetails.durationHours, serviceDetails.serviceType]
+    [
+      serviceDate,
+      serviceDetails.whenPreference,
+      serviceDetails.durationHours,
+      serviceDetails.serviceType,
+      scheduleNow,
+    ]
   );
   const latestStart = useMemo(
     () => getLatestStartForDuration(serviceDetails.durationHours, "cleaning", serviceDetails.serviceType),
@@ -153,6 +162,7 @@ export function AirbnbBookingFlow({
       serviceDate: date,
       whenPreference: pref,
       durationHours: serviceDetails.durationHours,
+      now: scheduleNow,
     });
     if ((pref === "today" || pref === "last_minute") && date === todayIsoDate() && slots.length === 0) {
       const tomorrow = tomorrowIsoDate();
@@ -162,6 +172,7 @@ export function AirbnbBookingFlow({
         serviceDate: tomorrow,
         whenPreference: "tomorrow_later",
         durationHours: serviceDetails.durationHours,
+        now: scheduleNow,
       });
       return { date: tomorrow, preference: "tomorrow_later" as const, time: slots[0]?.value ?? "" };
     }
@@ -271,6 +282,7 @@ export function AirbnbBookingFlow({
       durationHours: serviceDetails.durationHours,
       category: "cleaning",
       serviceType: serviceDetails.serviceType,
+      now: scheduleNow,
     });
   const canChooseCleaner =
     !!serviceDate &&
@@ -283,7 +295,8 @@ export function AirbnbBookingFlow({
       serviceTime,
       serviceDetails.durationHours,
       "cleaning",
-      serviceDetails.serviceType
+      serviceDetails.serviceType,
+      scheduleNow
     );
 
   const selectedType = getServiceType("cleaning", serviceDetails.serviceType);

@@ -53,3 +53,10 @@ export function getLusakaNowMinutes(now: Date = new Date()): number {
 export function isLusakaSameDay(serviceDate: string, now: Date = new Date()): boolean {
   return serviceDate === getLusakaTodayIsoDate(now);
 }
+
+export function isServiceDateBeforeToday(
+  serviceDate: string,
+  now: Date = new Date()
+): boolean {
+  return serviceDate < getLusakaTodayIsoDate(now);
+}

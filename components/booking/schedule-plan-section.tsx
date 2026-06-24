@@ -21,6 +21,7 @@ import {
   isScheduleBookable,
 } from "@/lib/booking/time-slots";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
+import { useScheduleClock } from "@/lib/booking/use-schedule-clock";
 import { cn } from "@/lib/utils";
 
 interface SchedulePlanSectionProps {
@@ -60,6 +61,7 @@ export function SchedulePlanSection({
   timingDescription = "Pick how soon you need help, then choose a start time that fits your visit length.",
   hideFrequency = false,
 }: SchedulePlanSectionProps) {
+  const scheduleNow = useScheduleClock();
   const whenPreference = serviceDetails.whenPreference;
   const durationHours = serviceDetails.durationHours;
   const startTimes = useMemo(
@@ -70,8 +72,9 @@ export function SchedulePlanSection({
         serviceDate,
         whenPreference,
         durationHours,
+        now: scheduleNow,
       }),
-    [category, serviceType, serviceDate, whenPreference, durationHours]
+    [category, serviceType, serviceDate, whenPreference, durationHours, scheduleNow]
   );
   const isRepeat = serviceDetails.frequency !== "once" && !!serviceDetails.frequency;
   const latestStart = useMemo(
@@ -92,6 +95,7 @@ export function SchedulePlanSection({
       durationHours,
       category,
       serviceType,
+      now: scheduleNow,
     });
 
   useEffect(() => {
@@ -114,6 +118,7 @@ export function SchedulePlanSection({
       serviceDate: date,
       whenPreference: pref,
       durationHours,
+      now: scheduleNow,
     });
     if (
       (pref === "today" || pref === "last_minute") &&
@@ -127,6 +132,7 @@ export function SchedulePlanSection({
         serviceDate: tomorrow,
         whenPreference: "tomorrow_later",
         durationHours,
+        now: scheduleNow,
       });
       return {
         date: tomorrow,
