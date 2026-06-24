@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { defaultBetweenGuestServiceDetails, defaultServiceDetails } from "./catalog";
-import { formatTurnoverFrequency, getServiceScopeRows } from "./utils";
+import { formatTurnoverFrequency, getAddonSectionCopy, getServiceScopeRows } from "./utils";
 
 describe("turnover frequency", () => {
   it("defaults between-guest bookings to once-off", () => {
@@ -50,6 +50,27 @@ describe("housekeeping scope summary", () => {
     const rows = getServiceScopeRows(details);
     expect(rows.some((r) => r.label === "Visit")).toBe(true);
     expect(rows.some((r) => r.label === "Home")).toBe(false);
+  });
+});
+
+describe("cooking scope summary", () => {
+  it("labels selected meal tasks as Duties, not Add-ons", () => {
+    const details = {
+      ...defaultServiceDetails("cooking"),
+      serviceType: "lunch",
+      addons: ["serve_clear", "packed_lunch"],
+    };
+    const rows = getServiceScopeRows(details);
+    expect(rows.some((r) => r.label === "Duties")).toBe(true);
+    expect(rows.some((r) => r.label === "Add-ons")).toBe(false);
+  });
+});
+
+describe("getAddonSectionCopy", () => {
+  it("uses duty language for housekeeping and cooking", () => {
+    expect(getAddonSectionCopy("housekeeping").pickerTitle).toBe("Duties for this visit");
+    expect(getAddonSectionCopy("cooking").pickerTitle).toBe("Meals and kitchen tasks");
+    expect(getAddonSectionCopy("cleaning").pickerTitle).toBe("Optional add-ons");
   });
 });
 

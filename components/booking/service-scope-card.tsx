@@ -1,10 +1,22 @@
 import { CheckCircle2, XCircle, PlusCircle, Clock } from "lucide-react";
-import { ServiceTypeOption, getAvailableAddons, type ServiceCategoryKey } from "@/lib/services/catalog";
+import {
+  getAvailableAddons,
+  type ServiceCategoryKey,
+  type ServiceTypeOption,
+} from "@/lib/services/catalog";
+import { getAddonSectionCopy } from "@/lib/services/utils";
 
-export function ServiceScopeCard({ category, type }: { category: ServiceCategoryKey, type: ServiceTypeOption }) {
+export function ServiceScopeCard({
+  category,
+  type,
+}: {
+  category: ServiceCategoryKey;
+  type: ServiceTypeOption;
+}) {
   if (!type) return null;
 
   const addons = getAvailableAddons(category, type.id);
+  const section = getAddonSectionCopy(category);
 
   return (
     <div className="bg-card rounded-2xl border border-border p-5 mt-4 space-y-6">
@@ -19,7 +31,6 @@ export function ServiceScopeCard({ category, type }: { category: ServiceCategory
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Included */}
         {type.included && type.included.length > 0 && (
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -37,7 +48,6 @@ export function ServiceScopeCard({ category, type }: { category: ServiceCategory
           </div>
         )}
 
-        {/* Not Included */}
         {type.notIncluded && type.notIncluded.length > 0 && (
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -58,13 +68,17 @@ export function ServiceScopeCard({ category, type }: { category: ServiceCategory
 
       {addons.length > 0 && (
         <div className="pt-4 border-t border-border">
-          <h4 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-3">
+          <h4 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-1">
             <PlusCircle className="w-4 h-4 text-muted-foreground" />
-            Available Add-ons (can be added next)
+            {section.previewTitle}
           </h4>
+          <p className="text-xs text-muted-foreground mb-3">{section.pickerSubtitle}</p>
           <div className="flex flex-wrap gap-2">
             {addons.map((addon) => (
-              <span key={addon.id} className="text-xs px-2.5 py-1 bg-surface rounded-md border border-border text-muted-foreground">
+              <span
+                key={addon.id}
+                className="text-xs px-2.5 py-1 bg-surface rounded-md border border-border text-muted-foreground"
+              >
                 {addon.label}
               </span>
             ))}

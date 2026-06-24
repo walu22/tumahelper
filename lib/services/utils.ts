@@ -17,6 +17,44 @@ import {
 } from "./catalog";
 import { formatLinenPreferences } from "@/lib/booking/airbnb-flow";
 
+export type AddonSectionCopy = {
+  /** Scope step heading for the duty/add-on picker */
+  pickerTitle: string;
+  /** Helper line under the picker heading */
+  pickerSubtitle: string;
+  /** Short label in booking summary rows */
+  summaryLabel: string;
+  /** Service selection card heading (type tabs) */
+  previewTitle: string;
+};
+
+/** Customer-facing labels for optional extras vs duty pickers. */
+export function getAddonSectionCopy(category: ServiceCategoryKey): AddonSectionCopy {
+  switch (category) {
+    case "housekeeping":
+      return {
+        pickerTitle: "Duties for this visit",
+        pickerSubtitle: "Select what you want covered during the visit.",
+        summaryLabel: "Duties",
+        previewTitle: "Duties for this visit",
+      };
+    case "cooking":
+      return {
+        pickerTitle: "Meals and kitchen tasks",
+        pickerSubtitle: "Select what the cook should prepare or handle in the kitchen.",
+        summaryLabel: "Duties",
+        previewTitle: "Meals and kitchen tasks",
+      };
+    default:
+      return {
+        pickerTitle: "Optional add-ons",
+        pickerSubtitle: "Select anything extra you need on the job details step.",
+        summaryLabel: "Add-ons",
+        previewTitle: "Optional add-ons",
+      };
+  }
+}
+
 /** Hours each add-on typically adds to a visit */
 const ADDON_HOUR_INCREMENT: Record<string, number> = {
   laundry: 1.5,
@@ -229,11 +267,11 @@ export function getServiceScopeRows(details: ServiceDetails): ServiceScopeRow[] 
   });
 
   if (details.addons.length > 0) {
-    const addonLabel = details.category === "housekeeping" ? "Duties" : "Add-ons";
+    const { summaryLabel } = getAddonSectionCopy(details.category);
     const labels = details.addons
       .map((id) => getAddon(details.category, id)?.label ?? id)
       .join(", ");
-    rows.push({ label: addonLabel, value: labels });
+    rows.push({ label: summaryLabel, value: labels });
   }
 
   return rows;

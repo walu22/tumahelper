@@ -28,7 +28,7 @@ import {
   type ServiceDetails,
   type TurnoverFrequency,
 } from "@/lib/services/catalog";
-import { suggestDuration, getDurationHelperText } from "@/lib/services/utils";
+import { suggestDuration, getDurationHelperText, getAddonSectionCopy } from "@/lib/services/utils";
 
 export interface HousekeepingBookingFlowProps {
   step: ServiceFlowStep;
@@ -63,7 +63,8 @@ const FLOW_COPY = {
     lockedSummary:
       "You are booking household help for a set time. Choose duties in the next step, not a fixed clean package.",
     scopeLead: "Choose what the helper should focus on during the visit.",
-    dutiesTitle: "Duties for this visit",
+    dutiesTitle: getAddonSectionCopy("housekeeping").pickerTitle,
+    dutiesSubtitle: getAddonSectionCopy("housekeeping").pickerSubtitle,
     visitLengthHint:
       "Half-day and full-day visits can be adjusted between 3 and 8 hours. We suggest a length based on your duties.",
     notesLabel: "Access and notes for your housekeeper",
@@ -81,7 +82,8 @@ const FLOW_COPY = {
     lockedSummary:
       "You are booking a cooking visit for a set time. Choose meals and kitchen tasks in the next step.",
     scopeLead: "Choose what the cook should prepare during the visit.",
-    dutiesTitle: "Meals and kitchen tasks",
+    dutiesTitle: getAddonSectionCopy("cooking").pickerTitle,
+    dutiesSubtitle: getAddonSectionCopy("cooking").pickerSubtitle,
     visitLengthHint:
       "Visit length can be adjusted between 3 and 8 hours. We suggest a length based on your meal choices.",
     notesLabel: "Dietary notes and kitchen access",
@@ -294,7 +296,7 @@ export function HousekeepingBookingFlow({
       {availableAddons.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold mb-1">{copy.dutiesTitle}</h3>
-          <p className="text-sm text-muted-foreground mb-3">Select all that apply.</p>
+          <p className="text-sm text-muted-foreground mb-3">{copy.dutiesSubtitle}</p>
           <div className="grid sm:grid-cols-2 gap-3">
             {availableAddons.map((addon) => (
               <AirbnbOptionCard
