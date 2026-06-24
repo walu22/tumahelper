@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isStartTimeValidForDuration } from "@/lib/booking/time-slots";
 import { nannyChildAgesComplete } from "@/lib/services/utils";
 
 export function normalizeZambianPhone(input: string): string {
@@ -162,6 +163,22 @@ export const bookingSchema = z
           path: ["description"],
         });
       }
+    }
+
+    if (
+      details &&
+      !isStartTimeValidForDuration(
+        data.serviceTime,
+        details.durationHours,
+        details.category,
+        details.serviceType
+      )
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Start time and visit length do not fit within standard visit hours",
+        path: ["serviceTime"],
+      });
     }
   });
 

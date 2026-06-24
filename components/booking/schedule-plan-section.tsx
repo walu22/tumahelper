@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Calendar, CalendarClock, Repeat, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { BookingStepFooter } from "@/components/booking/booking-step-footer";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
+import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 import {
   REGULAR_FREQUENCY_OPTIONS,
   formatVisitCadence,
@@ -13,7 +14,11 @@ import {
   type WhenPreference,
 } from "@/lib/booking/shared-flow";
 import type { ServiceDetails, TurnoverFrequency } from "@/lib/services/catalog";
-import { getStartTimeOptions, type StartTimeOption } from "@/lib/booking/time-slots";
+import {
+  getAvailableStartTimes,
+  getLatestStartForDuration,
+  formatBookingTime,
+} from "@/lib/booking/time-slots";
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
 
@@ -36,22 +41,6 @@ interface SchedulePlanSectionProps {
   hideFrequency?: boolean;
 }
 
-function filterStartTimes(
-  times: StartTimeOption[],
-  serviceDate: string,
-  whenPreference?: WhenPreference
-): StartTimeOption[] {
-  if (serviceDate !== todayIsoDate()) return times;
-  if (whenPreference !== "last_minute") return times;
-
-  const minHour = new Date().getHours() + 1;
-  const filtered = times.filter((slot) => {
-    const hour = parseInt(slot.value.split(":")[0] ?? "0", 10);
-    return hour >= minHour;
-  });
-  return filtered.length > 0 ? filtered : times.slice(-3);
-}
-
 export function SchedulePlanSection({
   category,
   serviceType,
@@ -67,16 +56,34 @@ export function SchedulePlanSection({
   frequencyHeading = "How often?",
   frequencyDescription = "Is this a one-off visit, or something you want on a regular schedule?",
   timingHeading = "When should the visit happen?",
-  timingDescription = "Pick how soon you need help, then choose your arrival window.",
+  timingDescription = "Pick how soon you need help, then choose a start time that fits your visit length.",
   hideFrequency = false,
 }: SchedulePlanSectionProps) {
-  const allStartTimes = getStartTimeOptions(category, serviceType);
   const whenPreference = serviceDetails.whenPreference;
+  const durationHours = serviceDetails.durationHours;
   const startTimes = useMemo(
-    () => filterStartTimes(allStartTimes, serviceDate, whenPreference),
-    [allStartTimes, serviceDate, whenPreference]
+    () =>
+      getAvailableStartTimes({
+        category,
+        serviceType,
+        serviceDate,
+        whenPreference,
+        durationHours,
+      }),
+    [category, serviceType, serviceDate, whenPreference, durationHours]
   );
   const isRepeat = serviceDetails.frequency !== "once" && !!serviceDetails.frequency;
+  const latestStart = useMemo(
+    () => getLatestStartForDuration(durationHours, category, serviceType),
+    [durationHours, category, serviceType]
+  );
+
+  useEffect(() => {
+    if (!serviceTime || startTimes.length === 0) return;
+    if (!startTimes.some((slot) => slot.value === serviceTime)) {
+      onTimeChange(startTimes[0]?.value ?? serviceTime);
+    }
+  }, [startTimes, serviceTime, onTimeChange]);
 
   function update(patch: Partial<ServiceDetails>) {
     onServiceDetailsChange({ ...serviceDetails, ...patch });
@@ -92,11 +99,25 @@ export function SchedulePlanSection({
     update({ whenPreference: pref });
     if (pref === "today" || pref === "last_minute") {
       onDateChange(todayIsoDate());
-      const slots = filterStartTimes(allStartTimes, todayIsoDate(), pref);
+      const slots = getAvailableStartTimes({
+        category,
+        serviceType,
+        serviceDate: todayIsoDate(),
+        whenPreference: pref,
+        durationHours,
+      });
       onTimeChange(slots[0]?.value ?? "09:00");
     } else if (!serviceDate || serviceDate === todayIsoDate()) {
       onDateChange(tomorrowIsoDate());
-      onTimeChange("09:00");
+      onTimeChange(
+        getAvailableStartTimes({
+          category,
+          serviceType,
+          serviceDate: tomorrowIsoDate(),
+          whenPreference: pref,
+          durationHours,
+        })[0]?.value ?? "09:00"
+      );
     }
   }
 
@@ -166,6 +187,12 @@ export function SchedulePlanSection({
       <div>
         <h2 className="text-2xl font-semibold">{timingHeading}</h2>
         <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{timingDescription}</p>
+        {durationHours >= 6 && latestStart && (
+          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+            This visit is booked for about {durationHours} hours. The latest start time is{" "}
+            {formatBookingTime(latestStart.value)}.
+          </p>
+        )}
       </div>
 
       <div className="grid sm:grid-cols-3 gap-3">
@@ -173,7 +200,7 @@ export function SchedulePlanSection({
           selected={whenPreference === "today"}
           onClick={() => setWhenPreference("today")}
           title="As soon as possible"
-          description="Today, during normal working hours"
+          description="Today, during standard visit hours"
           icon={Zap}
         />
         <AirbnbOptionCard
@@ -232,6 +259,14 @@ export function SchedulePlanSection({
             <p className="text-xs text-muted-foreground">
               Showing later slots today for urgent same-day visits.
             </p>
+          )}
+          {serviceTime && durationHours > 0 && (
+            <ScheduleFeasibilityNotice
+              category={category}
+              serviceType={serviceType}
+              serviceTime={serviceTime}
+              durationHours={durationHours}
+            />
           )}
         </div>
       )}

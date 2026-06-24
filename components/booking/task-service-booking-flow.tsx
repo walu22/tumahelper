@@ -26,6 +26,12 @@ import {
   type ServiceDetails,
 } from "@/lib/services/catalog";
 import { suggestDuration, getDurationHelperText } from "@/lib/services/utils";
+import {
+  canIncreaseDuration,
+  stepBookingDuration,
+  resolveDurationForSchedule,
+} from "@/lib/booking/schedule-duration";
+import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 
 interface TaskServiceBookingFlowProps {
   category: "laundry" | "garden";
@@ -125,11 +131,26 @@ export function TaskServiceBookingFlow({
   }
 
   function adjustHours(delta: number) {
-    const options = [...DURATION_OPTIONS];
-    const current = serviceDetails.durationHours;
-    const idx = Math.max(0, options.indexOf(current as (typeof options)[number]));
-    const nextIdx = Math.max(0, Math.min(options.length - 1, idx + delta));
-    update({ durationHours: options[nextIdx] ?? current });
+    const { durationHours, serviceTime: nextTime } = stepBookingDuration(
+      serviceDetails.durationHours,
+      delta,
+      serviceTime,
+      category,
+      serviceDetails.serviceType
+    );
+    update({ durationHours });
+    if (nextTime !== serviceTime) onTimeChange(nextTime);
+  }
+
+  function applySuggestedHours(hours: number) {
+    const { durationHours, serviceTime: nextTime } = resolveDurationForSchedule(
+      hours,
+      serviceTime,
+      category,
+      serviceDetails.serviceType
+    );
+    update({ durationHours });
+    if (nextTime !== serviceTime) onTimeChange(nextTime);
   }
 
   function handleTypeChange(typeId: string) {
@@ -286,7 +307,12 @@ export function TaskServiceBookingFlow({
             size="icon"
             onClick={() => adjustHours(1)}
             disabled={
-              serviceDetails.durationHours >= DURATION_OPTIONS[DURATION_OPTIONS.length - 1]
+              !canIncreaseDuration(
+                serviceDetails.durationHours,
+                serviceTime,
+                category,
+                serviceDetails.serviceType
+              )
             }
           >
             <Plus className="h-4 w-4" />
@@ -294,7 +320,7 @@ export function TaskServiceBookingFlow({
           {recommendedHours !== serviceDetails.durationHours && (
             <button
               type="button"
-              onClick={() => update({ durationHours: recommendedHours })}
+              onClick={() => applySuggestedHours(recommendedHours)}
               className="text-sm font-semibold text-primary hover:underline"
             >
               Suggested {recommendedHours}h
@@ -307,6 +333,15 @@ export function TaskServiceBookingFlow({
             {getDurationHelperText(category, serviceDetails.durationHours)}
           </p>
         </div>
+        {serviceTime && (
+          <ScheduleFeasibilityNotice
+            category={category}
+            serviceType={serviceDetails.serviceType}
+            serviceTime={serviceTime}
+            durationHours={serviceDetails.durationHours}
+            className="mt-4"
+          />
+        )}
       </div>
 
       <div>

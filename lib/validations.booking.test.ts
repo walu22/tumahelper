@@ -80,4 +80,28 @@ describe("bookingSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("rejects bookings where the visit runs past standard hours", () => {
+    const result = bookingSchema.safeParse({
+      ...baseBooking,
+      serviceTime: "16:00",
+      serviceDetails: {
+        ...defaultServiceDetails("cleaning"),
+        durationHours: 8,
+      },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts bookings that finish within standard hours", () => {
+    const result = bookingSchema.safeParse({
+      ...baseBooking,
+      serviceTime: "09:00",
+      serviceDetails: {
+        ...defaultServiceDetails("cleaning"),
+        durationHours: 8,
+      },
+    });
+    expect(result.success).toBe(true);
+  });
 });

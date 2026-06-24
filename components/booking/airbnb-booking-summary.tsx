@@ -10,7 +10,7 @@ import {
 } from "@/lib/booking/airbnb-flow";
 import { AirbnbScopeTeaser } from "@/components/booking/airbnb-scope-teaser";
 import { ServiceScopeDetails } from "@/components/booking/service-scope-details";
-import { formatBookingTime } from "@/lib/booking/time-slots";
+import { formatBookingTime, formatEstimatedEnd } from "@/lib/booking/time-slots";
 
 interface AirbnbBookingSummaryProps {
   step: AirbnbFlowStep;
@@ -128,6 +128,9 @@ export function AirbnbBookingSummary({
               <Calendar className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <span>
                 {formatDateLabel(serviceDate)} at {formatBookingTime(serviceTime)}
+                <span className="block text-muted-foreground mt-0.5">
+                  Est. finish ~{formatEstimatedEnd(serviceTime, details.durationHours)}
+                </span>
               </span>
             </p>
           </div>

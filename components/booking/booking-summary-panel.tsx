@@ -5,7 +5,7 @@ import { getServiceType } from "@/lib/services/catalog";
 import type { ServiceDetails } from "@/lib/services/catalog";
 import { getServiceScopeRows, suggestPrice } from "@/lib/services/utils";
 import { ServiceScopeDetails } from "@/components/booking/service-scope-details";
-import { formatBookingTime } from "@/lib/booking/time-slots";
+import { formatBookingTime, formatEstimatedEnd } from "@/lib/booking/time-slots";
 import { formatCurrency } from "@/lib/utils";
 import { AirbnbScopeTeaser } from "@/components/booking/airbnb-scope-teaser";
 
@@ -103,6 +103,9 @@ export function BookingSummaryPanel({
                   <p className="text-muted-foreground flex items-center gap-1 mt-0.5">
                     <Clock className="h-3.5 w-3.5" />
                     {formatBookingTime(serviceTime)}
+                  </p>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Est. finish ~{formatEstimatedEnd(serviceTime, details.durationHours)}
                   </p>
                 </div>
               </div>

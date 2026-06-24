@@ -29,6 +29,12 @@ import {
   type TurnoverFrequency,
 } from "@/lib/services/catalog";
 import { suggestDuration, getDurationHelperText, getAddonSectionCopy } from "@/lib/services/utils";
+import {
+  canIncreaseDuration,
+  stepBookingDuration,
+  resolveDurationForSchedule,
+} from "@/lib/booking/schedule-duration";
+import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 
 export interface HousekeepingBookingFlowProps {
   step: ServiceFlowStep;
@@ -157,11 +163,26 @@ export function HousekeepingBookingFlow({
   }
 
   function adjustHours(delta: number) {
-    const options = [...DURATION_OPTIONS];
-    const current = serviceDetails.durationHours;
-    const idx = Math.max(0, options.indexOf(current as (typeof options)[number]));
-    const nextIdx = Math.max(0, Math.min(options.length - 1, idx + delta));
-    update({ durationHours: options[nextIdx] ?? current });
+    const { durationHours, serviceTime: nextTime } = stepBookingDuration(
+      serviceDetails.durationHours,
+      delta,
+      serviceTime,
+      category,
+      serviceDetails.serviceType
+    );
+    update({ durationHours });
+    if (nextTime !== serviceTime) onTimeChange(nextTime);
+  }
+
+  function applySuggestedHours(hours: number) {
+    const { durationHours, serviceTime: nextTime } = resolveDurationForSchedule(
+      hours,
+      serviceTime,
+      category,
+      serviceDetails.serviceType
+    );
+    update({ durationHours });
+    if (nextTime !== serviceTime) onTimeChange(nextTime);
   }
 
   function handleTypeChange(typeId: string) {
@@ -338,7 +359,12 @@ export function HousekeepingBookingFlow({
             onClick={() => adjustHours(1)}
             disabled={
               !canAdjustHours ||
-              serviceDetails.durationHours >= DURATION_OPTIONS[DURATION_OPTIONS.length - 1]
+              !canIncreaseDuration(
+                serviceDetails.durationHours,
+                serviceTime,
+                category,
+                serviceDetails.serviceType
+              )
             }
           >
             <Plus className="h-4 w-4" />
@@ -346,7 +372,7 @@ export function HousekeepingBookingFlow({
           {canAdjustHours && recommendedHours !== serviceDetails.durationHours && (
             <button
               type="button"
-              onClick={() => update({ durationHours: recommendedHours })}
+              onClick={() => applySuggestedHours(recommendedHours)}
               className="text-sm font-semibold text-primary hover:underline"
             >
               Suggested {recommendedHours}h
@@ -356,9 +382,18 @@ export function HousekeepingBookingFlow({
         <div className="flex items-start gap-2.5 mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
           <Lightbulb className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
           <p className="text-sm text-foreground/80 leading-relaxed">
-            {getDurationHelperText("housekeeping", serviceDetails.durationHours)}
+            {getDurationHelperText(category, serviceDetails.durationHours)}
           </p>
         </div>
+        {serviceTime && (
+          <ScheduleFeasibilityNotice
+            category={category}
+            serviceType={serviceDetails.serviceType}
+            serviceTime={serviceTime}
+            durationHours={serviceDetails.durationHours}
+            className="mt-4"
+          />
+        )}
       </div>
 
       <div>

@@ -44,6 +44,7 @@ import {
   loadBookingDraft,
   saveBookingDraft,
 } from '@/lib/booking/draft-persistence'
+import { clampStartTimeForDuration } from '@/lib/booking/time-slots'
 import {
   appendPhotoUrlsToDescription,
   uploadBookingJobPhotos,
@@ -355,6 +356,19 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     if (draft.amount) setAmount(draft.amount)
     clearBookingDraft()
   }, [])
+
+  useEffect(() => {
+    if (!serviceDetails || !serviceTime) return
+    const clamped = clampStartTimeForDuration(
+      serviceTime,
+      serviceDetails.durationHours,
+      serviceDetails.category,
+      serviceDetails.serviceType
+    )
+    if (clamped !== serviceTime) {
+      setServiceTime(clamped)
+    }
+  }, [serviceDetails, serviceTime])
 
   useEffect(() => {
     ;(async () => {
