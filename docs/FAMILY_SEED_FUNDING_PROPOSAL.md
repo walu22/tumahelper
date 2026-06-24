@@ -264,4 +264,7 @@ I confirm that:
 ---
 
 *Appendix: See `docs/FAMILY_SEED_FUNDING_ONE_PAGER.md` for a 1-page summary.*  
+*Appendix: See `docs/FAMILY_SEED_FUNDING_ONE_PAGER.html` — open in browser → Print → Save as PDF.*  
+*Appendix: See `docs/FAMILY_SEED_FUNDING_PITCH_DECK.md` — 8-slide outline with speaker notes.*  
+*Appendix: See `docs/FAMILY_SEED_FUNDING_PITCH_DECK.html` — visual slides → Print landscape → PDF.*  
 *Appendix: See `docs/FAMILY_SEED_FUNDING_BUDGET_TRACKER.md` for the spreadsheet template.*
