@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { MobileCollapsibleSummary } from "@/components/booking/mobile-collapsible-summary";
+import { MobileStickySummary } from "@/components/booking/mobile-sticky-summary";
 
 interface BookingStepShellProps {
   summary?: ReactNode;
   children: ReactNode;
   layout?: "sidebar" | "stacked";
   summarySide?: "left" | "right";
+  totalPrice?: number;
 }
 
 /** Sidebar summary on md+ screens; stacked above content on small screens. */
@@ -14,21 +15,22 @@ export function BookingStepShell({
   children,
   layout = "sidebar",
   summarySide = "left",
+  totalPrice,
 }: BookingStepShellProps) {
   if (layout === "stacked" || !summary) {
-    return <div className="space-y-6">{children}</div>;
+    return <div className="space-y-6 pb-24 md:pb-0">{children}</div>;
   }
 
   const summaryDesktop =
     summarySide === "right" ? (
       <>
-        <div className="min-w-0">{children}</div>
+        <div className="min-w-0 pb-24 md:pb-0">{children}</div>
         <div className="hidden md:block md:sticky md:top-8">{summary}</div>
       </>
     ) : (
       <>
         <div className="hidden md:block md:sticky md:top-8">{summary}</div>
-        <div className="min-w-0">{children}</div>
+        <div className="min-w-0 pb-24 md:pb-0">{children}</div>
       </>
     );
 
@@ -38,8 +40,8 @@ export function BookingStepShell({
       : "md:grid-cols-[minmax(280px,300px)_1fr]";
 
   return (
-    <div className={`md:grid ${gridCols} gap-6 items-start`}>
-      <MobileCollapsibleSummary>{summary}</MobileCollapsibleSummary>
+    <div className={`md:grid ${gridCols} gap-6 items-start relative`}>
+      <MobileStickySummary totalPrice={totalPrice}>{summary}</MobileStickySummary>
       {summaryDesktop}
     </div>
   );

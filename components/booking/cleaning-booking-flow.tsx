@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
+import { Lightbulb, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { BookingStepFooter } from "@/components/booking/booking-step-footer";
@@ -8,6 +8,7 @@ import { AddressStepFields } from "@/components/booking/address-step-fields";
 import { BookingFlowProgress } from "@/components/booking/booking-flow-progress";
 import { SchedulePlanSection } from "@/components/booking/schedule-plan-section";
 import { CleaningTypeTabs } from "@/components/booking/cleaning-type-tabs";
+import { ServiceScopeCard } from "@/components/booking/service-scope-card";
 import { ServiceDetailsCard } from "@/components/booking/service-details-card";
 import { AirbnbOptionCard } from "@/components/booking/airbnb-option-card";
 import {
@@ -23,7 +24,7 @@ import {
   getServiceType,
   type ServiceDetails,
 } from "@/lib/services/catalog";
-import { suggestDuration } from "@/lib/services/utils";
+import { suggestDuration, getCleaningDurationHelperText } from "@/lib/services/utils";
 import { cn } from "@/lib/utils";
 
 const HOME_SIZE_PRESETS = [
@@ -148,6 +149,7 @@ export function CleaningBookingFlow({
           showDetails
           centered
         />
+
       </div>
     ) : null;
 
@@ -331,6 +333,12 @@ export function CleaningBookingFlow({
               Suggested {recommendedHours}h
             </button>
           )}
+        </div>
+        <div className="flex items-start gap-2.5 mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+          <Lightbulb className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+          <p className="text-sm text-foreground/80 leading-relaxed">
+            {getCleaningDurationHelperText(serviceDetails.durationHours)}
+          </p>
         </div>
       </div>
 

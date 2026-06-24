@@ -1,0 +1,6 @@
+@echo off
+echo Cleaning up any Vercel environment variables...
+set PLAYWRIGHT_BASE_URL=
+echo Starting the visual booking demo...
+npx playwright test e2e/watch-demo.spec.ts --headed --project=chromium
+pause

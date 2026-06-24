@@ -37,7 +37,7 @@ describe("resolvePopularHeroSearch", () => {
   it("links popular pills straight into booking", () => {
     expect(resolvePopularHeroSearch("Plumbing")?.href).toContain("handyman");
     expect(resolvePopularHeroSearch("Plumbing")?.href).toContain("plumbing");
-    expect(resolvePopularHeroSearch("Short-stay cleaning")?.href).toContain("airbnb");
+    expect(resolvePopularHeroSearch("Short-Stay Cleaning")?.href).toContain("airbnb");
     expect(resolvePopularHeroSearch("Nanny")?.href).toContain("category=nanny");
   });
 });

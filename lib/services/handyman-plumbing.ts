@@ -163,15 +163,9 @@ export function resolvePlumbingJob(
 
   if (job.id === "visible_pipe_leak" && followUp?.activeLeak) {
     if (followUp.waterShutoffAvailable === false) {
-      if (EMERGENCY_PLUMBING_AVAILABLE) {
-        effectiveRoute = "emergency_plumber";
-        effectiveBookingMode = "emergency_request";
-        effectiveRequiresAdminReview = true;
-      } else {
-        effectiveRoute = "specialist_plumber";
-        effectiveBookingMode = "specialist_quote_request";
-        effectiveRequiresAdminReview = true;
-      }
+      effectiveRoute = "emergency_plumber";
+      effectiveBookingMode = "emergency_request";
+      effectiveRequiresAdminReview = true;
     }
   }
 

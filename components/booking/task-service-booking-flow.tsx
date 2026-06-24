@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
+import { Lightbulb, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { BookingStepFooter } from "@/components/booking/booking-step-footer";
@@ -25,7 +25,7 @@ import {
   type ServiceCategoryKey,
   type ServiceDetails,
 } from "@/lib/services/catalog";
-import { suggestDuration } from "@/lib/services/utils";
+import { suggestDuration, getDurationHelperText } from "@/lib/services/utils";
 
 interface TaskServiceBookingFlowProps {
   category: "laundry" | "garden";
@@ -300,6 +300,12 @@ export function TaskServiceBookingFlow({
               Suggested {recommendedHours}h
             </button>
           )}
+        </div>
+        <div className="flex items-start gap-2.5 mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+          <Lightbulb className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+          <p className="text-sm text-foreground/80 leading-relaxed">
+            {getDurationHelperText(category, serviceDetails.durationHours)}
+          </p>
         </div>
       </div>
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { getServiceType, type ServiceCategoryKey, type ServiceTypeOption } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
-import { ServiceDetailsCard } from "@/components/booking/service-details-card";
+import { ServiceScopeCard } from "@/components/booking/service-scope-card";
 
 interface ServiceTypePillsProps {
   category: ServiceCategoryKey;
@@ -47,7 +47,7 @@ export function ServiceTypePills({
 
     if (href) {
       return (
-        <Link
+        <a
           key={type.id}
           href={href}
           role="tab"
@@ -57,7 +57,7 @@ export function ServiceTypePills({
           className={pillClass}
         >
           {label}
-        </Link>
+        </a>
       );
     }
 
@@ -108,10 +108,9 @@ export function ServiceTypePills({
       )}
 
       {showDetails && selected && (
-        <ServiceDetailsCard
+        <ServiceScopeCard
           category={category}
-          serviceType={selected.id}
-          variant="selection"
+          type={selected}
         />
       )}
     </div>

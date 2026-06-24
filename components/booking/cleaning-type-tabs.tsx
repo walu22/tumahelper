@@ -7,7 +7,7 @@ import {
   type ServiceTypeOption,
 } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
-import { ServiceDetailsCard } from "@/components/booking/service-details-card";
+import { ServiceScopeCard } from "@/components/booking/service-scope-card";
 
 interface CleaningTypeTabsProps {
   value: string;
@@ -48,7 +48,7 @@ export function CleaningTypeTabs({
 
     if (href) {
       return (
-        <Link
+        <a
           key={type.id}
           href={href}
           role="tab"
@@ -56,9 +56,13 @@ export function CleaningTypeTabs({
           title={type.description}
           aria-label={`${label}. ${type.description}`}
           className={pillClass}
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.href = href;
+          }}
         >
           {label}
-        </Link>
+        </a>
       );
     }
 
@@ -109,10 +113,9 @@ export function CleaningTypeTabs({
       )}
 
       {showDetails && selected && (
-        <ServiceDetailsCard
+        <ServiceScopeCard
           category="cleaning"
-          serviceType={selected.id}
-          variant="selection"
+          type={selected}
         />
       )}
     </div>

@@ -274,7 +274,6 @@ function isServiceTypeLocked(
   typeParam: string | null,
   funnelParam: string | null
 ): boolean {
-  if (typeParam) return true
   return !!resolveFunnelParam(funnelParam)?.type
 }
 
@@ -995,6 +994,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
             layout="sidebar"
             summary={renderGuidedSummary()}
             summarySide="right"
+            totalPrice={serviceSubStep === "scope" ? suggestPrice(serviceDetails).typical : undefined}
           >
             <Card>
               <CardContent className="p-6 sm:p-8">
@@ -1012,6 +1012,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
 
         {step === STEP.WORKER && (
           <BookingStepShell
+            totalPrice={serviceDetails ? suggestPrice(serviceDetails).typical : undefined}
             summary={
               guidedFlow && serviceDetails ? (
                 lockedAirbnb ? (

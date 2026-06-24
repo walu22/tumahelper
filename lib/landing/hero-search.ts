@@ -170,12 +170,12 @@ export function searchHeroServices(query: string, limit = 8): HeroSearchResult[]
 }
 
 export const HERO_POPULAR_SEARCHES = [
-  "House cleaning",
+  "House Cleaning",
   "Nanny",
   "Plumbing",
   "Cooking",
   "Laundry",
-  "Short-stay cleaning",
+  "Short-Stay Cleaning",
   "Electrical",
   "Garden",
 ] as const;
@@ -184,10 +184,10 @@ const POPULAR_SEARCH_TARGETS: Record<
   (typeof HERO_POPULAR_SEARCHES)[number],
   { category: ServiceCategoryKey; serviceType: string; label: string; categoryLabel: string }
 > = {
-  "House cleaning": {
+  "House Cleaning": {
     category: "cleaning",
     serviceType: "standard",
-    label: "House cleaning",
+    label: "House Cleaning",
     categoryLabel: "Cleaning",
   },
   Nanny: {
@@ -214,10 +214,10 @@ const POPULAR_SEARCH_TARGETS: Record<
     label: "Laundry",
     categoryLabel: "Laundry & ironing",
   },
-  "Short-stay cleaning": {
+  "Short-Stay Cleaning": {
     category: "cleaning",
     serviceType: "guest_checkout",
-    label: "Short-stay cleaning",
+    label: "Short-Stay Cleaning",
     categoryLabel: "Short-stay cleaning",
   },
   Electrical: {

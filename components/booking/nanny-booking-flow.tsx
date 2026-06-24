@@ -1,6 +1,6 @@
 "use client";
 
-import { Minus, Plus, Shield } from "lucide-react";
+import { Lightbulb, Minus, Plus, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { BookingStepFooter } from "@/components/booking/booking-step-footer";
@@ -30,7 +30,7 @@ import {
   getServiceType,
   type ServiceDetails,
 } from "@/lib/services/catalog";
-import { nannyChildAgesComplete, suggestDuration } from "@/lib/services/utils";
+import { nannyChildAgesComplete, suggestDuration, getDurationHelperText } from "@/lib/services/utils";
 import { useState } from "react";
 
 interface NannyBookingFlowProps {
@@ -387,6 +387,12 @@ export function NannyBookingFlow({
               Suggested {recommendedHours}h
             </button>
           )}
+        </div>
+        <div className="flex items-start gap-2.5 mt-4 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
+          <Lightbulb className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+          <p className="text-sm text-foreground/80 leading-relaxed">
+            {getDurationHelperText("nanny", serviceDetails.durationHours)}
+          </p>
         </div>
       </div>
 

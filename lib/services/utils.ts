@@ -339,6 +339,51 @@ export function mergeServiceDetails(
   return parsed ?? defaultServiceDetails(category);
 }
 
+export function getCleaningDurationHelperText(hours: number): string {
+  return getDurationHelperText("cleaning", hours);
+}
+
+export function getDurationHelperText(category: ServiceCategoryKey, hours: number): string {
+  if (category === "cleaning") {
+    if (hours <= 2) return "Best for a small apartment or light touch-up cleaning.";
+    if (hours === 3) return "Good for an apartment or small home with kitchen, bathroom, and floors.";
+    if (hours === 4) return "Good for a 2–3 bedroom home with kitchen, bathrooms, floors, and general tidying.";
+    if (hours <= 7) return "Good for a larger home or more detailed cleaning.";
+    return "Best for spring cleaning, move-in/move-out cleaning, or full-day cleaning.";
+  }
+  if (category === "nanny") {
+    if (hours <= 3) return "Great for a short outing or afternoon errands.";
+    if (hours <= 5) return "Covers a school run plus homework or afternoon play.";
+    if (hours <= 8) return "A full day of childcare while you're at work.";
+    return "Extended care for a long workday or overnight.";
+  }
+  if (category === "housekeeping") {
+    if (hours <= 3) return "A quick session for light duties — dishes, sweeping, laundry.";
+    if (hours <= 5) return "Enough time for cooking, cleaning, and one or two extra duties.";
+    if (hours <= 8) return "A full day — ideal for a thorough clean, cooking, and laundry.";
+    return "Extended help for larger households or event preparation.";
+  }
+  if (category === "cooking") {
+    if (hours <= 3) return "Enough to prepare one to two meals.";
+    if (hours <= 5) return "Covers meal prep, cooking, and kitchen cleanup.";
+    return "A full day of cooking — great for events or weekly meal-prep batches.";
+  }
+  if (category === "garden") {
+    if (hours <= 3) return "Good for lawn mowing and light trimming.";
+    if (hours <= 5) return "Covers mowing, hedge trimming, and weeding.";
+    return "A full garden overhaul — great for large yards or seasonal cleanup.";
+  }
+  if (category === "laundry") {
+    if (hours <= 3) return "Enough for a few loads — wash, dry, and fold.";
+    if (hours <= 5) return "Covers a full household's laundry including ironing.";
+    return "Extended session for large households or deep linen care.";
+  }
+  // Fallback for handyman and others
+  if (hours <= 3) return "Good for a single small task.";
+  if (hours <= 5) return "Enough for a couple of tasks or one medium job.";
+  return "A full session for larger projects or multiple tasks.";
+}
+
 export function nannyChildAgesComplete(details: ServiceDetails): boolean {
   if (details.category !== "nanny") return true;
   const count = details.children ?? 1;

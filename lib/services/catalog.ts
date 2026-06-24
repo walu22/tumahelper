@@ -281,7 +281,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "standard",
         label: "House cleaning",
-        tabLabel: "House cleaning",
+        tabLabel: "House Cleaning",
         description:
           "For general home cleaning, including bedrooms, bathrooms, kitchen, and living areas.",
         selectionSummary:
@@ -323,7 +323,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "apartment",
         label: "Apartment cleaning",
-        tabLabel: "Apartment cleaning",
+        tabLabel: "Apartment Cleaning",
         description:
           "Cleaning for flats, apartments, and smaller homes, including kitchen, bathroom, living area, bedroom, and balcony.",
         included: [
@@ -351,7 +351,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "deep",
         label: "Deep cleaning",
-        tabLabel: "Deep cleaning",
+        tabLabel: "Deep Cleaning",
         description:
           "Detailed cleaning for built-up dirt, bathrooms, kitchen, tiles, corners, doors, handles, and hard-to-reach areas.",
         included: [
@@ -381,7 +381,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "spring",
         label: "Spring cleaning",
-        tabLabel: "Spring cleaning",
+        tabLabel: "Spring Cleaning",
         description:
           "A full home refresh, including general cleaning, dusting, organising visible clutter, interior windows, and areas normally skipped.",
         included: [
@@ -410,7 +410,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "move",
         label: "Move-in / move-out cleaning",
-        tabLabel: "Move-in / out",
+        tabLabel: "Move-In / Move-Out Cleaning",
         description:
           "Cleaning for empty or nearly empty homes before moving in, after moving out, or before handover.",
         included: [
@@ -440,7 +440,7 @@ export const SERVICE_CATALOG: Record<ServiceCategoryKey, ServiceCatalogEntry> = 
       {
         id: "garage",
         label: "Garage & outside cleaning",
-        tabLabel: "Garage & outside",
+        tabLabel: "Garage & Outside Cleaning",
         description:
           "Light cleaning of garage, verandah, patio, paved yard, driveway, and outside areas.",
         included: [

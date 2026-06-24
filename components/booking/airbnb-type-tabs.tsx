@@ -46,17 +46,13 @@ export function AirbnbTypeTabs({
 
     if (href) {
       return (
-        <Link
-          key={type.id}
-          href={href}
-          role="tab"
-          aria-selected={active}
+        <a key={type.id} href={href} role="tab" aria-selected={active}
           title={type.description}
           aria-label={`${label}. ${type.description}`}
           className={pillClass}
         >
           {label}
-        </Link>
+        </a>
       );
     }
 
@@ -112,3 +108,4 @@ export function AirbnbTypeTabs({
     </div>
   );
 }
+
