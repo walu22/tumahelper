@@ -32,6 +32,7 @@ import {
   stepBookingDuration,
   resolveDurationForSchedule,
   syncDetailsWithSchedule,
+  canProceedWithBookingDetails,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 
@@ -182,13 +183,10 @@ export function TaskServiceBookingFlow({
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!whenPreference &&
-    canProceedWithSchedule(
-      serviceDate,
-      serviceTime,
-      serviceDetails.durationHours,
+    canProceedWithBookingDetails(serviceDate, serviceTime, {
+      ...serviceDetails,
       category,
-      serviceDetails.serviceType
-    );
+    });
 
   const TypeTabs = category === "laundry" ? LaundryTypeTabs : GardenTypeTabs;
 

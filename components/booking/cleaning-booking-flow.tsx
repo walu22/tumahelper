@@ -31,6 +31,7 @@ import {
   stepBookingDuration,
   resolveDurationForSchedule,
   syncDetailsWithSchedule,
+  canProceedWithBookingDetails,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 import { cn } from "@/lib/utils";
@@ -165,13 +166,7 @@ export function CleaningBookingFlow({
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!whenPreference &&
-    canProceedWithSchedule(
-      serviceDate,
-      serviceTime,
-      serviceDetails.durationHours,
-      "cleaning",
-      serviceDetails.serviceType
-    );
+    canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails);
 
   function handleCleaningTypeChange(typeId: string) {
     const type = getServiceType("cleaning", typeId);

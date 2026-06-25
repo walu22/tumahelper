@@ -41,6 +41,7 @@ import {
   stepBookingDuration,
   resolveDurationForSchedule,
   syncDetailsWithSchedule,
+  canProceedWithBookingDetails,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 import { BookingJobPhotos } from "@/components/booking/booking-job-photos";
@@ -202,13 +203,7 @@ export function HandymanBookingFlow({
     description.trim().length >= 10 &&
     (!isPlumbing || !!serviceDetails.partsAvailable) &&
     (!isPlumbing || !!serviceDetails.plumberBuyParts) &&
-    canProceedWithSchedule(
-      serviceDate,
-      serviceTime,
-      serviceDetails.durationHours,
-      "handyman",
-      serviceDetails.serviceType
-    );
+    canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails);
 
   const typePicker =
     !lockServiceType && step === "address" ? (

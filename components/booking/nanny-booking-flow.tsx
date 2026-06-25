@@ -37,6 +37,7 @@ import {
   stepBookingDuration,
   resolveDurationForSchedule,
   syncDetailsWithSchedule,
+  canProceedWithBookingDetails,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 import { useState } from "react";
@@ -187,13 +188,7 @@ export function NannyBookingFlow({
     !!whenPreference &&
     nannyChildAgesComplete(serviceDetails) &&
     !!careAnswers.emergencyContact.trim() &&
-    canProceedWithSchedule(
-      serviceDate,
-      serviceTime,
-      serviceDetails.durationHours,
-      "nanny",
-      serviceDetails.serviceType
-    );
+    canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails);
 
   function handleCleaningTypeChange(typeId: string) {
     const type = getServiceType("nanny", typeId);

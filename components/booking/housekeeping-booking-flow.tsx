@@ -35,6 +35,7 @@ import {
   stepBookingDuration,
   resolveDurationForSchedule,
   syncDetailsWithSchedule,
+  canProceedWithBookingDetails,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 
@@ -211,13 +212,7 @@ export function HousekeepingBookingFlow({
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!whenPreference &&
-    canProceedWithSchedule(
-      serviceDate,
-      serviceTime,
-      serviceDetails.durationHours,
-      category,
-      serviceDetails.serviceType
-    );
+    canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails);
 
   const typePicker =
     !lockServiceType && step === "address" ? (

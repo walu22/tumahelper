@@ -94,7 +94,7 @@ export function SchedulePlanSection({
     isScheduleBookable({
       serviceDate,
       startTime: serviceTime,
-      durationHours,
+      durationHours: scheduleDuration,
       category,
       serviceType,
       now: scheduleNow,

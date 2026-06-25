@@ -43,7 +43,19 @@ const SCENARIOS: CategoryScenario[] = [
     invalidStart: "16:30",
   },
   {
-    label: "spring cleaning",
+    label: "deep cleaning",
+    category: "cleaning",
+    serviceType: "deep",
+    details: {
+      bedrooms: 5,
+      bathrooms: 3,
+      addons: ["ironing", "laundry", "oven", "fridge"],
+    },
+    durationHours: 8,
+    validStart: "09:00",
+    invalidStart: "16:30",
+  },
+  {
     category: "cleaning",
     serviceType: "spring",
     details: { bedrooms: 3, bathrooms: 2, addons: ["laundry", "ironing"] },

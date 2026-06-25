@@ -45,7 +45,10 @@ import {
   saveBookingDraft,
 } from '@/lib/booking/draft-persistence'
 import { clampStartTimeForDuration } from '@/lib/booking/time-slots'
-import { canProceedWithSchedule } from '@/lib/booking/schedule-duration'
+import {
+  canProceedWithBookingDetails,
+  ensureScheduleFits,
+} from '@/lib/booking/schedule-duration'
 import { useScheduleClock } from '@/lib/booking/use-schedule-clock'
 import {
   appendPhotoUrlsToDescription,
@@ -361,18 +364,17 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
   }, [])
 
   useEffect(() => {
-    if (!serviceDetails || !serviceDate) return
-    if (!serviceTime) return
-    const clamped = clampStartTimeForDuration(
+    if (!serviceDetails) return
+    const { details, serviceTime: nextTime } = ensureScheduleFits(
+      serviceDetails,
       serviceTime,
-      serviceDetails.durationHours,
-      serviceDetails.category,
-      serviceDetails.serviceType,
-      serviceDate,
-      scheduleNow
+      serviceDate || undefined
     )
-    if (clamped !== serviceTime) {
-      setServiceTime(clamped)
+    if (details.durationHours !== serviceDetails.durationHours) {
+      setServiceDetails(details)
+    }
+    if (nextTime !== serviceTime) {
+      setServiceTime(nextTime)
     }
   }, [serviceDetails, serviceTime, serviceDate, scheduleNow])
 
@@ -641,14 +643,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       }
       if (
         serviceDetails &&
-        !canProceedWithSchedule(
-          serviceDate,
-          serviceTime,
-          serviceDetails.durationHours,
-          serviceDetails.category,
-          serviceDetails.serviceType,
-          scheduleNow
-        )
+        !canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails, scheduleNow)
       ) {
         toast.error(
           'That start time is no longer available for today. Go back and pick a new time or date.'
@@ -683,14 +678,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
     locationAddress.length >= 5 &&
     !!amount &&
     parseFloat(amount) >= 1 &&
-    canProceedWithSchedule(
-      serviceDate,
-      serviceTime,
-      serviceDetails.durationHours,
-      serviceDetails.category,
-      serviceDetails.serviceType,
-      scheduleNow
-    )
+    canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails, scheduleNow)
 
   const amountInCents = Math.round(parseFloat(amount || '0') * 100)
   const platformFee = Math.round(amountInCents * 0.1)
@@ -716,13 +704,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       return
     }
     if (
-      !canProceedWithSchedule(
-        serviceDate,
-        serviceTime,
-        serviceDetails.durationHours,
-        serviceDetails.category,
-        serviceDetails.serviceType
-      )
+      !canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails, scheduleNow)
     ) {
       toast.error(
         'That start time is no longer available for today. Go back and pick a new time or date.'
@@ -813,13 +795,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
       return
     }
     if (
-      !canProceedWithSchedule(
-        serviceDate,
-        serviceTime,
-        serviceDetails.durationHours,
-        serviceDetails.category,
-        serviceDetails.serviceType
-      )
+      !canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails, scheduleNow)
     ) {
       toast.error(
         'That start time is no longer available for today. Go back and pick a new time or date.'
@@ -970,13 +946,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           serviceDetails &&
           serviceDate &&
           serviceTime &&
-          !canProceedWithSchedule(
-            serviceDate,
-            serviceTime,
-            serviceDetails.durationHours,
-            serviceDetails.category,
-            serviceDetails.serviceType
-          )
+          !canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails, scheduleNow)
         ) {
           toast.error(
             'Choose a start time that fits your visit length and is still available.'

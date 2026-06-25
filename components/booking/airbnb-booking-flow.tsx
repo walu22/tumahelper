@@ -55,6 +55,7 @@ import {
   stepBookingDuration,
   resolveDurationForSchedule,
   syncDetailsWithSchedule,
+  canProceedWithBookingDetails,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 import { useScheduleClock } from "@/lib/booking/use-schedule-clock";
@@ -285,26 +286,17 @@ export function AirbnbBookingFlow({
     repeatCadenceChosen &&
     !!serviceDate &&
     !!serviceTime &&
-    isScheduleBookable({
-      serviceDate,
-      startTime: serviceTime,
-      durationHours: serviceDetails.durationHours,
-      category: "cleaning",
-      serviceType: serviceDetails.serviceType,
-      now: scheduleNow,
-    });
+    canProceedWithBookingDetails(serviceDate, serviceTime, serviceDetails, scheduleNow);
   const canChooseCleaner =
     !!serviceDate &&
     !!serviceTime &&
     locationAddress.length >= 5 &&
     !!whenPreference &&
     linenPreferences.length > 0 &&
-    canProceedWithSchedule(
+    canProceedWithBookingDetails(
       serviceDate,
       serviceTime,
-      serviceDetails.durationHours,
-      "cleaning",
-      serviceDetails.serviceType,
+      serviceDetails,
       scheduleNow
     );
 

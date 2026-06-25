@@ -145,4 +145,33 @@ test.describe("Cleaning booking end-to-end", () => {
     expect(options.some((label) => label.includes("4:30 PM"))).toBe(false);
     expect(options.some((label) => label.includes("4:00 PM"))).toBe(false);
   });
+
+  test("deep cleaning auto-adjusts start time when add-ons require an 8-hour visit", async ({
+    page,
+    baseURL,
+  }) => {
+    await loginAsCustomer(page, baseURL!);
+    await page.goto("/customer/book?category=cleaning&type=deep");
+    await expect(page.getByRole("heading", { name: "Where should we clean?" })).toBeVisible({
+      timeout: 15_000,
+    });
+
+    await page.locator("#cleaning-street").fill("Chelstone Anglican Church, Lusaka");
+    await page.getByText("Confirm this address").click();
+
+    await page.getByRole("button", { name: "One-time visit" }).click();
+    await page.getByRole("button", { name: "Pick a date" }).click();
+    await page.locator("#service-date").fill(tomorrowIsoDate());
+    await page.locator("#service-start-time").selectOption("11:00");
+    await page.getByRole("button", { name: "Continue" }).click();
+
+    await page.getByRole("button", { name: "Large" }).click();
+    await page.getByRole("button", { name: "Laundry" }).click();
+    await page.getByRole("button", { name: "Ironing" }).click();
+    await page.getByRole("button", { name: "Inside oven" }).click();
+    await page.getByRole("button", { name: "Inside fridge" }).click();
+
+    await expect(page.getByText("Estimated finish: ~5:00 PM")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Choose your cleaner" })).toBeEnabled();
+  });
 });

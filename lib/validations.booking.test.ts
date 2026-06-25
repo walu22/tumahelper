@@ -141,6 +141,40 @@ describe("bookingSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("rejects deep cleaning with 8 hours starting at 4:30 PM", () => {
+    const result = bookingSchema.safeParse({
+      ...baseBooking,
+      serviceDate: "2026-06-25",
+      serviceTime: "16:30",
+      serviceDetails: {
+        ...defaultServiceDetails("cleaning"),
+        serviceType: "deep",
+        bedrooms: 5,
+        bathrooms: 3,
+        durationHours: 8,
+        addons: ["ironing", "laundry", "oven", "fridge"],
+      },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects deep cleaning when stored duration is too low but add-ons require 8 hours", () => {
+    const result = bookingSchema.safeParse({
+      ...baseBooking,
+      serviceDate: "2026-06-25",
+      serviceTime: "16:30",
+      serviceDetails: {
+        ...defaultServiceDetails("cleaning"),
+        serviceType: "deep",
+        bedrooms: 5,
+        bathrooms: 3,
+        durationHours: 4,
+        addons: ["ironing", "laundry", "oven", "fridge"],
+      },
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("rejects spring cleaning with 8 hours starting at 4:30 PM", () => {
     const result = bookingSchema.safeParse({
       ...baseBooking,

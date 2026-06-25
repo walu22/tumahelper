@@ -4,9 +4,34 @@ import { suggestDuration } from "@/lib/services/utils";
 import {
   clampStartTimeForDuration,
   getAllowedDurations,
-  getEffectiveDurationHours,
   isScheduleBookable,
 } from "@/lib/booking/time-slots";
+
+/** Visit length used for schedule checks — never shorter than home/add-on suggestion. */
+export function getEffectiveBookingDuration(details: ServiceDetails): number {
+  return Math.max(details.durationHours || 0, suggestDuration(details));
+}
+
+/** Keep stored duration and start time feasible for the configured visit. */
+export function ensureScheduleFits(
+  details: ServiceDetails,
+  serviceTime: string,
+  serviceDate?: string
+): { details: ServiceDetails; serviceTime: string } {
+  const durationHours = getEffectiveBookingDuration(details);
+  const nextTime = clampStartTimeForDuration(
+    serviceTime,
+    durationHours,
+    details.category,
+    details.serviceType,
+    serviceDate
+  );
+  return {
+    details:
+      durationHours !== details.durationHours ? { ...details, durationHours } : details,
+    serviceTime: nextTime,
+  };
+}
 
 /** After home size / add-ons change suggested length, keep start time feasible. */
 export function syncDetailsWithSchedule(
@@ -42,6 +67,22 @@ export function canProceedWithSchedule(
     durationHours,
     category,
     serviceType,
+    now,
+  });
+}
+
+export function canProceedWithBookingDetails(
+  serviceDate: string,
+  serviceTime: string,
+  details: ServiceDetails,
+  now?: Date
+): boolean {
+  return isScheduleBookable({
+    serviceDate,
+    startTime: serviceTime,
+    durationHours: getEffectiveBookingDuration(details),
+    category: details.category,
+    serviceType: details.serviceType,
     now,
   });
 }

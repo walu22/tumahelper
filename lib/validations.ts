@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isScheduleBookable } from "@/lib/booking/time-slots";
+import { getEffectiveBookingDuration } from "@/lib/booking/schedule-duration";
 import { nannyChildAgesComplete } from "@/lib/services/utils";
 
 export function normalizeZambianPhone(input: string): string {
@@ -170,7 +171,7 @@ export const bookingSchema = z
       !isScheduleBookable({
         serviceDate: data.serviceDate,
         startTime: data.serviceTime,
-        durationHours: details.durationHours,
+        durationHours: getEffectiveBookingDuration(details),
         category: details.category,
         serviceType: details.serviceType,
       })
