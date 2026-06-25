@@ -19,8 +19,6 @@ export default async function AdminAuditPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Audit Logs</h1>
-
       <Card>
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>

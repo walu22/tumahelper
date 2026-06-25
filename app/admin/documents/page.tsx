@@ -41,7 +41,6 @@ export default function AdminDocumentsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Document Verification</h1>
       <Card>
         <CardHeader><CardTitle>All Documents</CardTitle></CardHeader>
         <CardContent>

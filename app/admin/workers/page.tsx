@@ -22,8 +22,6 @@ export default async function AdminWorkersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Workers Management</h1>
-
       <Card>
         <CardHeader>
           <CardTitle>All Workers ({workers.length})</CardTitle>

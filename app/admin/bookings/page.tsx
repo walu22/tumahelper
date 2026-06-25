@@ -20,8 +20,6 @@ export default async function AdminBookingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">All Bookings</h1>
-
       <Card>
         <CardHeader>
           <CardTitle>Booking List</CardTitle>

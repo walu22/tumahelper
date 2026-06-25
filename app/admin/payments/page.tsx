@@ -39,7 +39,6 @@ export default function AdminPaymentsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Payment Confirmation</h1>
       <Card>
         <CardHeader><CardTitle>All Payments</CardTitle></CardHeader>
         <CardContent>
