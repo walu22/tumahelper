@@ -72,26 +72,28 @@ export function Header({ user }: { user: AppUser | null }) {
             {user ? (
               <>
                 <NotificationBell userId={user.id} />
-                <Link href={dashboardHref}>
-                  <Button variant="ghost" size="sm" className="rounded-full">
+                <Button variant="ghost" size="sm" className="rounded-full" asChild>
+                  <Link href={dashboardHref}>
                     <User className="h-4 w-4 mr-2" />
                     Account
+                  </Link>
+                </Button>
+                <form action={logoutAction}>
+                  <Button variant="ghost" size="sm" className="rounded-full" type="submit">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign out
                   </Button>
-                </Link>
+                </form>
               </>
             ) : (
-              <Link href="/login">
-                <Button variant="ghost" size="sm" className="rounded-full">
-                  Sign in
-                </Button>
-              </Link>
+              <Button variant="ghost" size="sm" className="rounded-full" asChild>
+                <Link href="/login">Sign in</Link>
+              </Button>
             )}
 
-            <Link href={HEADER_BOOK_CTA.href}>
-              <Button size="sm" className="rounded-full px-6">
-                {HEADER_BOOK_CTA.label}
-              </Button>
-            </Link>
+            <Button size="sm" className="rounded-full px-6" asChild>
+              <Link href={HEADER_BOOK_CTA.href}>{HEADER_BOOK_CTA.label}</Link>
+            </Button>
           </div>
 
           <div className="flex md:hidden items-center gap-2 shrink-0">
@@ -137,11 +139,11 @@ export function Header({ user }: { user: AppUser | null }) {
               {user ? (
                 <>
                   <NotificationBell userId={user.id} />
-                  <Link href={dashboardHref} onClick={closeMenu}>
-                    <Button variant="outline" className="w-full rounded-full">
+                  <Button variant="outline" className="w-full rounded-full" asChild>
+                    <Link href={dashboardHref} onClick={closeMenu}>
                       Account
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                   <form action={logoutAction}>
                     <Button variant="ghost" className="w-full rounded-full" type="submit">
                       <LogOut className="h-4 w-4 mr-2" />
@@ -150,11 +152,11 @@ export function Header({ user }: { user: AppUser | null }) {
                   </form>
                 </>
               ) : (
-                <Link href="/login" onClick={closeMenu}>
-                  <Button variant="outline" className="w-full rounded-full">
+                <Button variant="outline" className="w-full rounded-full" asChild>
+                  <Link href="/login" onClick={closeMenu}>
                     Sign in
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )}
             </div>
           </div>
