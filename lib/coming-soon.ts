@@ -1,7 +1,10 @@
 const BYPASS_COOKIE = "coming_soon_bypass";
 
 export function isComingSoonEnabled(): boolean {
-  return process.env.COMING_SOON === "true";
+  if (process.env.COMING_SOON === "false") return false;
+  if (process.env.COMING_SOON === "true") return true;
+  // Live Vercel production (tumahelper.com) shows coming soon until launch.
+  return process.env.VERCEL_ENV === "production";
 }
 
 export function getComingSoonBypassSecret(): string | undefined {

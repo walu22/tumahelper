@@ -10,12 +10,28 @@ describe("coming soon", () => {
   afterEach(() => {
     delete process.env.COMING_SOON;
     delete process.env.COMING_SOON_BYPASS_SECRET;
+    delete process.env.VERCEL_ENV;
   });
 
-  it("is disabled unless COMING_SOON=true", () => {
+  it("is disabled locally and on preview deploys", () => {
     expect(isComingSoonEnabled()).toBe(false);
+    process.env.VERCEL_ENV = "preview";
+    expect(isComingSoonEnabled()).toBe(false);
+  });
+
+  it("is enabled when COMING_SOON=true or on Vercel production", () => {
     process.env.COMING_SOON = "true";
     expect(isComingSoonEnabled()).toBe(true);
+
+    delete process.env.COMING_SOON;
+    process.env.VERCEL_ENV = "production";
+    expect(isComingSoonEnabled()).toBe(true);
+  });
+
+  it("can be turned off on production with COMING_SOON=false", () => {
+    process.env.VERCEL_ENV = "production";
+    process.env.COMING_SOON = "false";
+    expect(isComingSoonEnabled()).toBe(false);
   });
 
   it("exempts the coming soon page and static assets", () => {
