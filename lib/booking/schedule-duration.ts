@@ -1,10 +1,32 @@
-import type { ServiceCategoryKey } from "@/lib/services/catalog";
+import type { ServiceCategoryKey, ServiceDetails } from "@/lib/services/catalog";
 import { DURATION_OPTIONS } from "@/lib/services/catalog";
+import { suggestDuration } from "@/lib/services/utils";
 import {
   clampStartTimeForDuration,
   getAllowedDurations,
+  getEffectiveDurationHours,
   isScheduleBookable,
 } from "@/lib/booking/time-slots";
+
+/** After home size / add-ons change suggested length, keep start time feasible. */
+export function syncDetailsWithSchedule(
+  nextDetails: ServiceDetails,
+  serviceTime: string,
+  serviceDate?: string
+): { details: ServiceDetails; serviceTime: string } {
+  const suggestedHours = suggestDuration(nextDetails);
+  const { durationHours, serviceTime: nextTime } = resolveDurationForSchedule(
+    suggestedHours,
+    serviceTime,
+    nextDetails.category,
+    nextDetails.serviceType,
+    serviceDate
+  );
+  return {
+    details: { ...nextDetails, durationHours },
+    serviceTime: nextTime,
+  };
+}
 
 export function canProceedWithSchedule(
   serviceDate: string,
@@ -55,12 +77,21 @@ export function resolveDurationForSchedule(
   serviceDate?: string
 ): { durationHours: number; serviceTime: string } {
   const allowed = getAllowedDurations(serviceTime, category, serviceType);
-  const resolved =
-    allowed.length === 0
-      ? durationHours
-      : allowed.includes(durationHours as (typeof DURATION_OPTIONS)[number])
-        ? durationHours
-        : allowed[allowed.length - 1];
+  if (allowed.length === 0) {
+    return {
+      durationHours,
+      serviceTime: clampStartTimeForDuration(
+        serviceTime,
+        durationHours,
+        category,
+        serviceType,
+        serviceDate
+      ),
+    };
+  }
+  const resolved = allowed.includes(durationHours as (typeof DURATION_OPTIONS)[number])
+    ? durationHours
+    : allowed[allowed.length - 1];
   const nextTime = clampStartTimeForDuration(
     serviceTime,
     resolved,

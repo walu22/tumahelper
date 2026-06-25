@@ -34,6 +34,7 @@ import {
   canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
+  syncDetailsWithSchedule,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 
@@ -141,26 +142,34 @@ export function HousekeepingBookingFlow({
     onServiceDetailsChange({ ...serviceDetails, ...patch });
   }
 
+  function applyDetailsWithSchedule(next: ServiceDetails) {
+    const { details, serviceTime: nextTime } = syncDetailsWithSchedule(
+      next,
+      serviceTime,
+      serviceDate
+    );
+    onServiceDetailsChange(details);
+    if (nextTime !== serviceTime) onTimeChange(nextTime);
+  }
+
   function setServiceType(serviceType: string, defaultHours: number) {
     const addons = sanitizeAddons(category, serviceType, serviceDetails.addons);
     const frequency: TurnoverFrequency =
       serviceType === "weekly" || serviceType === "weekly_cooking" ? "weekly" : "once";
-    const next = {
+    applyDetailsWithSchedule({
       ...serviceDetails,
       serviceType,
       addons,
       durationHours: defaultHours,
       frequency,
-    };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    });
   }
 
   function toggleDuty(id: string) {
     const addons = serviceDetails.addons.includes(id)
       ? serviceDetails.addons.filter((a) => a !== id)
       : [...serviceDetails.addons, id];
-    const next = { ...serviceDetails, addons };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    applyDetailsWithSchedule({ ...serviceDetails, addons });
   }
 
   function adjustHours(delta: number) {

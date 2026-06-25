@@ -40,6 +40,7 @@ import {
   canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
+  syncDetailsWithSchedule,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 import { BookingJobPhotos } from "@/components/booking/booking-job-photos";
@@ -108,18 +109,31 @@ export function HandymanBookingFlow({
     onServiceDetailsChange({ ...serviceDetails, ...patch });
   }
 
+  function applyDetailsWithSchedule(next: ServiceDetails) {
+    const { details, serviceTime: nextTime } = syncDetailsWithSchedule(
+      next,
+      serviceTime,
+      serviceDate
+    );
+    onServiceDetailsChange(details);
+    if (nextTime !== serviceTime) onTimeChange(nextTime);
+  }
+
   function setServiceType(serviceType: string, defaultHours: number) {
     const addons = sanitizeAddons("handyman", serviceType, serviceDetails.addons);
-    const next = { ...serviceDetails, serviceType, addons, durationHours: defaultHours };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    applyDetailsWithSchedule({
+      ...serviceDetails,
+      serviceType,
+      addons,
+      durationHours: defaultHours,
+    });
   }
 
   function toggleAddon(id: string) {
     const addons = serviceDetails.addons.includes(id)
       ? serviceDetails.addons.filter((a) => a !== id)
       : [...serviceDetails.addons, id];
-    const next = { ...serviceDetails, addons };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    applyDetailsWithSchedule({ ...serviceDetails, addons });
   }
 
   function adjustHours(delta: number) {

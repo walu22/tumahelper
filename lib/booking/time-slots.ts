@@ -1,5 +1,5 @@
 import type { ServiceCategoryKey } from "@/lib/services/catalog";
-import { isAirbnbCleaningType } from "@/lib/services/catalog";
+import { isAirbnbCleaningType, getServiceType } from "@/lib/services/catalog";
 import { DURATION_OPTIONS } from "@/lib/services/catalog";
 import {
   getLusakaNowMinutes,
@@ -18,6 +18,18 @@ export interface StartTimeOption {
 export type WhenPreference = "today" | "last_minute" | "tomorrow_later";
 
 export const SAME_DAY_MIN_LEAD_MINUTES = 60;
+
+/** Duration used when filtering start times — never skip the visit-length check. */
+export function getEffectiveDurationHours(
+  durationHours: number | undefined,
+  category?: ServiceCategoryKey,
+  serviceType?: string
+): number {
+  if (durationHours && durationHours > 0) return durationHours;
+  const type =
+    category && serviceType ? getServiceType(category, serviceType) : undefined;
+  return type?.defaultHours ?? DURATION_OPTIONS[0];
+}
 
 export interface ScheduleFeasibility {
   valid: boolean;
@@ -236,16 +248,19 @@ export function getAvailableStartTimes(options: {
   now?: Date;
 }): StartTimeOption[] {
   const now = options.now ?? new Date();
+  const durationHours = getEffectiveDurationHours(
+    options.durationHours,
+    options.category,
+    options.serviceType
+  );
   let times = getStartTimeOptions(options.category, options.serviceType);
   times = filterSameDaySlots(times, options.serviceDate ?? "", SAME_DAY_MIN_LEAD_MINUTES, now);
-  if (options.durationHours && options.durationHours > 0) {
-    times = filterStartTimesByDuration(
-      times,
-      options.durationHours,
-      options.category,
-      options.serviceType
-    );
-  }
+  times = filterStartTimesByDuration(
+    times,
+    durationHours,
+    options.category,
+    options.serviceType
+  );
   return times;
 }
 

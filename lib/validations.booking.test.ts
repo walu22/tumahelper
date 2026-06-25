@@ -140,4 +140,20 @@ describe("bookingSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("rejects spring cleaning with 8 hours starting at 4:30 PM", () => {
+    const result = bookingSchema.safeParse({
+      ...baseBooking,
+      serviceTime: "16:30",
+      serviceDetails: {
+        ...defaultServiceDetails("cleaning"),
+        serviceType: "spring",
+        bedrooms: 3,
+        bathrooms: 2,
+        durationHours: 8,
+        addons: ["laundry", "ironing"],
+      },
+    });
+    expect(result.success).toBe(false);
+  });
 });

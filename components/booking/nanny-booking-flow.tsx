@@ -36,6 +36,7 @@ import {
   canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
+  syncDetailsWithSchedule,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 import { useState } from "react";
@@ -97,10 +98,24 @@ export function NannyBookingFlow({
     onServiceDetailsChange({ ...serviceDetails, ...patch });
   }
 
+  function applyDetailsWithSchedule(next: ServiceDetails) {
+    const { details, serviceTime: nextTime } = syncDetailsWithSchedule(
+      next,
+      serviceTime,
+      serviceDate
+    );
+    onServiceDetailsChange(details);
+    if (nextTime !== serviceTime) onTimeChange(nextTime);
+  }
+
   function setServiceType(serviceType: string, defaultHours: number) {
     const addons = sanitizeAddons("nanny", serviceType, serviceDetails.addons);
-    const next = { ...serviceDetails, serviceType, addons, durationHours: defaultHours };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    applyDetailsWithSchedule({
+      ...serviceDetails,
+      serviceType,
+      addons,
+      durationHours: defaultHours,
+    });
   }
 
   function setChildrenCount(count: number) {
@@ -125,8 +140,7 @@ export function NannyBookingFlow({
     const addons = serviceDetails.addons.includes(id)
       ? serviceDetails.addons.filter((a) => a !== id)
       : [...serviceDetails.addons, id];
-    const next = { ...serviceDetails, addons };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    applyDetailsWithSchedule({ ...serviceDetails, addons });
   }
 
   function adjustHours(delta: number) {

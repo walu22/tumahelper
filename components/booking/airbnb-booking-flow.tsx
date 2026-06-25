@@ -54,6 +54,7 @@ import {
   canProceedWithSchedule,
   stepBookingDuration,
   resolveDurationForSchedule,
+  syncDetailsWithSchedule,
 } from "@/lib/booking/schedule-duration";
 import { ScheduleFeasibilityNotice } from "@/components/booking/schedule-feasibility-notice";
 import { useScheduleClock } from "@/lib/booking/use-schedule-clock";
@@ -190,6 +191,16 @@ export function AirbnbBookingFlow({
     onServiceDetailsChange({ ...serviceDetails, ...patch });
   }
 
+  function applyDetailsWithSchedule(next: ServiceDetails) {
+    const { details, serviceTime: nextTime } = syncDetailsWithSchedule(
+      next,
+      serviceTime,
+      serviceDate
+    );
+    onServiceDetailsChange(details);
+    if (nextTime !== serviceTime) onTimeChange(nextTime);
+  }
+
   function setFrequencyMode(repeat: boolean) {
     update({
       frequency: repeat ? "per_checkout" : "once",
@@ -230,15 +241,14 @@ export function AirbnbBookingFlow({
     if (!wantsLaundry && hasLaundry) addons.splice(addons.indexOf("laundry"), 1);
 
     const updated = { ...serviceDetails, linenPreferences: next, addons };
-    onServiceDetailsChange({ ...updated, durationHours: suggestDuration(updated) });
+    applyDetailsWithSchedule(updated);
   }
 
   function toggleExtraTask(id: string) {
     const addons = serviceDetails.addons.includes(id)
       ? serviceDetails.addons.filter((a) => a !== id)
       : [...serviceDetails.addons, id];
-    const next = { ...serviceDetails, addons };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    applyDetailsWithSchedule({ ...serviceDetails, addons });
   }
 
   function adjustHours(delta: number) {
@@ -267,8 +277,7 @@ export function AirbnbBookingFlow({
   }
 
   function applyHomePreset(bedrooms: number, bathrooms: number) {
-    const next = { ...serviceDetails, bedrooms, bathrooms };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    applyDetailsWithSchedule({ ...serviceDetails, bedrooms, bathrooms });
   }
 
   const canContinuePlan =
@@ -304,8 +313,12 @@ export function AirbnbBookingFlow({
 
   function setServiceType(serviceType: string, defaultHours: number) {
     const addons = sanitizeAddons("cleaning", serviceType, serviceDetails.addons);
-    const next = { ...serviceDetails, serviceType, addons, durationHours: defaultHours };
-    onServiceDetailsChange({ ...next, durationHours: suggestDuration(next) });
+    applyDetailsWithSchedule({
+      ...serviceDetails,
+      serviceType,
+      addons,
+      durationHours: defaultHours,
+    });
   }
 
   function handleAirbnbTypeChange(typeId: string) {

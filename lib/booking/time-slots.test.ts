@@ -121,4 +121,15 @@ describe("schedule feasibility", () => {
       })
     ).toBe(false);
   });
+
+  it("never offers late starts when duration filtering uses the service default", () => {
+    const slots = getAvailableStartTimes({
+      category: "cleaning",
+      serviceType: "spring",
+      serviceDate: "2026-12-20",
+    });
+
+    expect(slots.some((slot) => slot.value === "16:30")).toBe(false);
+    expect(slots[slots.length - 1]?.value).toBe("11:00");
+  });
 });
