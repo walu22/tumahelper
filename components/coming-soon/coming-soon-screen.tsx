@@ -31,16 +31,16 @@ export function ComingSoonScreen() {
         </div>
 
         <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          We&apos;re putting the finishing touches on something useful for Lusaka homes.
+          Home help in Lusaka, without the stress.
         </h1>
 
         <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-          TumaHelper will help you book trusted help for cleaning, childcare, cooking,
-          laundry, garden work, and home repairs — with clear pricing and verified workers.
+          Soon you&apos;ll be able to book verified helpers for cleaning, childcare, cooking,
+          laundry, garden work, and home repairs all in one place.
         </p>
 
         <p className="mt-10 text-sm text-muted-foreground">
-          Launching soon in Lusaka, Zambia
+          Launching soon in Lusaka, Zambia.
         </p>
       </div>
     </div>
