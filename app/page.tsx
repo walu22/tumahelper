@@ -1,3 +1,5 @@
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { getServerClient } from "@/lib/supabase";
 import { LandingHero } from "@/components/landing/hero";
 import { PlatformOfferings } from "@/components/landing/platform-offerings";
@@ -8,8 +10,22 @@ import { WORKERS_SPOTLIGHT_LIMIT } from "@/lib/landing/content";
 import { getSpotlightReviewQuotes } from "@/lib/landing/spotlight-reviews";
 import { PUBLIC_WORKER_AVAILABILITY, WORKER_STUB_AREA } from "@/lib/workers/public-listing";
 import type { PublicWorkerProfile } from "@/types";
+import {
+  BYPASS_COOKIE,
+  hasComingSoonBypassCookie,
+  isComingSoonEnabled,
+} from "@/lib/coming-soon";
+
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const host = headers().get("host");
+  const bypass = hasComingSoonBypassCookie(cookies().get(BYPASS_COOKIE)?.value);
+
+  if (isComingSoonEnabled(host) && !bypass) {
+    redirect("/coming-soon");
+  }
+
   let featuredWorkers: PublicWorkerProfile[] | null = null;
   let spotlightReviewQuotes: Record<string, string> = {};
 

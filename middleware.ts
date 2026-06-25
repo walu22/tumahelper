@@ -5,9 +5,9 @@ import { getRedirectForRole, isDevBypassEnabled } from "@/lib/auth/config";
 import {
   BYPASS_COOKIE,
   hasComingSoonBypassCookie,
-  isComingSoonEnabled,
   isComingSoonExemptPath,
   previewTokenMatches,
+  shouldGateRequest,
 } from "@/lib/coming-soon";
 
 const PROTECTED_PREFIXES = ["/customer", "/worker", "/employer", "/admin"];
@@ -20,8 +20,7 @@ function withPathname(request: NextRequest, pathname: string) {
 }
 
 function handleComingSoon(request: NextRequest): NextResponse | null {
-  if (!isComingSoonEnabled()) return null;
-
+  const host = request.headers.get("host");
   const { pathname, searchParams } = request.nextUrl;
   const preview = searchParams.get("preview");
 
@@ -46,10 +45,13 @@ function handleComingSoon(request: NextRequest): NextResponse | null {
     return null;
   }
 
+  if (!shouldGateRequest(host, pathname)) return null;
+
   const url = request.nextUrl.clone();
   url.pathname = "/coming-soon";
   url.search = "";
-  return NextResponse.rewrite(url);
+  const requestHeaders = withPathname(request, "/coming-soon");
+  return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
 }
 
 export async function middleware(request: NextRequest) {

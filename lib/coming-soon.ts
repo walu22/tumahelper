@@ -1,9 +1,19 @@
 const BYPASS_COOKIE = "coming_soon_bypass";
 
-export function isComingSoonEnabled(): boolean {
+const LIVE_SITE_HOST = "tumahelper.com";
+
+function normalizeHost(host?: string | null): string {
+  return (host ?? "").toLowerCase().split(":")[0]?.replace(/^www\./, "") ?? "";
+}
+
+export function isLiveSiteHost(host?: string | null): boolean {
+  return normalizeHost(host) === LIVE_SITE_HOST;
+}
+
+export function isComingSoonEnabled(host?: string | null): boolean {
   if (process.env.COMING_SOON === "false") return false;
   if (process.env.COMING_SOON === "true") return true;
-  // Live Vercel production (tumahelper.com) shows coming soon until launch.
+  if (isLiveSiteHost(host)) return true;
   return process.env.VERCEL_ENV === "production";
 }
 
@@ -32,6 +42,17 @@ export function isComingSoonExemptPath(pathname: string): boolean {
 export function previewTokenMatches(token: string | null): boolean {
   const secret = getComingSoonBypassSecret();
   return !!secret && !!token && token === secret;
+}
+
+export function shouldGateRequest(
+  host: string | null | undefined,
+  pathname: string,
+  bypassCookie?: string
+): boolean {
+  if (!isComingSoonEnabled(host)) return false;
+  if (hasComingSoonBypassCookie(bypassCookie)) return false;
+  if (isComingSoonExemptPath(pathname)) return false;
+  return true;
 }
 
 export { BYPASS_COOKIE };

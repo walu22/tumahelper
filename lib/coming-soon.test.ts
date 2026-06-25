@@ -2,8 +2,10 @@ import { describe, expect, it, afterEach } from "vitest";
 import {
   isComingSoonEnabled,
   isComingSoonExemptPath,
+  isLiveSiteHost,
   isStaticAssetPath,
   previewTokenMatches,
+  shouldGateRequest,
 } from "./coming-soon";
 
 describe("coming soon", () => {
@@ -28,16 +30,32 @@ describe("coming soon", () => {
     expect(isComingSoonEnabled()).toBe(true);
   });
 
+  it("is enabled on the live tumahelper.com hostname", () => {
+    expect(isLiveSiteHost("tumahelper.com")).toBe(true);
+    expect(isLiveSiteHost("www.tumahelper.com")).toBe(true);
+    expect(isLiveSiteHost("TumaHelper.com:443")).toBe(true);
+    expect(isComingSoonEnabled("tumahelper.com")).toBe(true);
+    expect(isComingSoonEnabled("preview-abc.vercel.app")).toBe(false);
+  });
+
   it("can be turned off on production with COMING_SOON=false", () => {
     process.env.VERCEL_ENV = "production";
     process.env.COMING_SOON = "false";
     expect(isComingSoonEnabled()).toBe(false);
+    expect(isComingSoonEnabled("tumahelper.com")).toBe(false);
   });
 
   it("exempts the coming soon page and static assets", () => {
     expect(isComingSoonExemptPath("/coming-soon")).toBe(true);
     expect(isStaticAssetPath("/logo.svg")).toBe(true);
     expect(isComingSoonExemptPath("/")).toBe(false);
+  });
+
+  it("gates public routes on the live site", () => {
+    expect(shouldGateRequest("tumahelper.com", "/")).toBe(true);
+    expect(shouldGateRequest("tumahelper.com", "/workers")).toBe(true);
+    expect(shouldGateRequest("tumahelper.com", "/coming-soon")).toBe(false);
+    expect(shouldGateRequest("localhost:3000", "/")).toBe(false);
   });
 
   it("matches preview bypass tokens only when a secret is configured", () => {
