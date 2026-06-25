@@ -5,12 +5,13 @@ import { LOGIN_ACCOUNTS, isDevBypassEnabled } from "@/lib/auth/config";
 export default function DevLoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string };
+  searchParams: { error?: string; redirect?: string };
 }) {
   async function devLoginAction(formData: FormData) {
     "use server";
 
     const phone = String(formData.get("phone") || "");
+    const redirectTo = String(formData.get("redirect") || "") || null;
     const account = LOGIN_ACCOUNTS.find((item) => item.phone === phone);
 
     if (!account) {
@@ -23,7 +24,7 @@ export default function DevLoginPage({
 
     let result;
     try {
-      result = await signIn({ email: account.email, password: "dev123" });
+      result = await signIn({ email: account.email, password: "dev123", redirect: redirectTo });
     } catch (error) {
       const message = error instanceof AuthError ? error.message : "Login failed";
       redirect(`/dev-login?error=${encodeURIComponent(message)}`);
@@ -50,6 +51,9 @@ export default function DevLoginPage({
           {LOGIN_ACCOUNTS.map((account) => (
             <form key={account.phone} action={devLoginAction}>
               <input type="hidden" name="phone" value={account.phone} />
+              {searchParams.redirect ? (
+                <input type="hidden" name="redirect" value={searchParams.redirect} />
+              ) : null}
               <button
                 type="submit"
                 className="w-full text-left p-3 border rounded-lg hover:bg-surface transition-colors"

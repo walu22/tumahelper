@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LogoMark } from "@/components/brand/logo";
 import { loginAction } from "./actions";
 import { SubmitButton } from "./submit-button";
+import { isDevBypassEnabled } from "@/lib/auth/config";
 
 export default function LoginPage({
   searchParams,
@@ -81,6 +82,22 @@ export default function LoginPage({
             Register
           </Link>
         </p>
+
+        {isDevBypassEnabled() ? (
+          <p className="text-center text-sm text-muted-foreground mt-3">
+            Local dev?{" "}
+            <Link
+              href={
+                searchParams.redirect
+                  ? `/dev-login?redirect=${encodeURIComponent(searchParams.redirect)}`
+                  : "/dev-login"
+              }
+              className="text-primary hover:underline"
+            >
+              Use one-click dev login
+            </Link>
+          </p>
+        ) : null}
       </div>
     </div>
   );

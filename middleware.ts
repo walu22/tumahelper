@@ -112,7 +112,9 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/admin") && user.role !== "admin") {
     if (isDevBypassEnabled()) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(
+        new URL(getRedirectForRole(user.role), request.url)
+      );
     }
 
     const admin = getAdminClient();
@@ -123,7 +125,9 @@ export async function middleware(request: NextRequest) {
       .maybeSingle();
 
     if (dbUser?.role !== "admin") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(
+        new URL(getRedirectForRole(dbUser?.role ?? user.role), request.url)
+      );
     }
   }
 

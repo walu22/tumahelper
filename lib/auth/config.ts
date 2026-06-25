@@ -78,6 +78,9 @@ export function getLoginEmailsForAttempt(email: string): string[] {
 
 export function getRedirectForRole(role: string, fallback?: string | null) {
   if (fallback) {
+    if (fallback.startsWith("/admin") && role !== "admin") {
+      return ROLE_REDIRECTS[role] || "/dashboard";
+    }
     if (fallback.startsWith("/customer") && role !== "customer") {
       return ROLE_REDIRECTS[role] || "/dashboard";
     }
