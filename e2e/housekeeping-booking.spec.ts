@@ -62,7 +62,7 @@ test.describe("Housekeeping booking end-to-end", () => {
     await page.getByText("Confirm this address").click();
 
     await expect(page.getByText("Every week")).toHaveCount(0);
-    await completeOneTimeSchedule(page, { time: "10:00" });
+    await completeOneTimeSchedule(page, { time: "09:00" });
 
     await expect(page.getByRole("heading", { name: "Duties for this visit" })).toBeVisible();
     await page.getByRole("button", { name: "Laundry" }).click();
@@ -84,7 +84,7 @@ test.describe("Housekeeping booking end-to-end", () => {
       workerId: MOCK_CLEANER_WORKER.user_id,
       categoryId: MOCK_CATEGORIES[1].id,
       serviceDate: tomorrowIsoDate(),
-      serviceTime: "10:00",
+      serviceTime: "09:00",
       locationAddress: expect.stringContaining("Plot 15, Kabulonga"),
       serviceDetails: {
         category: "housekeeping",

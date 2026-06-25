@@ -123,4 +123,26 @@ test.describe("Cleaning booking end-to-end", () => {
     await page.locator("#service-start-time").selectOption("10:00");
     await expect(continueBtn).toBeEnabled();
   });
+
+  test("spring cleaning does not offer late starts that cannot fit an 8-hour visit", async ({
+    page,
+    baseURL,
+  }) => {
+    await loginAsCustomer(page, baseURL!);
+    await page.goto("/customer/book?category=cleaning&type=spring");
+    await expect(page.getByRole("heading", { name: "Where should we clean?" })).toBeVisible({
+      timeout: 15_000,
+    });
+
+    await page.locator("#cleaning-street").fill("Plot 20, Woodlands, Lusaka");
+    await page.getByText("Confirm this address").click();
+
+    await page.getByRole("button", { name: "One-time visit" }).click();
+    await page.getByRole("button", { name: "Pick a date" }).click();
+    await page.locator("#service-date").fill(tomorrowIsoDate());
+
+    const options = await page.locator("#service-start-time option").allTextContents();
+    expect(options.some((label) => label.includes("4:30 PM"))).toBe(false);
+    expect(options.some((label) => label.includes("4:00 PM"))).toBe(false);
+  });
 });
