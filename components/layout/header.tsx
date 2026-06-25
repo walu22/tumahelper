@@ -4,13 +4,12 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/brand/logo'
 import { useState } from 'react'
-import { Menu, X, User, LogOut, Sun, Moon } from 'lucide-react'
+import { Menu, X, Sun, Moon } from 'lucide-react'
 import { useTheme } from '@/components/theme-provider'
 import type { User as AppUser } from '@/types'
-import { ROLE_REDIRECTS } from '@/lib/auth/config'
-import { logoutAction } from '@/app/(auth)/login/actions'
 import { HEADER_BOOK_CTA, HEADER_NAV_LINKS } from '@/lib/landing/content'
 import { NotificationBell } from '@/components/layout/notification-bell'
+import { AccountMenu, AccountMenuLinks } from '@/components/layout/account-menu'
 
 function ThemeToggle({
   className,
@@ -38,7 +37,6 @@ function ThemeToggle({
 
 export function Header({ user }: { user: AppUser | null }) {
   const [isOpen, setIsOpen] = useState(false)
-  const dashboardHref = user ? ROLE_REDIRECTS[user.role] || '/dashboard' : '/login'
 
   function closeMenu() {
     setIsOpen(false)
@@ -72,18 +70,7 @@ export function Header({ user }: { user: AppUser | null }) {
             {user ? (
               <>
                 <NotificationBell userId={user.id} />
-                <Button variant="ghost" size="sm" className="rounded-full" asChild>
-                  <Link href={dashboardHref}>
-                    <User className="h-4 w-4 mr-2" />
-                    Account
-                  </Link>
-                </Button>
-                <form action={logoutAction}>
-                  <Button variant="ghost" size="sm" className="rounded-full" type="submit">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign out
-                  </Button>
-                </form>
+                <AccountMenu user={user} />
               </>
             ) : (
               <Button variant="ghost" size="sm" className="rounded-full" asChild>
@@ -139,17 +126,7 @@ export function Header({ user }: { user: AppUser | null }) {
               {user ? (
                 <>
                   <NotificationBell userId={user.id} />
-                  <Button variant="outline" className="w-full rounded-full" asChild>
-                    <Link href={dashboardHref} onClick={closeMenu}>
-                      Account
-                    </Link>
-                  </Button>
-                  <form action={logoutAction}>
-                    <Button variant="ghost" className="w-full rounded-full" type="submit">
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Sign out
-                    </Button>
-                  </form>
+                  <AccountMenuLinks user={user} onNavigate={closeMenu} />
                 </>
               ) : (
                 <Button variant="outline" className="w-full rounded-full" asChild>
