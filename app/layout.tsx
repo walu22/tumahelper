@@ -49,6 +49,8 @@ export default function RootLayout({
 }) {
   const pathname = headers().get("x-pathname") || "";
   const isAdmin = pathname.startsWith("/admin");
+  const isComingSoonPage = pathname === "/coming-soon";
+  const showSiteChrome = !isAdmin && !isComingSoonPage;
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -57,10 +59,10 @@ export default function RootLayout({
       </head>
       <body className={`${sans.variable} ${display.variable} ${hero.variable} font-sans`}>
         <ThemeProvider>
-          {!isAdmin && <HeaderAuth />}
-          <main className={isAdmin ? "" : "min-h-screen pb-safe-nav md:pb-0"}>{children}</main>
-          {!isAdmin && <Footer className="hidden md:block" />}
-          {!isAdmin && <MobileNavAuth />}
+          {showSiteChrome && <HeaderAuth />}
+          <main className={showSiteChrome ? "min-h-screen pb-safe-nav md:pb-0" : ""}>{children}</main>
+          {showSiteChrome && <Footer className="hidden md:block" />}
+          {showSiteChrome && <MobileNavAuth />}
           <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>

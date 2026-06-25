@@ -2,19 +2,66 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getAdminClient } from "@/lib/supabase";
 import { resolveUserFromRequest } from "@/lib/auth/session";
 import { getRedirectForRole, isDevBypassEnabled } from "@/lib/auth/config";
+import {
+  BYPASS_COOKIE,
+  hasComingSoonBypassCookie,
+  isComingSoonEnabled,
+  isComingSoonExemptPath,
+  previewTokenMatches,
+} from "@/lib/coming-soon";
 
 const PROTECTED_PREFIXES = ["/customer", "/worker", "/employer", "/admin"];
 const ONBOARDING_ROLES = ["customer", "worker", "employer"] as const;
 
-export async function middleware(request: NextRequest) {
+function withPathname(request: NextRequest, pathname: string) {
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  requestHeaders.set("x-pathname", pathname);
+  return requestHeaders;
+}
+
+function handleComingSoon(request: NextRequest): NextResponse | null {
+  if (!isComingSoonEnabled()) return null;
+
+  const { pathname, searchParams } = request.nextUrl;
+  const preview = searchParams.get("preview");
+
+  if (previewTokenMatches(preview)) {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete("preview");
+    const response = NextResponse.redirect(url);
+    response.cookies.set(BYPASS_COOKIE, "1", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+    return response;
+  }
+
+  if (
+    hasComingSoonBypassCookie(request.cookies.get(BYPASS_COOKIE)?.value) ||
+    isComingSoonExemptPath(pathname)
+  ) {
+    return null;
+  }
+
+  const url = request.nextUrl.clone();
+  url.pathname = "/coming-soon";
+  url.search = "";
+  return NextResponse.rewrite(url);
+}
+
+export async function middleware(request: NextRequest) {
+  const comingSoonResponse = handleComingSoon(request);
+  if (comingSoonResponse) return comingSoonResponse;
+
+  const { pathname } = request.nextUrl;
+  const requestHeaders = withPathname(request, pathname);
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
-
-  const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/onboarding/")) {
     const onboardingRole = pathname.split("/")[2];
@@ -83,8 +130,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/(customer|worker|employer|admin)/:path*",
-    "/api/admin/:path*",
-    "/onboarding/:path*",
+    "/((?!_next/static|_next/image|favicon.ico|logo\\.svg|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
