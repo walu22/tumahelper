@@ -879,6 +879,11 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         ? getBookingPageTitle(serviceDetails.category, serviceDetails.serviceType)
         : 'Book a service'
 
+  const bookingSubtitle =
+    step === STEP.PICK
+      ? 'Choose a popular service or browse by category. We’ll help you set the address and schedule next.'
+      : null
+
   function renderGuidedSummary() {
     if (!serviceDetails) return null
     if (lockedAirbnb || (serviceDetails && usesAirbnbBookingFlow(serviceDetails))) {
@@ -1005,7 +1010,12 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
         }`}
       >
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2">{bookingTitle}</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight mb-2">
+            {bookingTitle}
+          </h1>
+          {bookingSubtitle ? (
+            <p className="max-w-2xl text-sm sm:text-base text-muted-foreground">{bookingSubtitle}</p>
+          ) : null}
           {showWizardProgress && (
             <>
               <div className="md:hidden mt-4 space-y-2">
@@ -1052,13 +1062,7 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           )}
         </div>
 
-        {step === STEP.PICK && (
-          <Card>
-            <CardContent className="p-6">
-              <ServiceTypePicker onSelect={selectServiceType} />
-            </CardContent>
-          </Card>
-        )}
+        {step === STEP.PICK && <ServiceTypePicker onSelect={selectServiceType} />}
 
         {step === STEP.DETAILS && serviceDetails && guidedFlow && (
           <BookingStepShell

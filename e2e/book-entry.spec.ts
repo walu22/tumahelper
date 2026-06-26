@@ -41,7 +41,7 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
   test("hero Short-Stay Cleaning expands short-stay pills", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("tab", { name: "Guest checkout clean" })).not.toBeVisible();
-    await page.getByRole("button", { name: "Short-Stay Cleaning" }).click();
+    await page.locator("#choose-service").getByRole("button", { name: "Short-Stay Cleaning" }).click();
     await expect(page.getByRole("tab", { name: "Guest checkout clean" })).toBeVisible();
     await page.getByRole("tab", { name: "Same-day turnaround" }).click();
     await expect(page).toHaveURL(/type=same_day_turnaround/);
@@ -90,20 +90,40 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
     });
   });
 
-  test("plain /customer/book shows launch service pills", async ({ page }) => {
+  test("plain /customer/book shows launch service picker", async ({ page }) => {
     await page.goto("/customer/book");
     await expect(page.getByRole("heading", { name: "What do you need?" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Popular in Lusaka" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /House cleaning/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^Nannies/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^Cleaning/ })).toBeVisible();
+
+    await page.getByRole("button", { name: /^Cleaning/ }).click();
     await expect(page.getByRole("tab", { name: "Deep cleaning" })).toBeVisible();
+    await page.getByRole("button", { name: /^Nannies/ }).click();
     await expect(page.getByRole("tab", { name: "Day nanny" })).toBeVisible();
+    await page.getByRole("button", { name: /^Housekeeping/ }).click();
     await expect(page.getByRole("tab", { name: "Half-day" })).toBeVisible();
+    await page.getByRole("button", { name: /^Cooking & Meals/ }).click();
     await expect(
       page.getByRole("tablist", { name: "Type of cooking visit" }).getByRole("tab", {
         name: /^Lunch\./,
       })
     ).toBeVisible();
+    await page.getByRole("button", { name: /^Short-Stay Cleaning/ }).click();
     await expect(page.getByRole("tab", { name: "Guest checkout clean" })).toBeVisible();
+    await page.getByRole("button", { name: /^Laundry & Ironing/ }).click();
     await expect(page.getByRole("tab", { name: "Wash & fold" })).toBeVisible();
+    await page.getByRole("button", { name: /^Garden & Yard/ }).click();
     await expect(page.getByRole("tab", { name: "Lawn cutting" })).toBeVisible();
+  });
+
+  test("popular service pick starts guided booking flow", async ({ page }) => {
+    await page.goto("/customer/book");
+    await page.getByRole("button", { name: /House cleaning/i }).click();
+    await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
   test("book cooking without type starts guided flow with default visit", async ({ page }) => {
