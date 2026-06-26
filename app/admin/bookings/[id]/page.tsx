@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { CalendarCheck } from "lucide-react";
 import { AdminBookingDetailPanel } from "@/components/admin/admin-booking-detail-panel";
 import { AdminEmptyState } from "@/components/admin/admin-page-section";
 import { isAdminSupabaseConfigured } from "@/lib/admin/env";
 import { getAdminBookingDetail } from "@/lib/admin/booking-detail-data";
 import { Button } from "@/components/ui/button";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminBookingDetailPage({
   params,
@@ -32,7 +33,18 @@ export default async function AdminBookingDetailPage({
 
   const booking = await getAdminBookingDetail(params.id);
   if (!booking) {
-    notFound();
+    return (
+      <div className="space-y-4">
+        <AdminEmptyState
+          icon={CalendarCheck}
+          title="Booking not found"
+          description="This booking may have been removed, or the link may be out of date. Return to the bookings list and try again."
+        />
+        <Button variant="outline" asChild>
+          <Link href="/admin/bookings">Back to bookings</Link>
+        </Button>
+      </div>
+    );
   }
 
   return <AdminBookingDetailPanel booking={booking} />;
