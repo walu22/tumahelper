@@ -183,7 +183,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
         id: "documents",
         label: `${pendingDocuments} document${pendingDocuments === 1 ? "" : "s"} to review`,
         description: "Worker verification uploads waiting for approval",
-        href: "/admin/documents",
+        href: "/admin/documents?status=submitted",
         tone: "warning",
       });
     }
@@ -193,7 +193,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
         id: "payments",
         label: `${pendingPayments} payment${pendingPayments === 1 ? "" : "s"} to confirm`,
         description: "Customers submitted proof that needs checking",
-        href: "/admin/payments",
+        href: "/admin/payments?status=paid",
         tone: "info",
       });
     }
@@ -203,7 +203,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
         id: "disputes",
         label: `${openDisputes} open dispute${openDisputes === 1 ? "" : "s"}`,
         description: "Issues that need a decision from the team",
-        href: "/admin/disputes",
+        href: "/admin/disputes?status=open",
         tone: "destructive",
       });
     }
@@ -213,7 +213,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
         id: "workers",
         label: `${pendingWorkers} worker profile${pendingWorkers === 1 ? "" : "s"} pending`,
         description: "New signups waiting for verification review",
-        href: "/admin/workers",
+        href: "/admin/workers?verification_status=pending",
         tone: "warning",
       });
     }

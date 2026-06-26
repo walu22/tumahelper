@@ -12,6 +12,7 @@ export const ADMIN_NAV_LINKS = [
 export function getAdminPageTitle(pathname: string): string {
   if (pathname === "/admin") return "Dashboard";
   if (pathname.startsWith("/admin/workers/")) return "Worker details";
+  if (pathname.startsWith("/admin/bookings/")) return "Booking details";
   const match = ADMIN_NAV_LINKS.find(
     (link) => link.href !== "/admin" && pathname.startsWith(link.href)
   );

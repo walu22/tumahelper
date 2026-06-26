@@ -62,7 +62,7 @@ export function AdminBookingsTable({ bookings }: { bookings: AdminBookingRow[] }
               </td>
               <td className="py-3">
                 <Button variant="ghost" size="sm" className="rounded-full" asChild>
-                  <Link href={`/customer/bookings/${booking.id}`}>
+                  <Link href={`/admin/bookings/${booking.id}`}>
                     <Eye className="h-4 w-4" />
                     <span className="sr-only">View booking</span>
                   </Link>
