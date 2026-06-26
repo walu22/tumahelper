@@ -11,7 +11,7 @@ import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 
 function canReviewPayment(status: string) {
-  return status === "paid" || status === "pending";
+  return status === "pending" || status === "paid";
 }
 
 export function AdminPaymentsTable({ payments }: { payments: AdminPaymentRow[] }) {

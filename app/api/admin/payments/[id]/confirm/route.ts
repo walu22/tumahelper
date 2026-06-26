@@ -28,19 +28,51 @@ export async function PATCH(
       return errorResponse("UPDATE_FAILED", error.message, 500);
     }
 
-    await adminClient.from("payments").insert({
-      payment_code: `PAY-${Date.now()}`,
-      booking_id: id,
-      payer_id: data.customer_id,
-      payee_id: data.worker_id,
-      amount: data.amount,
-      platform_fee: data.platform_fee,
-      payment_type: "booking",
-      status: "confirmed",
-      confirmed_by: admin.id,
-      confirmed_at: new Date().toISOString(),
-      notes,
-    });
+    const { data: existingPayment } = await adminClient
+      .from("payments")
+      .select("id")
+      .eq("booking_id", id)
+      .in("status", ["pending", "paid"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const confirmedAt = new Date().toISOString();
+
+    if (existingPayment) {
+      const { error: paymentError } = await adminClient
+        .from("payments")
+        .update({
+          status: "confirmed",
+          payee_id: data.worker_id,
+          confirmed_by: admin.id,
+          confirmed_at: confirmedAt,
+          notes,
+        })
+        .eq("id", existingPayment.id);
+
+      if (paymentError) {
+        return errorResponse("UPDATE_FAILED", paymentError.message, 500);
+      }
+    } else {
+      const { error: paymentError } = await adminClient.from("payments").insert({
+        payment_code: `PAY-${Date.now()}`,
+        booking_id: id,
+        payer_id: data.customer_id,
+        payee_id: data.worker_id,
+        amount: data.amount,
+        platform_fee: data.platform_fee,
+        payment_type: "booking",
+        status: "confirmed",
+        confirmed_by: admin.id,
+        confirmed_at: confirmedAt,
+        notes,
+      });
+
+      if (paymentError) {
+        return errorResponse("UPDATE_FAILED", paymentError.message, 500);
+      }
+    }
 
     await adminClient.from("audit_logs").insert({
       admin_id: admin.id,

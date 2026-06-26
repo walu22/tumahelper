@@ -72,6 +72,7 @@ export async function POST(
       payment_code: `PAY-${Date.now().toString(36).toUpperCase()}`,
       booking_id: params.id,
       payer_id: user.id,
+      payee_id: booking.worker_id,
       amount: booking.amount,
       platform_fee: Math.round(booking.amount * 0.1),
       payment_type: 'booking',

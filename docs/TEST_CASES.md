@@ -138,7 +138,7 @@ Run automated tests: `npm run test:ci` (PR smoke) · `npm run test:e2e` (full) �
 | ID | Priority | Title | Preconditions | Steps | Expected result | Auto |
 |----|----------|-------|---------------|-------|-----------------|------|
 | WRK-001 | P1 | Worker dashboard loads | Worker logged in | Visit `/worker/dashboard` | Upcoming bookings, profile summary | auth-access.spec |
-| WRK-002 | P1 | Worker accepts pending booking | Worker assigned, pending | Open booking → Accept | Status → accepted | booking-lifecycle.spec |
+| WRK-002 | P1 | Worker accepts pending booking | Worker assigned, pending | Open booking → Accept | Status → accepted | go-live-loop.spec |
 | WRK-003 | P1 | Worker declines booking | Pending booking | Decline with reason | Status → declined; customer notified | booking-lifecycle.spec |
 | WRK-004 | P1 | Worker marks in progress | Accepted booking | Start job | Status → in_progress | booking-lifecycle.spec |
 | WRK-005 | P1 | Worker marks completed | In progress | Complete job | Status → completed; trust score recalc | booking-lifecycle.spec |
@@ -166,7 +166,7 @@ Run automated tests: `npm run test:ci` (PR smoke) · `npm run test:e2e` (full) �
 |----|----------|-------|---------------|-------|-----------------|------|
 | ADM-001 | P1 | Admin dashboard loads | Admin logged in | Visit `/admin` | Stats cards; navigation to queues | auth-access.spec |
 | ADM-002 | P1 | Approve worker verification | Pending worker | Admin workers → approve | Worker approved; can appear in search | Manual |
-| ADM-003 | P1 | Confirm customer payment | Payment proof uploaded | Admin payments → confirm | `payment_status` confirmed | Manual |
+| ADM-003 | P1 | Confirm customer payment | Payment proof uploaded | Admin payments → confirm | `payment_status` confirmed | go-live-loop.spec |
 | ADM-004 | P2 | Reject payment proof | Invalid screenshot | Admin payments → reject | Customer can re-upload | Manual |
 | ADM-005 | P2 | Approve worker document | Pending NRC doc | Admin documents → approve | Verification level may increase | Manual |
 | ADM-006 | P2 | Resolve dispute | Open dispute | Admin disputes → resolve | Dispute closed; audit log entry | Manual |
@@ -231,8 +231,8 @@ Run automated tests: `npm run test:ci` (PR smoke) · `npm run test:e2e` (full) �
 | Phase | Scope | Status |
 |-------|-------|--------|
 | 1 | Booking entry + nanny/cleaning flow + auth guards | Done (`e2e/`) |
-| 2 | Booking detail, payment upload, worker status changes | Done (`booking-lifecycle`, `payment-proof`) |
-| 3 | Admin queues, employer jobs | Planned |
+| 2 | Booking detail, payment upload, worker status changes, admin payment confirm | Done (`booking-lifecycle`, `payment-proof`, `go-live-loop`) |
+| 3 | Admin queues (documents, disputes), employer jobs | Planned |
 | 4 | Unit tests: trust score, validations, fee math, status machine | Planned |
 
 ---

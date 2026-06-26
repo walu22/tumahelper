@@ -137,9 +137,9 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
         .select("*", { count: "exact", head: true })
         .in("status", ["pending", "accepted", "in_progress"]),
       supabase
-        .from("payments")
+        .from("bookings")
         .select("*", { count: "exact", head: true })
-        .eq("status", "paid"),
+        .eq("payment_status", "paid"),
       supabase
         .from("disputes")
         .select("*", { count: "exact", head: true })
@@ -193,7 +193,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
         id: "payments",
         label: `${pendingPayments} payment${pendingPayments === 1 ? "" : "s"} to confirm`,
         description: "Customers submitted proof that needs checking",
-        href: "/admin/payments?status=paid",
+        href: "/admin/payments?status=pending",
         tone: "info",
       });
     }

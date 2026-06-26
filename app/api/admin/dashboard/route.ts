@@ -30,9 +30,9 @@ export async function GET(req: NextRequest) {
       .neq("status", "resolved");
 
     const { count: pendingPayments } = await supabase
-      .from("payments")
+      .from("bookings")
       .select("*", { count: "exact", head: true })
-      .eq("status", "paid");
+      .eq("payment_status", "paid");
 
     const { data: recentBookings } = await supabase
       .from("bookings")

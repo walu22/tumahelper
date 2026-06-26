@@ -22,11 +22,13 @@ import {
   paymentRecordStatusVariant,
   paymentStatusVariant,
 } from "@/lib/admin/status-badges";
+import { AdminConfirmPaymentButton } from "@/components/admin/admin-confirm-payment-button";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export function AdminBookingDetailPanel({ booking }: { booking: AdminBookingDetail }) {
   const needsPaymentReview =
-    booking.payment_status === "paid" || booking.payments.some((payment) => payment.status === "paid");
+    booking.payment_status === "paid" ||
+    booking.payments.some((payment) => payment.status === "pending" || payment.status === "paid");
 
   return (
     <div className="space-y-6">
@@ -157,9 +159,12 @@ export function AdminBookingDetailPanel({ booking }: { booking: AdminBookingDeta
                 />
               ) : null}
               {needsPaymentReview ? (
-                <Button size="sm" className="mt-2 w-full rounded-full" asChild>
-                  <Link href="/admin/payments?status=paid">Review payment proof</Link>
-                </Button>
+                <div className="mt-2 space-y-2">
+                  <AdminConfirmPaymentButton bookingId={booking.id} />
+                  <Button size="sm" variant="outline" className="w-full rounded-full" asChild>
+                    <Link href="/admin/payments?status=pending">Open payments queue</Link>
+                  </Button>
+                </div>
               ) : null}
             </CardContent>
           </Card>

@@ -21,7 +21,7 @@ export function workerAvailabilityVariant(status: string) {
 
 export function paymentRecordStatusVariant(status: string) {
   if (status === "confirmed") return "success" as const;
-  if (status === "paid") return "warning" as const;
+  if (status === "paid" || status === "pending") return "warning" as const;
   if (status === "failed" || status === "refunded") return "destructive" as const;
   return "info" as const;
 }
