@@ -50,7 +50,11 @@ export default function RootLayout({
   const pathname = headers().get("x-pathname") || "";
   const isAdmin = pathname.startsWith("/admin");
   const isComingSoonPage = pathname === "/coming-soon";
-  const showSiteChrome = !isAdmin && !isComingSoonPage;
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/dev-login";
+  const showSiteChrome = !isAdmin && !isComingSoonPage && !isAuthPage;
 
   return (
     <html lang="en" suppressHydrationWarning>
