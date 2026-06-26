@@ -261,3 +261,14 @@ export function getDefaultHeroSearchResults(limit = 8): HeroSearchResult[] {
     .filter((result): result is HeroSearchResult => result != null)
     .slice(0, limit);
 }
+
+/** Booking-page search: only deep links into the booking wizard. */
+export function searchBookServices(query: string, limit = 8): HeroSearchResult[] {
+  const pool = query.trim()
+    ? searchHeroServices(query, limit + 6)
+    : getDefaultHeroSearchResults(limit + 6);
+
+  return pool
+    .filter((result) => result.href.startsWith("/customer/book"))
+    .slice(0, limit);
+}

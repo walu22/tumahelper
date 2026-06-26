@@ -1,8 +1,23 @@
-import { Suspense } from 'react'
-import { Loader2 } from 'lucide-react'
-import { BookingWizard } from '@/components/booking/booking-wizard'
+import { Suspense } from "react";
+import { Loader2 } from "lucide-react";
+import { BookingWizard } from "@/components/booking/booking-wizard";
+import { getCurrentUser } from "@/lib/auth";
+import { getRecentBookingShortcuts } from "@/lib/booking/service-picker-helpers";
+import { createAuthenticatedServerClient } from "@/lib/supabase-server";
 
-export default function BookPage() {
+export default async function BookPage() {
+  const user = await getCurrentUser();
+  let recentBookings: Awaited<ReturnType<typeof getRecentBookingShortcuts>> = [];
+
+  if (user) {
+    try {
+      const supabase = createAuthenticatedServerClient();
+      recentBookings = await getRecentBookingShortcuts(supabase, user.id);
+    } catch {
+      recentBookings = [];
+    }
+  }
+
   return (
     <Suspense
       fallback={
@@ -11,8 +26,7 @@ export default function BookPage() {
         </div>
       }
     >
-      <BookingWizard />
+      <BookingWizard recentBookings={recentBookings} />
     </Suspense>
-  )
+  );
 }
-

@@ -44,6 +44,7 @@ import {
   loadBookingDraft,
   saveBookingDraft,
 } from '@/lib/booking/draft-persistence'
+import type { RecentBookingShortcut } from '@/lib/booking/service-picker-helpers'
 import { clampStartTimeForDuration } from '@/lib/booking/time-slots'
 import {
   canProceedWithBookingDetails,
@@ -283,7 +284,13 @@ function isServiceTypeLocked(
   return !!resolveFunnelParam(funnelParam)?.type
 }
 
-export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }) {
+export function BookingWizard({
+  airbnbEntry = false,
+  recentBookings = [],
+}: {
+  airbnbEntry?: boolean;
+  recentBookings?: RecentBookingShortcut[];
+}) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const workerProfileId = searchParams.get('worker')
@@ -1062,7 +1069,9 @@ export function BookingWizard({ airbnbEntry = false }: { airbnbEntry?: boolean }
           )}
         </div>
 
-        {step === STEP.PICK && <ServiceTypePicker onSelect={selectServiceType} />}
+        {step === STEP.PICK && (
+          <ServiceTypePicker onSelect={selectServiceType} recentBookings={recentBookings} />
+        )}
 
         {step === STEP.DETAILS && serviceDetails && guidedFlow && (
           <BookingStepShell

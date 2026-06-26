@@ -94,11 +94,12 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
     await page.goto("/customer/book");
     await expect(page.getByRole("heading", { name: "What do you need?" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Popular in Lusaka" })).toBeVisible();
-    await expect(page.getByRole("button", { name: /House cleaning/i })).toBeVisible();
+    await expect(page.getByRole("combobox", { name: "Search for a home service" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "House cleaning. From K350" })).toBeVisible();
     await expect(page.getByRole("button", { name: /^Nannies/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: /^Cleaning/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^Cleaning Household/ })).toBeVisible();
 
-    await page.getByRole("button", { name: /^Cleaning/ }).click();
+    await page.getByRole("button", { name: /^Cleaning Household/ }).click();
     await expect(page.getByRole("tab", { name: "Deep cleaning" })).toBeVisible();
     await page.getByRole("button", { name: /^Nannies/ }).click();
     await expect(page.getByRole("tab", { name: "Day nanny" })).toBeVisible();
@@ -120,7 +121,7 @@ test.describe("Booking entry points", { tag: "@smoke" }, () => {
 
   test("popular service pick starts guided booking flow", async ({ page }) => {
     await page.goto("/customer/book");
-    await page.getByRole("button", { name: /House cleaning/i }).click();
+    await page.getByRole("button", { name: "House cleaning. From K350" }).click();
     await expect(page.getByRole("heading", { name: "Book house cleaning" })).toBeVisible({
       timeout: 15_000,
     });

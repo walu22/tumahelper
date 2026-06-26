@@ -11,6 +11,14 @@ import { HousekeepingTypeTabs } from "@/components/booking/housekeeping-type-tab
 import { LaundryTypeTabs } from "@/components/booking/laundry-type-tabs";
 import { GardenTypeTabs } from "@/components/booking/garden-type-tabs";
 import { HandymanTypeTabs } from "@/components/booking/handyman-type-tabs";
+import { ServicePickerSearch } from "@/components/booking/service-picker-search";
+import { RecentBookingShortcuts } from "@/components/booking/recent-booking-shortcuts";
+import {
+  formatServicePriceHint,
+  parseBookServiceHref,
+  type RecentBookingShortcut,
+} from "@/lib/booking/service-picker-helpers";
+import type { HeroSearchResult } from "@/lib/landing/hero-search";
 import {
   HERO_CATEGORIES,
   HERO_CATEGORY_PANEL_IDS,
@@ -74,6 +82,7 @@ export type ServiceCategoryExplorerProps = {
   variant?: "hero" | "page";
   showPopular?: boolean;
   initialExpanded?: HeroCategoryId | null;
+  recentBookings?: RecentBookingShortcut[];
 };
 
 function linkOrSelect(
@@ -93,6 +102,7 @@ export function ServiceCategoryExplorer({
   variant = "page",
   showPopular = variant === "page",
   initialExpanded = null,
+  recentBookings = [],
 }: ServiceCategoryExplorerProps) {
   const cleaningTypes = getResidentialCleaningTypes();
   const nannyTypes = getNannyTypes();
@@ -123,6 +133,27 @@ export function ServiceCategoryExplorer({
     if (href) window.location.href = href;
   }
 
+  function navigateToHref(href: string) {
+    window.location.href = href;
+  }
+
+  function handleSearchResult(result: HeroSearchResult) {
+    const parsed = parseBookServiceHref(result.href);
+    const hasWorker = result.href.includes("worker=");
+
+    if (hasWorker || !parsed) {
+      navigateToHref(result.href);
+      return;
+    }
+
+    if (onSelect) {
+      onSelect(parsed.category, parsed.typeId);
+      return;
+    }
+
+    navigateToHref(result.href);
+  }
+
   const airbnbLinkProps = onSelect
     ? { onChange: (typeId: string) => onSelect("cleaning", typeId) }
     : { getHref: (typeId: string) => getAirbnbHref?.(typeId) ?? "#" };
@@ -130,12 +161,19 @@ export function ServiceCategoryExplorer({
   return (
     <div className="space-y-8">
       {variant === "page" ? (
-        <div className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-4 sm:px-5">
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Tell us what you need and we&apos;ll guide you through address, schedule, and worker
-            choice. Payment comes after you confirm your booking.
-          </p>
-        </div>
+        <>
+          <ServicePickerSearch onResult={handleSearchResult} />
+          <div className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-4 sm:px-5">
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Tell us what you need and we&apos;ll guide you through address, schedule, and worker
+              choice. Payment comes after you confirm your booking.
+            </p>
+          </div>
+        </>
+      ) : null}
+
+      {variant === "page" && recentBookings.length > 0 ? (
+        <RecentBookingShortcuts bookings={recentBookings} onSelect={navigateToHref} />
       ) : null}
 
       {showPopular ? (
@@ -147,23 +185,34 @@ export function ServiceCategoryExplorer({
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            {POPULAR_SERVICES.map((service) => (
+            {POPULAR_SERVICES.map((service) => {
+              const priceHint = formatServicePriceHint(service.category, service.typeId);
+              return (
               <button
                 key={`${service.category}-${service.typeId}`}
                 type="button"
                 onClick={() => handlePopularPick(service.category, service.typeId)}
+                aria-label={`${service.label}. ${priceHint ?? service.description}`}
                 className="group flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-4 text-left transition-all hover:border-primary/40 hover:shadow-sm"
               >
                 <div className="shrink-0 transition-transform group-hover:scale-105">
                   <ServiceIcon name={service.icon} className="h-12 w-12" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-sm">{service.label}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold text-sm">{service.label}</p>
+                    {priceHint ? (
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                        {priceHint}
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{service.description}</p>
                 </div>
                 <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
               </button>
-            ))}
+            );
+            })}
           </div>
         </section>
       ) : null}
