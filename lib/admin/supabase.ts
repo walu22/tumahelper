@@ -1,19 +1,10 @@
-import { getSupabaseServer } from "@/lib/supabase";
+import { isAdminSupabaseConfigured } from "@/lib/admin/env";
 
-export function isAdminSupabaseConfigured(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
-
-  return Boolean(
-    url &&
-    serviceKey &&
-    !url.includes("placeholder") &&
-    !url.includes("your-project") &&
-    !serviceKey.includes("placeholder")
-  );
-}
+export { isAdminSupabaseConfigured };
 
 export function getAdminSupabaseClient() {
   if (!isAdminSupabaseConfigured()) return null;
+
+  const { getSupabaseServer } = require("@/lib/supabase") as typeof import("@/lib/supabase");
   return getSupabaseServer();
 }

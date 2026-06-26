@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { isAdminSupabaseConfigured } from "@/lib/admin/supabase";
+import { isAdminSupabaseConfigured } from "@/lib/admin/env";
 
 export function AdminDemoBanner() {
   if (isAdminSupabaseConfigured()) return null;
