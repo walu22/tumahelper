@@ -4,19 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { AdminRecentBooking } from "@/lib/admin/dashboard-data";
+import {
+  bookingStatusVariant,
+  formatAdminLabel,
+  paymentStatusVariant,
+} from "@/lib/admin/status-badges";
 import { formatCurrency } from "@/lib/utils";
-
-function bookingStatusVariant(status: string) {
-  if (status === "completed") return "success" as const;
-  if (status === "cancelled" || status === "declined") return "destructive" as const;
-  if (status === "pending") return "warning" as const;
-  return "info" as const;
-}
-
-function paymentStatusVariant(status: string) {
-  if (status === "confirmed" || status === "paid") return "success" as const;
-  return "warning" as const;
-}
 
 export function AdminRecentBookingsTable({
   bookings,
@@ -62,12 +55,12 @@ export function AdminRecentBookingsTable({
                     <td className="py-3 pr-3 whitespace-nowrap">{formatCurrency(booking.amount)}</td>
                     <td className="py-3 pr-3">
                       <Badge variant={bookingStatusVariant(booking.status)}>
-                        {booking.status.replaceAll("_", " ")}
+                        {formatAdminLabel(booking.status)}
                       </Badge>
                     </td>
                     <td className="py-3">
                       <Badge variant={paymentStatusVariant(booking.payment_status)}>
-                        {booking.payment_status}
+                        {formatAdminLabel(booking.payment_status)}
                       </Badge>
                     </td>
                   </tr>

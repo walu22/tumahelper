@@ -6,6 +6,7 @@ import {
   Users,
 } from "lucide-react";
 import { AdminAttentionPanel } from "@/components/admin/admin-attention-panel";
+import { AdminDemoBanner } from "@/components/admin/admin-page-section";
 import { AdminQuickLinks, AdminStatCards } from "@/components/admin/admin-stat-cards";
 import { AdminRecentBookingsTable } from "@/components/admin/admin-recent-bookings";
 import { AdminRecentWorkersTable } from "@/components/admin/admin-recent-workers";
@@ -55,14 +56,7 @@ export default async function AdminDashboard() {
         </p>
       </div>
 
-      {data.usingLocalDemoData ? (
-        <div className="rounded-2xl border border-amber-200/80 bg-amber-50/80 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-100">
-          Supabase is not configured yet, so this dashboard is showing empty demo data.
-          Copy <code className="rounded bg-background/80 px-1 py-0.5">.env.local.example</code> to{" "}
-          <code className="rounded bg-background/80 px-1 py-0.5">.env.local</code> and add your
-          project keys to load live admin data.
-        </div>
-      ) : null}
+      {data.usingLocalDemoData ? <AdminDemoBanner /> : null}
 
       <AdminAttentionPanel items={data.attentionItems} />
       <AdminStatCards stats={data.stats} />
