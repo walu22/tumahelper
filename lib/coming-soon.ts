@@ -13,8 +13,8 @@ export function isLiveSiteHost(host?: string | null): boolean {
 export function isComingSoonEnabled(host?: string | null): boolean {
   if (process.env.COMING_SOON === "false") return false;
   if (process.env.COMING_SOON === "true") return true;
-  if (isLiveSiteHost(host)) return true;
-  return process.env.VERCEL_ENV === "production";
+  // Disabled coming soon gate by default to launch the live site
+  return false;
 }
 
 export function getComingSoonBypassSecret(): string | undefined {
