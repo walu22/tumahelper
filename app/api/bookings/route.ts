@@ -166,7 +166,9 @@ export async function GET(request: NextRequest) {
       total: count || 0,
       total_pages: Math.ceil((count || 0) / limit),
     });
-  } catch (error) {
+   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return errorResponse("UNAUTHORIZED", "Not authenticated", 401);
+    }
     return errorResponse("INTERNAL_ERROR", "Failed to fetch bookings", 500);
   }
-}
