@@ -49,3 +49,8 @@ supabase/.temp/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+.env
+.env.local
+.env.*.local
+.env.vercel*
+!.env.local.example
